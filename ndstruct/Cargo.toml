@@ -15,9 +15,9 @@ std = ["alloc"]
 [package]
 authors = ["Caio Fernandes <c410.f3r@gmail.com>"]
 categories = ["data-structures", "concurrency", "science", "no-std"]
-description = "Sparse structures for N-dimensions"
+description = "Structures for N-dimensions"
 edition = "2021"
-keywords = ["coo", "csr", "dimension", "sparse", "structure"]
+keywords = ["coo", "csr", "dense", "dimension", "sparse", "structure"]
 license = "Apache-2.0"
 name = "ndstruct"
 readme = "README.md"

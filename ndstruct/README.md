@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/badge/license-APACHE2-blue.svg)](./LICENSE)
 [![Rustc](https://img.shields.io/badge/rustc-1.52-lightgray")](https://blog.rust-lang.org/2020/03/12/Rust-1.52.html)
 
-Structures to store and retrieve N-dimensional data. Well, not any `N ∈ ℕ` but any natural number that fits into the pointer size of the machine that you are using. E.g., an 8-bit microcontroller can manipulate any sparse structure with up to 255 dimensions.
+Structures to store and retrieve N-dimensional data. Well, not any `N ∈ ℕ` but any natural number that fits into the pointer size of the machine that you are using. E.g., an 8-bit microcontroller can manipulate any structure with up to 255 dimensions.
 
 For those that might be wondering about why this crate should be used, it generally comes down to space-efficiency, ergometrics and retrieving speed. The following snippet shows some use-cases for potential replacement with `_cube_of_vecs` being the most inefficient of all.
 
