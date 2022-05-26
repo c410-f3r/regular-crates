@@ -6,9 +6,7 @@
 [![License](https://img.shields.io/badge/license-APACHE2-blue.svg)](./LICENSE)
 ![Rustc](https://img.shields.io/badge/rustc-1.52-lightgray)
 
-Yet another library that generalizes collections.
-
-This crate provides a single method for each `trait` to achieve maximum flexibility and freedom instead of imposing an abstraction subset for all situations and users.
+For traits, this crate provides a single method for each operation to achieve maximum flexibility and freedom instead of imposing abstract subsets.
 
 ## Examples
 
