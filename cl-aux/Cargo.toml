@@ -1,0 +1,30 @@
+[dependencies]
+arrayvec = { default-features = false, optional = true, version = "0.7" }
+serde = { default-features = false, optional = true, version = "1.0" }
+smallvec = { default-features = false, optional = true, version = "1.0" }
+staticvec = { default-features = false, optional = true, version = "0.11" }
+tinyvec = { default-features = false, optional = true, version = "1.0" }
+
+[features]
+alloc = []
+arrayvec = ["dep:arrayvec"]
+default = []
+gat = []
+serde = ["dep:serde"]
+smallvec = ["dep:smallvec"]
+staticvec = ["dep:staticvec"]
+std = ["alloc"]
+tinyvec = ["dep:tinyvec", "tinyvec?/alloc"]
+
+[package]
+authors = ["Caio Fernandes <c410.f3r@gmail.com>"]
+categories = ["development-tools"]
+description = "Provides traits that describe collections"
+edition = "2021"
+keywords = ["collections", "traits"]
+license = "Apache-2.0"
+name = "cl-aux"
+readme = "README.md"
+repository = "https://github.com/c410-f3r/regular-crates"
+rust-version = "1.61"
+version = "1.0.0"

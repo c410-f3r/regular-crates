@@ -1,0 +1,28 @@
+[dependencies]
+cl-aux = { default-features = false, features = ["serde"], path = "../cl-aux", version = "1.0" }
+rand = { default-features = false, optional = true, version = "0.8" }
+rayon = { default-features = false, optional = true, version = "1.0" }
+serde = { default-features = false, features = ["derive"], optional = true, version = "1.0" }
+
+[features]
+alloc = ["cl-aux/alloc"]
+default = []
+rand = ["dep:rand"]
+rayon = ["dep:rayon"]
+serde = ["dep:serde"]
+std = ["alloc"]
+
+[package]
+authors = ["Caio Fernandes <c410.f3r@gmail.com>"]
+categories = ["data-structures", "concurrency", "science", "no-std"]
+description = "Sparse structures for N-dimensions"
+edition = "2021"
+keywords = ["coo", "csr", "dimension", "sparse", "structure"]
+license = "Apache-2.0"
+name = "ndstruct"
+readme = "README.md"
+repository = "https://github.com/c410-f3r/regular-crates"
+version = "1.0.0"
+
+[package.metadata.docs.rs]
+all-features = true

@@ -1,0 +1,3 @@
+[workspace]
+default-members = ["cl-aux", "ndstruct", "rust-tools"]
+members = ["cl-aux", "ndstruct", "ndstruct-fuzz", "rust-tools"]

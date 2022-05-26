@@ -1,0 +1,33 @@
+[[bin]]
+name = "coo"
+path = "coo.rs"
+
+[[bin]]
+name = "csl"
+path = "csl.rs"
+
+[[bin]]
+name = "random_coo"
+path = "random_coo.rs"
+
+[[bin]]
+name = "random_csl"
+path = "random_csl.rs"
+
+[dependencies]
+arbitrary = { default-features = false, features = ["derive"], version = "1.0" }
+libfuzzer-sys = { default-features = false, version = "0.4" }
+ndstruct = { default-features = false, features = ["alloc", "rand", "rayon"], path = "../ndstruct" }
+rand = { default-features = false, version = "0.8" }
+rayon = { default-features = false, version = "1.0" }
+
+[package]
+authors = ["Automatically generated"]
+edition = "2021"
+license = "Apache-2.0"
+name = "ndstruct-fuzz"
+publish = false
+version = "0.0.0"
+
+[package.metadata]
+cargo-fuzz = true
