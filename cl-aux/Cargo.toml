@@ -19,7 +19,7 @@ tinyvec = ["dep:tinyvec", "tinyvec?/alloc"]
 [package]
 authors = ["Caio Fernandes <c410.f3r@gmail.com>"]
 categories = ["development-tools"]
-description = "Provides traits that describe collections"
+description = "Provides elements that describe collections"
 edition = "2021"
 keywords = ["collections", "traits"]
 license = "Apache-2.0"

@@ -2,7 +2,7 @@ use crate::{Clear, Push, Truncate, WithCapacity};
 use core::fmt::Write;
 use core::ops::{Deref, DerefMut};
 
-/// Any string-like structure that `cl-aux` knows should implement this trait.
+/// Any owned growing string-like structure that `cl-aux` knows should implement this trait.
 ///
 #[cfg_attr(feature = "alloc", doc = "```rust")]
 #[cfg_attr(not(feature = "alloc"), doc = "```ignore")]
@@ -22,6 +22,7 @@ use core::ops::{Deref, DerefMut};
 pub trait String:
   AsRef<str>
   + Clear
+  + Default
   + Deref<Target = str>
   + DerefMut
   + crate::Extend<char>
@@ -35,6 +36,7 @@ pub trait String:
 impl<T> String for T where
   T: AsRef<str>
     + Clear
+    + Default
     + Deref<Target = str>
     + DerefMut
     + crate::Extend<char>
