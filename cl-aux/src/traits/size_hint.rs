@@ -62,6 +62,17 @@ where
 /// let structure = cl_aux::doc_tests::slice();
 /// assert_eq!(cl_aux::SizeHint::size_hint(&structure), (3, Some(3)));
 /// ```
+impl<T> SizeHint for [T] {
+  #[inline]
+  fn size_hint(&self) -> (usize, Option<usize>) {
+    (self.len(), Some(self.len()))
+  }
+}
+
+/// ```rust
+/// let structure = cl_aux::doc_tests::slice();
+/// assert_eq!(cl_aux::SizeHint::size_hint(&structure), (3, Some(3)));
+/// ```
 impl<T> SizeHint for &'_ [T] {
   #[inline]
   fn size_hint(&self) -> (usize, Option<usize>) {
