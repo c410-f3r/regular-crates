@@ -3,7 +3,11 @@ use std::process::Command;
 
 macro_rules! create_fns {
   (
-    $cargo_action:literal, $info:literal, $generic_fn:ident, $with_features_fn:ident
+    $cargo_action:literal,
+    $info:literal,
+    $generic_fn:ident,
+    $with_features_fn:ident
+    $(, $additional_arg:expr)?
   ) => {
     pub(crate) fn $generic_fn(&self, package: String) -> crate::Result<()> {
       handle_cmd_output(Command::new("echo").args(&[
@@ -18,6 +22,7 @@ macro_rules! create_fns {
         "--manifest-path",
         &format!("{}/Cargo.toml", package),
         "--no-default-features",
+        $($additional_arg)?
       ]))?;
 
       handle_cmd_output(Command::new("echo").args(&[
@@ -32,6 +37,7 @@ macro_rules! create_fns {
         "--all-features",
         "--manifest-path",
         &format!("{}/Cargo.toml", package),
+        $($additional_arg)?
       ]))?;
       Ok(())
     }
@@ -51,6 +57,7 @@ macro_rules! create_fns {
         "--manifest-path",
         &format!("{}/Cargo.toml", package),
         "--no-default-features",
+        $($additional_arg)?
       ]))?;
       Ok(())
     }
@@ -59,6 +66,6 @@ macro_rules! create_fns {
 
 impl Actions {
   create_fns!("build", "Building", build_generic, build_with_features);
-  create_fns!("check", "Checking", check_generic, check_with_features);
+  create_fns!("check", "Checking", check_generic, check_with_features, "--tests");
   create_fns!("test", "Testing", test_generic, test_with_features);
 }
