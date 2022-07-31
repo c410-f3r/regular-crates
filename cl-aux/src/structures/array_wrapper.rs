@@ -224,11 +224,10 @@ mod here_be_dragons {
 
 #[cfg(feature = "serde")]
 mod serde {
-  use crate::ArrayWrapper;
+  use crate::{ArrayWrapper, ArrayWrapperRef};
   use core::{fmt::Formatter, marker::PhantomData};
   use serde::{
     de::{self, SeqAccess, Visitor},
-    ser::SerializeTuple,
     Deserialize, Deserializer, Serialize, Serializer,
   };
 
@@ -280,11 +279,7 @@ mod serde {
     where
       S: Serializer,
     {
-      let mut seq = serializer.serialize_tuple(self.0.len())?;
-      for elem in &self.0 {
-        seq.serialize_element(elem)?;
-      }
-      seq.end()
+      ArrayWrapperRef::from(&self.0).serialize(serializer)
     }
   }
 }

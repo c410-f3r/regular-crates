@@ -20,24 +20,24 @@ mod swap;
 mod truncate;
 mod with_capacity;
 
-pub use capacity::*;
-pub use capacity_upper_bound::*;
-pub use clear::*;
-pub use extend::*;
+pub use capacity::Capacity;
+pub use capacity_upper_bound::CapacityUpperBound;
+pub use clear::Clear;
+pub use extend::Extend;
 #[cfg(feature = "gat")]
-pub use get::*;
+pub use get::Get;
 #[cfg(feature = "gat")]
-pub use get_mut::*;
-pub use insert::*;
+pub use get_mut::GetMut;
+pub use insert::Insert;
 #[cfg(feature = "gat")]
-pub use iter::*;
-pub use length::*;
-pub use push::*;
-pub use remove::*;
-pub use retain::*;
-pub use single_type_storage::*;
-pub use size_hint::*;
-pub use string::*;
-pub use swap::*;
-pub use truncate::*;
-pub use with_capacity::*;
+pub use iter::Iter;
+pub use length::Length;
+pub use push::Push;
+pub use remove::Remove;
+pub use retain::Retain;
+pub use single_type_storage::SingleTypeStorage;
+pub use size_hint::SizeHint;
+pub use string::String;
+pub use swap::Swap;
+pub use truncate::Truncate;
+pub use with_capacity::WithCapacity;
