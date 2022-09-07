@@ -48,13 +48,12 @@ where
 }
 
 #[inline]
-fn iterations<F, R>(
+fn iterations<R>(
   overall_buffer: &mut String,
   br: &mut BufReader<R>,
-  mut cb: F,
+  mut cb: impl FnMut(&str) -> bool,
 ) -> crate::Result<()>
 where
-  F: FnMut(&str) -> bool,
   R: Read,
 {
   overall_buffer.clear();

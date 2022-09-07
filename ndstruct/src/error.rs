@@ -6,7 +6,7 @@ use crate::{
 use core::fmt::{Debug, Display, Formatter};
 
 /// Contains all errors related to ndstruct
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 #[non_exhaustive]
 pub enum Error {
   /// [CooError]

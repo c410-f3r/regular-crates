@@ -149,7 +149,7 @@ pub(crate) fn line_offs<const D: usize>(
   match D {
     0 => None,
     1 => Some({
-      let off_end = offs.get(1)?.saturating_sub(*offs.get(0)?);
+      let off_end = offs.get(1)?.saturating_sub(*offs.first()?);
       [0..2, 0..off_end]
     }),
     _ => {

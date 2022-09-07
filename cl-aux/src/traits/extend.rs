@@ -12,9 +12,10 @@ pub trait Extend<IN> {
   type Output;
 
   /// Returns an mutable inner reference of a derived element.
-  fn extend<IT>(&mut self, into_iter: IT) -> Result<Self::Output, Self::Error>
-  where
-    IT: IntoIterator<Item = IN>;
+  fn extend(
+    &mut self,
+    into_iter: impl IntoIterator<Item = IN>,
+  ) -> Result<Self::Output, Self::Error>;
 }
 
 /// ```rust
@@ -27,10 +28,10 @@ impl<T> Extend<T> for Option<T> {
   type Output = ();
 
   #[inline]
-  fn extend<IT>(&mut self, into_iter: IT) -> Result<Self::Output, Self::Error>
-  where
-    IT: IntoIterator<Item = T>,
-  {
+  fn extend(
+    &mut self,
+    into_iter: impl IntoIterator<Item = T>,
+  ) -> Result<Self::Output, Self::Error> {
     _check_capacity!(self);
     let err = || crate::Error::InsufficientCapacity(stringify!(self), 1);
     let mut iter = into_iter.into_iter();
@@ -55,10 +56,10 @@ impl Extend<char> for String {
   type Output = ();
 
   #[inline]
-  fn extend<IT>(&mut self, into_iter: IT) -> Result<Self::Output, Self::Error>
-  where
-    IT: IntoIterator<Item = char>,
-  {
+  fn extend(
+    &mut self,
+    into_iter: impl IntoIterator<Item = char>,
+  ) -> Result<Self::Output, Self::Error> {
     core::iter::Extend::extend(self, into_iter);
     Ok(())
   }
@@ -75,10 +76,10 @@ impl<T> Extend<T> for Vec<T> {
   type Output = ();
 
   #[inline]
-  fn extend<IT>(&mut self, into_iter: IT) -> Result<Self::Output, Self::Error>
-  where
-    IT: IntoIterator<Item = T>,
-  {
+  fn extend(
+    &mut self,
+    into_iter: impl IntoIterator<Item = T>,
+  ) -> Result<Self::Output, Self::Error> {
     core::iter::Extend::extend(self, into_iter);
     Ok(())
   }
@@ -99,10 +100,10 @@ where
   type Output = ();
 
   #[inline]
-  fn extend<IT>(&mut self, into_iter: IT) -> Result<Self::Output, Self::Error>
-  where
-    IT: IntoIterator<Item = char>,
-  {
+  fn extend(
+    &mut self,
+    into_iter: impl IntoIterator<Item = char>,
+  ) -> Result<Self::Output, Self::Error> {
     for elem in into_iter.into_iter() {
       crate::Push::push(self, elem)?;
     }
@@ -124,10 +125,10 @@ where
   type Output = ();
 
   #[inline]
-  fn extend<IT>(&mut self, into_iter: IT) -> Result<Self::Output, Self::Error>
-  where
-    IT: IntoIterator<Item = T>,
-  {
+  fn extend(
+    &mut self,
+    into_iter: impl IntoIterator<Item = T>,
+  ) -> Result<Self::Output, Self::Error> {
     for elem in into_iter.into_iter() {
       crate::Push::push(self, elem)?;
     }
@@ -150,10 +151,10 @@ where
   type Output = ();
 
   #[inline]
-  fn extend<IT>(&mut self, into_iter: IT) -> Result<Self::Output, Self::Error>
-  where
-    IT: IntoIterator<Item = A::Item>,
-  {
+  fn extend(
+    &mut self,
+    into_iter: impl IntoIterator<Item = A::Item>,
+  ) -> Result<Self::Output, Self::Error> {
     for elem in into_iter.into_iter() {
       crate::Push::push(self, elem)?;
     }
@@ -175,10 +176,10 @@ where
   type Output = ();
 
   #[inline]
-  fn extend<IT>(&mut self, into_iter: IT) -> Result<Self::Output, Self::Error>
-  where
-    IT: IntoIterator<Item = T>,
-  {
+  fn extend(
+    &mut self,
+    into_iter: impl IntoIterator<Item = T>,
+  ) -> Result<Self::Output, Self::Error> {
     for elem in into_iter.into_iter() {
       crate::Push::push(self, elem)?;
     }
@@ -201,10 +202,10 @@ where
   type Output = ();
 
   #[inline]
-  fn extend<IT>(&mut self, into_iter: IT) -> Result<Self::Output, Self::Error>
-  where
-    IT: IntoIterator<Item = A::Item>,
-  {
+  fn extend(
+    &mut self,
+    into_iter: impl IntoIterator<Item = A::Item>,
+  ) -> Result<Self::Output, Self::Error> {
     for elem in into_iter.into_iter() {
       crate::Push::push(self, elem)?;
     }
@@ -228,10 +229,10 @@ where
   type Output = ();
 
   #[inline]
-  fn extend<IT>(&mut self, into_iter: IT) -> Result<Self::Output, Self::Error>
-  where
-    IT: IntoIterator<Item = A::Item>,
-  {
+  fn extend(
+    &mut self,
+    into_iter: impl IntoIterator<Item = A::Item>,
+  ) -> Result<Self::Output, Self::Error> {
     for elem in into_iter.into_iter() {
       crate::Push::push(self, elem)?;
     }

@@ -1,7 +1,7 @@
 use core::fmt::{Debug, Display, Formatter};
 
 /// Any error related to `Coo` operations
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 #[non_exhaustive]
 pub enum DenseError {
   /// Some index overflows the maximum number of dimensions.

@@ -577,14 +577,13 @@ where
   /// _random = CslVec::new_controlled_random_rand(dims, 9, &mut rng, |r, _| r.gen());
   /// ```
   #[inline]
-  pub fn new_controlled_random_rand<F, R>(
+  pub fn new_controlled_random_rand<R>(
     dims: [usize; D],
     nnz: usize,
     rng: &mut R,
-    cb: F,
+    cb: impl FnMut(&mut R, [usize; D]) -> DATA,
   ) -> crate::Result<Self>
   where
-    F: FnMut(&mut R, [usize; D]) -> DATA,
     R: rand::Rng,
   {
     let mut csl = Csl { dims: dims.into(), ..Default::default() };

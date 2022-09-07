@@ -1,6 +1,7 @@
 mod capacity;
 mod capacity_upper_bound;
 mod clear;
+mod dyn_contig_coll;
 mod extend;
 #[cfg(feature = "gat")]
 mod get;
@@ -23,6 +24,7 @@ mod with_capacity;
 pub use capacity::Capacity;
 pub use capacity_upper_bound::CapacityUpperBound;
 pub use clear::Clear;
+pub use dyn_contig_coll::DynContigColl;
 pub use extend::Extend;
 #[cfg(feature = "gat")]
 pub use get::Get;

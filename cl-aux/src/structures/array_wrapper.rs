@@ -15,10 +15,7 @@ pub struct ArrayWrapper<T, const N: usize>(
 impl<T, const N: usize> ArrayWrapper<T, N> {
   /// Creates an array `[T; N]` where each array element `T` is returned by the `cb` call.
   #[inline]
-  pub fn from_fn<F>(mut cb: F) -> Self
-  where
-    F: FnMut(usize) -> T,
-  {
+  pub fn from_fn(mut cb: impl FnMut(usize) -> T) -> Self {
     let mut idx = 0;
     Self([(); N].map(|_| {
       let res = cb(idx);
@@ -31,10 +28,7 @@ impl<T, const N: usize> ArrayWrapper<T, N> {
   /// Unlike [`ArrayWrapper::from_fn`], where the element creation can't fail, this version will return an error
   /// if any element creation was unsuccessful.
   #[inline]
-  pub fn try_from_fn<E, F>(cb: F) -> Result<Self, E>
-  where
-    F: FnMut(usize) -> Result<T, E>,
-  {
+  pub fn try_from_fn<E>(cb: impl FnMut(usize) -> Result<T, E>) -> Result<Self, E> {
     Ok(Self(here_be_dragons::try_from_fn(cb)?))
   }
 }
@@ -130,10 +124,9 @@ mod here_be_dragons {
   };
 
   #[inline]
-  pub(super) fn try_from_fn<E, F, T, const N: usize>(cb: F) -> Result<[T; N], E>
-  where
-    F: FnMut(usize) -> Result<T, E>,
-  {
+  pub(super) fn try_from_fn<E, T, const N: usize>(
+    cb: impl FnMut(usize) -> Result<T, E>,
+  ) -> Result<[T; N], E> {
     let mut iter = (0..N).map(cb);
     debug_assert!(N <= iter.size_hint().1.unwrap_or(usize::MAX));
     debug_assert!(N <= iter.size_hint().0);
@@ -150,10 +143,9 @@ mod here_be_dragons {
     (&array as *const _ as *const [T; N]).read()
   }
 
-  fn try_collect_into_array<E, I, T, const N: usize>(iter: &mut I) -> Option<Result<[T; N], E>>
-  where
-    I: Iterator<Item = Result<T, E>>,
-  {
+  fn try_collect_into_array<E, T, const N: usize>(
+    iter: &mut impl Iterator<Item = Result<T, E>>,
+  ) -> Option<Result<[T; N], E>> {
     if N == 0 {
       // SAFETY: An empty array is always inhabited and has no validity invariants.
       return unsafe { Some(mem::zeroed()) };

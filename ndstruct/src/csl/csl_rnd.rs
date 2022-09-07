@@ -34,10 +34,7 @@ where
   }
 
   #[inline]
-  pub(crate) fn fill<F>(mut self, cb: F) -> Option<()>
-  where
-    F: FnMut(&mut R, [usize; D]) -> DATA,
-  {
+  pub(crate) fn fill(mut self, cb: impl FnMut(&mut R, [usize; D]) -> DATA) -> Option<()> {
     let last_dim_idx = if self.csl.dims.is_empty() {
       return Some(());
     } else {
@@ -50,10 +47,11 @@ where
   }
 
   #[inline]
-  fn fill_data<F>(&mut self, mut cb: F, last_dim_idx: usize) -> Option<()>
-  where
-    F: FnMut(&mut R, [usize; D]) -> DATA,
-  {
+  fn fill_data(
+    &mut self,
+    mut cb: impl FnMut(&mut R, [usize; D]) -> DATA,
+    last_dim_idx: usize,
+  ) -> Option<()> {
     let data = &mut self.csl.data;
     let indcs = self.csl.indcs.as_ref();
     let orig_dims = self.csl.dims.0;
@@ -129,10 +127,11 @@ where
   }
 
   #[inline]
-  fn do_fill_offs<F>(&mut self, last_dim_idx: usize, mut f: F) -> Option<usize>
-  where
-    F: FnMut(usize, usize, &mut Self) -> Option<usize>,
-  {
+  fn do_fill_offs(
+    &mut self,
+    last_dim_idx: usize,
+    mut f: impl FnMut(usize, usize, &mut Self) -> Option<usize>,
+  ) -> Option<usize> {
     let nnz = self.nnz;
     let mut idx = 1;
     let mut previous_nnz = *self.csl.offs.as_ref().first()?;

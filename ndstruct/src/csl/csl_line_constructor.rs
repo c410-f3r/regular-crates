@@ -4,7 +4,7 @@ use core::fmt::{Debug, Display, Formatter};
 
 /// Constructs valid lines in a easy and interactive manner, abstracting away the complexity
 /// of the compressed sparse format.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct CslLineConstructor<'csl, DS, IS, OS, const D: usize> {
   csl: &'csl mut Csl<DS, IS, OS, D>,
   curr_dim_idx: usize,
@@ -100,10 +100,7 @@ where
   /// assert_eq!(line, CslRef::new([50], &[1, 2][..], &[1, 40][..], &[0, 2][..]).ok());
   /// # Ok(()) }
   #[inline]
-  pub fn push_line<DI>(mut self, di: DI) -> crate::Result<Self>
-  where
-    DI: Iterator<Item = (usize, DATA)>,
-  {
+  pub fn push_line(mut self, di: impl Iterator<Item = (usize, DATA)>) -> crate::Result<Self> {
     let nnz_iter = 1..self.last_dim().saturating_add(1);
     let off_iter = self.last_off.saturating_add(1)..;
     let mut iter = off_iter.zip(nnz_iter.zip(di));
@@ -161,7 +158,7 @@ where
 }
 
 /// Contains all errors related to CslLineConstructor.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 #[non_exhaustive]
 pub enum CslLineConstructorError {
   /// The maximum number of dimenstions has been reached

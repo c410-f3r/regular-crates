@@ -3,7 +3,7 @@ use core::slice;
 /// A structure that holds one, and only one `T`.
 ///
 /// Behaves like [T; 1] but has additional `Default` and `From` implementations.
-#[derive(Debug, Default, PartialEq, PartialOrd)]
+#[derive(Debug, Default, Eq, PartialEq, PartialOrd)]
 pub struct SingleItemStorage<T>(
   // Single item
   pub T,

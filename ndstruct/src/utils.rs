@@ -11,9 +11,11 @@ pub struct ParallelIteratorWrapper<I>(pub(crate) I);
 pub struct ParallelProducerWrapper<I>(pub(crate) I);
 
 #[inline]
-pub(crate) fn are_in_ascending_order<'slice, F, T, U>(slice: &'slice [T], cb: F) -> bool
+pub(crate) fn are_in_ascending_order<'slice, T, U>(
+  slice: &'slice [T],
+  cb: impl Fn(&'slice T, &'slice T) -> [&'slice U; 2],
+) -> bool
 where
-  F: Fn(&'slice T, &'slice T) -> [&'slice U; 2],
   T: 'slice,
   U: PartialOrd + 'slice,
 {
@@ -51,7 +53,7 @@ pub(crate) fn max_nnz<const D: usize>(dims: &[usize; D]) -> usize {
   if dims == &ArrayWrapper::default().0 {
     return 0;
   }
-  if let Some(first) = dims.get(0).copied() {
+  if let Some(first) = dims.first().copied() {
     if D == 1 {
       return first;
     }

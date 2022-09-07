@@ -1,7 +1,7 @@
 use core::fmt::{Debug, Display, Formatter};
 
 /// Any error related to `Coo` operations
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 #[non_exhaustive]
 pub enum CooError {
   /// Some index isn't in asceding order

@@ -20,9 +20,9 @@ create_value!(get value);
 create_value!(get_mut value_mut [mut]);
 
 #[inline]
-pub(crate) fn does_not_have_duplicates_sorted<F, T>(slice: &[T], mut cb: F) -> bool
-where
-  F: FnMut(&T, &T) -> bool,
-{
+pub(crate) fn does_not_have_duplicates_sorted<T>(
+  slice: &[T],
+  mut cb: impl FnMut(&T, &T) -> bool,
+) -> bool {
   windows2(slice).all(|[a, b]| cb(a, b))
 }

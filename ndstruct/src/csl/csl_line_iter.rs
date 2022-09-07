@@ -4,7 +4,7 @@ use core::mem;
 macro_rules! impl_iter {
   ($csl_iter:ident, $data_type:ty, $split_at:ident, $ref:ident) => {
     /// Iterator of a CSL dimension.
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, Eq, PartialEq)]
     pub struct $csl_iter<'slices, T, const D: usize> {
       curr_idx: usize,
       data: $data_type,
