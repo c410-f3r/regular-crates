@@ -16,7 +16,7 @@ jobs:
         with:
           override: true
           profile: minimal
-          toolchain: nightly-2021-12-19
+          toolchain: nightly-2022-07-07
 
       - uses: actions-rs/install@v0.1
         with:
