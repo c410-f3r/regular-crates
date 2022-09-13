@@ -62,7 +62,7 @@ mod serde {
     where
       S: Serializer,
     {
-      let mut seq = serializer.serialize_tuple(self.0.len())?;
+      let mut seq = serializer.serialize_tuple(N)?;
       for elem in self.0 {
         seq.serialize_element(elem)?;
       }

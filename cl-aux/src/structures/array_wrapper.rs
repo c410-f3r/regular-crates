@@ -258,7 +258,7 @@ mod serde {
         }
       }
 
-      deserializer.deserialize_seq(ArrayVisitor::<T, N>(PhantomData))
+      deserializer.deserialize_tuple(N, ArrayVisitor::<T, N>(PhantomData))
     }
   }
 
