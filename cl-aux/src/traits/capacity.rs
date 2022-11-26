@@ -10,6 +10,16 @@ pub trait Capacity {
 }
 
 /// ```rust
+/// assert_eq!(cl_aux::Capacity::capacity(&()), 0);
+/// ```
+impl Capacity for () {
+  #[inline]
+  fn capacity(&self) -> usize {
+    0
+  }
+}
+
+/// ```rust
 /// assert_eq!(cl_aux::Capacity::capacity(&Some(0)), 1);
 /// ```
 impl<T> Capacity for Option<T> {
@@ -54,7 +64,7 @@ impl<T> Capacity for &'_ [T] {
 
 /// ```rust
 /// let mut structure = cl_aux::doc_tests::slice_mut!();
-/// assert_eq!(cl_aux::Length::length(structure), 3);
+/// assert_eq!(cl_aux::Length::length(&mut structure), 3);
 /// ```
 impl<T> Capacity for &'_ mut [T] {
   #[inline]

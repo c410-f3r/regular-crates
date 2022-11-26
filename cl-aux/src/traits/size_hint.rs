@@ -25,6 +25,16 @@ where
 }
 
 /// ```rust
+/// assert_eq!(cl_aux::SizeHint::size_hint(&()), (0, Some(0)));
+/// ```
+impl SizeHint for () {
+  #[inline]
+  fn size_hint(&self) -> (usize, Option<usize>) {
+    (0, Some(0))
+  }
+}
+
+/// ```rust
 /// let mut opt = Some(0);
 /// assert_eq!(cl_aux::SizeHint::size_hint(&opt), (1, Some(1)));
 /// opt.take();
@@ -82,7 +92,7 @@ impl<T> SizeHint for &'_ [T] {
 
 /// ```rust
 /// let mut structure = cl_aux::doc_tests::slice_mut!();
-/// assert_eq!(cl_aux::SizeHint::size_hint(structure), (3, Some(3)));
+/// assert_eq!(cl_aux::SizeHint::size_hint(&mut structure), (3, Some(3)));
 /// ```
 impl<T> SizeHint for &'_ mut [T] {
   #[inline]

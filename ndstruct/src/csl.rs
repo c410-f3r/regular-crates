@@ -9,7 +9,7 @@
 
 #![allow(
   // Serde
-  clippy::integer_arithmetic
+  clippy::arithmetic_side_effects, clippy::integer_arithmetic
 )]
 
 mod csl_error;
@@ -29,8 +29,6 @@ use core::ops::Range;
 pub use csl_error::*;
 pub use csl_line_constructor::*;
 pub use csl_line_iter::*;
-#[cfg(feature = "rayon")]
-pub use csl_rayon::*;
 use csl_utils::*;
 
 /// CSL backed by a static array.
@@ -72,9 +70,9 @@ pub struct Csl<DS, IS, OS, const D: usize> {
 
 impl<DS, IS, OS, const D: usize> Csl<DS, IS, OS, D>
 where
-  DS: WithCapacity<Input = usize>,
-  IS: WithCapacity<Input = usize>,
-  OS: WithCapacity<Input = usize>,
+  DS: WithCapacity<Error = cl_aux::Error, Input = usize>,
+  IS: WithCapacity<Error = cl_aux::Error, Input = usize>,
+  OS: WithCapacity<Error = cl_aux::Error, Input = usize>,
 {
   /// Creates an empty instance with initial capacity.
   ///
@@ -96,13 +94,13 @@ where
   /// let _ = CslVec::<i32, 3>::with_capacity(nnz, nolp1);
   /// ```
   #[inline]
-  pub fn with_capacity(nnz: usize, nolp1: usize) -> Self {
-    Self {
-      data: DS::with_capacity(nnz),
+  pub fn with_capacity(nnz: usize, nolp1: usize) -> crate::Result<Self> {
+    Ok(Self {
+      data: DS::with_capacity(nnz)?,
       dims: Default::default(),
-      indcs: IS::with_capacity(nnz),
-      offs: OS::with_capacity(nolp1),
-    }
+      indcs: IS::with_capacity(nnz)?,
+      offs: OS::with_capacity(nolp1)?,
+    })
   }
 }
 

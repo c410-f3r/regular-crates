@@ -5,17 +5,27 @@ use alloc::{string::String, vec::Vec};
 /// See [CapacityUpperBound::capacity_upper_bound] for more information.
 pub trait CapacityUpperBound {
   /// The maximum theoretical number of elements a type implementation is able to store.
-  fn capacity_upper_bound(&self) -> usize;
+  const CAPACITY_UPPER_BOUND: usize;
+
+  /// Instance method representing [Self::CAPACITY_UPPER_BOUND].
+  #[inline]
+  fn capacity_upper_bound(&self) -> usize {
+    Self::CAPACITY_UPPER_BOUND
+  }
+}
+
+/// ```rust
+/// assert_eq!(cl_aux::CapacityUpperBound::capacity_upper_bound(&()), 0);
+/// ```
+impl CapacityUpperBound for () {
+  const CAPACITY_UPPER_BOUND: usize = 0;
 }
 
 /// ```rust
 /// assert_eq!(cl_aux::CapacityUpperBound::capacity_upper_bound(&Some(0)), 1);
 /// ```
 impl<T> CapacityUpperBound for Option<T> {
-  #[inline]
-  fn capacity_upper_bound(&self) -> usize {
-    1
-  }
+  const CAPACITY_UPPER_BOUND: usize = 1;
 }
 
 /// ```rust
@@ -23,10 +33,7 @@ impl<T> CapacityUpperBound for Option<T> {
 /// assert_eq!(cl_aux::Capacity::capacity(&structure), 1);
 /// ```
 impl<T> CapacityUpperBound for SingleItemStorage<T> {
-  #[inline]
-  fn capacity_upper_bound(&self) -> usize {
-    1
-  }
+  const CAPACITY_UPPER_BOUND: usize = 1;
 }
 
 /// ```rust
@@ -34,32 +41,23 @@ impl<T> CapacityUpperBound for SingleItemStorage<T> {
 /// assert_eq!(cl_aux::CapacityUpperBound::capacity_upper_bound(&structure), 3);
 /// ```
 impl<T, const N: usize> CapacityUpperBound for [T; N] {
-  #[inline]
-  fn capacity_upper_bound(&self) -> usize {
-    N
-  }
+  const CAPACITY_UPPER_BOUND: usize = N;
 }
 
 /// ```rust
 /// let structure = cl_aux::doc_tests::slice();
-/// assert_eq!(cl_aux::CapacityUpperBound::capacity_upper_bound(&structure), 3);
+/// assert_eq!(cl_aux::CapacityUpperBound::capacity_upper_bound(&structure), 2305843009213693951);
 /// ```
 impl<T> CapacityUpperBound for &'_ [T] {
-  #[inline]
-  fn capacity_upper_bound(&self) -> usize {
-    self.len()
-  }
+  const CAPACITY_UPPER_BOUND: usize = _capacity_upper_bound_of_type::<T>();
 }
 
 /// ```rust
 /// let mut structure = cl_aux::doc_tests::slice_mut!();
-/// assert_eq!(cl_aux::CapacityUpperBound::capacity_upper_bound(structure), 3);
+/// assert_eq!(cl_aux::CapacityUpperBound::capacity_upper_bound(&mut structure), 2305843009213693951);
 /// ```
 impl<T> CapacityUpperBound for &'_ mut [T] {
-  #[inline]
-  fn capacity_upper_bound(&self) -> usize {
-    self.len()
-  }
+  const CAPACITY_UPPER_BOUND: usize = _capacity_upper_bound_of_type::<T>();
 }
 
 /// ```rust
@@ -68,10 +66,7 @@ impl<T> CapacityUpperBound for &'_ mut [T] {
 /// ```
 #[cfg(feature = "alloc")]
 impl CapacityUpperBound for String {
-  #[inline]
-  fn capacity_upper_bound(&self) -> usize {
-    _capacity_upper_bound_for_heap::<u8>()
-  }
+  const CAPACITY_UPPER_BOUND: usize = _capacity_upper_bound_of_type::<u8>();
 }
 
 /// ```rust
@@ -80,10 +75,7 @@ impl CapacityUpperBound for String {
 /// ```
 #[cfg(feature = "alloc")]
 impl<T> CapacityUpperBound for Vec<T> {
-  #[inline]
-  fn capacity_upper_bound(&self) -> usize {
-    _capacity_upper_bound_for_heap::<T>()
-  }
+  const CAPACITY_UPPER_BOUND: usize = _capacity_upper_bound_of_type::<T>();
 }
 
 /// ```rust
@@ -92,10 +84,7 @@ impl<T> CapacityUpperBound for Vec<T> {
 /// ```
 #[cfg(feature = "arrayvec")]
 impl<const N: usize> CapacityUpperBound for arrayvec::ArrayString<N> {
-  #[inline]
-  fn capacity_upper_bound(&self) -> usize {
-    N
-  }
+  const CAPACITY_UPPER_BOUND: usize = N;
 }
 
 /// ```rust
@@ -104,10 +93,7 @@ impl<const N: usize> CapacityUpperBound for arrayvec::ArrayString<N> {
 /// ```
 #[cfg(feature = "arrayvec")]
 impl<T, const N: usize> CapacityUpperBound for arrayvec::ArrayVec<T, N> {
-  #[inline]
-  fn capacity_upper_bound(&self) -> usize {
-    N
-  }
+  const CAPACITY_UPPER_BOUND: usize = N;
 }
 
 /// ```rust
@@ -119,10 +105,7 @@ impl<A> CapacityUpperBound for smallvec::SmallVec<A>
 where
   A: smallvec::Array,
 {
-  #[inline]
-  fn capacity_upper_bound(&self) -> usize {
-    _capacity_upper_bound_for_heap::<A::Item>()
-  }
+  const CAPACITY_UPPER_BOUND: usize = _capacity_upper_bound_of_type::<A::Item>();
 }
 
 /// ```rust
@@ -131,10 +114,7 @@ where
 /// ```
 #[cfg(feature = "staticvec")]
 impl<T, const N: usize> CapacityUpperBound for staticvec::StaticVec<T, N> {
-  #[inline]
-  fn capacity_upper_bound(&self) -> usize {
-    N
-  }
+  const CAPACITY_UPPER_BOUND: usize = N;
 }
 
 /// ```rust
@@ -147,10 +127,7 @@ where
   A: tinyvec::Array,
   A::Item: Default,
 {
-  #[inline]
-  fn capacity_upper_bound(&self) -> usize {
-    A::CAPACITY
-  }
+  const CAPACITY_UPPER_BOUND: usize = A::CAPACITY;
 }
 
 /// ```rust
@@ -163,19 +140,16 @@ where
   A: tinyvec::Array,
   A::Item: Default,
 {
-  #[inline]
-  fn capacity_upper_bound(&self) -> usize {
-    _capacity_upper_bound_for_heap::<A::Item>()
-  }
+  const CAPACITY_UPPER_BOUND: usize = _capacity_upper_bound_of_type::<A::Item>();
 }
 
-#[allow(
-  // `E0080` does not allow `T`s larger than `isize::MAX`
-  clippy::unwrap_used,
-)]
 #[inline]
-fn _capacity_upper_bound_for_heap<T>() -> usize {
+const fn _capacity_upper_bound_of_type<T>() -> usize {
   let size_of_t = core::mem::size_of::<T>();
   let isize_max_usize = isize::MAX.unsigned_abs();
-  isize_max_usize.checked_div(size_of_t).unwrap()
+  if let Some(elem) = isize_max_usize.checked_div(size_of_t) {
+    elem
+  } else {
+    0
+  }
 }

@@ -1,8 +1,5 @@
 #[cfg(feature = "alloc")]
-use {
-  alloc::{string::String, vec::Vec},
-  core::convert::Infallible,
-};
+use alloc::{string::String, vec::Vec};
 
 /// See [Extend::extend] for more information.
 pub trait Extend<IN> {
@@ -16,6 +13,16 @@ pub trait Extend<IN> {
     &mut self,
     into_iter: impl IntoIterator<Item = IN>,
   ) -> Result<Self::Output, Self::Error>;
+}
+
+impl<T> Extend<T> for () {
+  type Error = crate::Error;
+  type Output = ();
+
+  #[inline]
+  fn extend(&mut self, _: impl IntoIterator<Item = T>) -> Result<Self::Output, Self::Error> {
+    Ok(())
+  }
 }
 
 /// ```rust
@@ -52,7 +59,7 @@ impl<T> Extend<T> for Option<T> {
 /// ```
 #[cfg(feature = "alloc")]
 impl Extend<char> for String {
-  type Error = Infallible;
+  type Error = crate::Error;
   type Output = ();
 
   #[inline]
@@ -91,7 +98,6 @@ impl<T> Extend<T> for Vec<T> {
 /// assert_eq!(structure.as_str(), "Hello!");
 /// ```
 #[cfg(feature = "arrayvec")]
-
 impl<const N: usize> Extend<char> for arrayvec::ArrayString<N>
 where
   Self: crate::Push<char, Output = ()>,

@@ -16,6 +16,16 @@ pub trait Length {
 }
 
 /// ```rust
+/// assert_eq!(cl_aux::Length::length(&()), 0);
+/// ```
+impl Length for () {
+  #[inline]
+  fn length(&self) -> usize {
+    0
+  }
+}
+
+/// ```rust
 /// let mut opt = Some(0);
 /// assert_eq!(cl_aux::Length::length(&opt), 1);
 /// opt.take();
@@ -24,11 +34,7 @@ pub trait Length {
 impl<T> Length for Option<T> {
   #[inline]
   fn length(&self) -> usize {
-    if self.is_some() {
-      1
-    } else {
-      0
-    }
+    usize::from(self.is_some())
   }
 }
 
@@ -66,7 +72,7 @@ impl<T> Length for &'_ [T] {
 
 /// ```rust
 /// let mut structure = cl_aux::doc_tests::slice_mut!();
-/// assert_eq!(cl_aux::Length::length(structure), 3);
+/// assert_eq!(cl_aux::Length::length(&mut structure), 3);
 /// ```
 impl<T> Length for &'_ mut [T] {
   #[inline]

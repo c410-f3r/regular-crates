@@ -33,7 +33,7 @@ impl<T, const N: usize> Swap for [T; N] {
 
 /// ```rust
 /// let mut structure = cl_aux::doc_tests::slice_mut!();
-/// cl_aux::Swap::swap(structure, [0, 2]);
+/// cl_aux::Swap::swap(&mut structure, [0, 2]);
 /// assert_eq!(structure.get(0), Some(&3));
 /// assert_eq!(structure.get(2), Some(&1));
 /// ```

@@ -2,7 +2,7 @@
 
 #![allow(
   // Serde
-  clippy::integer_arithmetic
+  clippy::arithmetic_side_effects, clippy::integer_arithmetic
 )]
 
 mod coo_error;

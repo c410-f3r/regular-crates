@@ -18,26 +18,6 @@ pub trait GetMut {
 }
 
 /// ```rust
-/// assert_eq!(cl_aux::GetMut::get_mut(&mut Some(1), 0), Ok(&mut 1));
-/// ```
-impl<T> GetMut for Option<T> {
-  type Error = crate::Error;
-  type Input = usize;
-  type Output<'output> = &'output mut T
-  where
-    Self: 'output;
-
-  #[inline]
-  fn get_mut(&mut self, _: Self::Input) -> Result<Self::Output<'_>, Self::Error> {
-    if let &mut Some(ref mut el) = self {
-      Ok(el)
-    } else {
-      Err(crate::Error::OutOfBounds(stringify!(self), 1))
-    }
-  }
-}
-
-/// ```rust
 /// let mut structure = cl_aux::doc_tests::single_item_storage();
 /// assert_eq!(cl_aux::GetMut::get_mut(&mut structure, 0), Ok(&mut 1));
 /// ```
@@ -73,7 +53,7 @@ impl<T, const N: usize> GetMut for [T; N] {
 
 /// ```rust
 /// let mut structure = cl_aux::doc_tests::slice_mut!();
-/// assert_eq!(cl_aux::GetMut::get_mut(structure, 0), Ok(&mut 1));
+/// assert_eq!(cl_aux::GetMut::get_mut(&mut structure, 0), Ok(&mut 1));
 /// ```
 impl<T> GetMut for &'_ mut [T] {
   type Error = crate::Error;
@@ -170,13 +150,14 @@ where
 /// let mut structure = cl_aux::doc_tests::static_vec();
 /// assert_eq!(cl_aux::GetMut::get_mut(&mut structure, 0), Ok(&mut 1));
 /// ```
-#[cfg(feature = "tinyvec")]
+#[cfg(feature = "staticvec")]
 impl<T, const N: usize> GetMut for staticvec::StaticVec<T, N> {
   type Error = crate::Error;
   type Input = usize;
   type Output<'output> = &'output mut T
   where
-    Self: 'output;
+    Self: 'output,
+    T: 'output;
 
   #[inline]
   fn get_mut(&mut self, input: Self::Input) -> Result<Self::Output<'_>, Self::Error> {

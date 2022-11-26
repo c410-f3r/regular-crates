@@ -18,26 +18,6 @@ pub trait Get {
 }
 
 /// ```rust
-/// assert_eq!(cl_aux::Get::get(&Some(1), 0), Ok(&1));
-/// ```
-impl<T> Get for Option<T> {
-  type Error = crate::Error;
-  type Input = usize;
-  type Output<'output> = &'output T
-  where
-    Self: 'output;
-
-  #[inline]
-  fn get(&self, _: Self::Input) -> Result<Self::Output<'_>, Self::Error> {
-    if let &Some(ref el) = self {
-      Ok(el)
-    } else {
-      Err(crate::Error::OutOfBounds(stringify!(self), 1))
-    }
-  }
-}
-
-/// ```rust
 /// let structure = cl_aux::doc_tests::single_item_storage();
 /// assert_eq!(cl_aux::Get::get(&structure, 0), Ok(&1));
 /// ```
@@ -89,8 +69,8 @@ impl<T> Get for &'_ [T] {
 }
 
 /// ```rust
-/// let structure = cl_aux::doc_tests::slice_mut!();
-/// assert_eq!(cl_aux::Get::get(structure, 0), Ok(&1));
+/// let mut structure = cl_aux::doc_tests::slice_mut!();
+/// assert_eq!(cl_aux::Get::get(&mut structure, 0), Ok(&1));
 /// ```
 impl<T> Get for &'_ mut [T] {
   type Error = crate::Error;
@@ -166,13 +146,14 @@ where
 /// let structure = cl_aux::doc_tests::static_vec();
 /// assert_eq!(cl_aux::Get::get(&structure, 0), Ok(&1));
 /// ```
-#[cfg(feature = "tinyvec")]
+#[cfg(feature = "staticvec")]
 impl<T, const N: usize> Get for staticvec::StaticVec<T, N> {
   type Error = crate::Error;
   type Input = usize;
   type Output<'output> = &'output T
   where
-    Self: 'output;
+    Self: 'output,
+    T: 'output;
 
   #[inline]
   fn get(&self, input: Self::Input) -> Result<Self::Output<'_>, Self::Error> {

@@ -9,7 +9,6 @@ tinyvec = { default-features = false, optional = true, version = "1.0" }
 alloc = []
 arrayvec = ["dep:arrayvec"]
 default = []
-gat = []
 serde = ["dep:serde"]
 smallvec = ["dep:smallvec"]
 staticvec = ["dep:staticvec"]
@@ -26,5 +25,5 @@ license = "Apache-2.0"
 name = "cl-aux"
 readme = "README.md"
 repository = "https://github.com/c410-f3r/regular-crates"
-rust-version = "1.61"
+rust-version = "1.65"
 version = "1.2.1"

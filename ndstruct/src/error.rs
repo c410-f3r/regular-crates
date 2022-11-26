@@ -9,6 +9,8 @@ use core::fmt::{Debug, Display, Formatter};
 #[derive(Debug, Eq, PartialEq)]
 #[non_exhaustive]
 pub enum Error {
+  /// See [cl_aux::Error].
+  ClAux(cl_aux::Error),
   /// [CooError]
   Coo(CooError),
   /// [CslError]
@@ -32,6 +34,13 @@ impl Display for Error {
 
 #[cfg(feature = "std")]
 impl std::error::Error for Error {}
+
+impl From<cl_aux::Error> for Error {
+  #[inline]
+  fn from(from: cl_aux::Error) -> Self {
+    Self::ClAux(from)
+  }
+}
 
 impl From<CooError> for Error {
   #[inline]

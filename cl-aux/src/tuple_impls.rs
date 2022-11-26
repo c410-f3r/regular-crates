@@ -15,10 +15,7 @@ macro_rules! tuple_impls {
       }
 
       impl<$( $T, )*> CapacityUpperBound for ($( $T, )*) {
-        #[inline]
-        fn capacity_upper_bound(&self) -> usize {
-          $tuple_len
-        }
+        const CAPACITY_UPPER_BOUND: usize = $tuple_len;
       }
 
       impl<$( $T, )*> Length for ($( $T, )*) {
@@ -39,8 +36,6 @@ macro_rules! tuple_impls {
 }
 
 tuple_impls! {
-  0 {
-  }
   1 {
     (0) -> A
   }

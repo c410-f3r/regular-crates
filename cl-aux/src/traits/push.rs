@@ -19,6 +19,21 @@ pub trait Push<I> {
 /// cl_aux::Push::push(&mut opt, 3);
 /// assert_eq!(opt, Some(3));
 /// ```
+impl<T> Push<T> for () {
+  type Error = crate::Error;
+  type Output = ();
+
+  #[inline]
+  fn push(&mut self, _: T) -> Result<Self::Output, Self::Error> {
+    Ok(())
+  }
+}
+
+/// ```rust
+/// let mut opt = None;
+/// cl_aux::Push::push(&mut opt, 3);
+/// assert_eq!(opt, Some(3));
+/// ```
 impl<T> Push<T> for Option<T> {
   type Error = crate::Error;
   type Output = ();

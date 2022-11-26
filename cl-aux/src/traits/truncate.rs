@@ -13,7 +13,8 @@ pub trait Truncate {
 }
 
 /// ```rust
-/// let structure: Option<i32> = cl_aux::WithCapacity::with_capacity(Default::default());
+/// let mut structure = Some(1);
+/// cl_aux::Truncate::truncate(&mut structure, 0);
 /// assert_eq!(structure, None);
 /// ```
 impl<T> Truncate for Option<T> {
@@ -21,7 +22,7 @@ impl<T> Truncate for Option<T> {
   type Output = ();
 
   #[inline]
-  fn truncate(&mut self, input: Self::Input) {
+  fn truncate(&mut self, input: Self::Input) -> Self::Output {
     if input == 0 {
       *self = None;
     }
@@ -39,7 +40,7 @@ impl Truncate for String {
   type Output = ();
 
   #[inline]
-  fn truncate(&mut self, input: Self::Input) {
+  fn truncate(&mut self, input: Self::Input) -> Self::Output {
     self.truncate(input);
   }
 }
@@ -55,7 +56,7 @@ impl<T> Truncate for Vec<T> {
   type Output = ();
 
   #[inline]
-  fn truncate(&mut self, input: Self::Input) {
+  fn truncate(&mut self, input: Self::Input) -> Self::Output {
     self.truncate(input);
   }
 }
@@ -71,7 +72,7 @@ impl<const N: usize> Truncate for arrayvec::ArrayString<N> {
   type Output = ();
 
   #[inline]
-  fn truncate(&mut self, input: Self::Input) {
+  fn truncate(&mut self, input: Self::Input) -> Self::Output {
     self.truncate(input);
   }
 }
@@ -87,7 +88,7 @@ impl<T, const N: usize> Truncate for arrayvec::ArrayVec<T, N> {
   type Output = ();
 
   #[inline]
-  fn truncate(&mut self, input: Self::Input) {
+  fn truncate(&mut self, input: Self::Input) -> Self::Output {
     self.truncate(input);
   }
 }
@@ -106,7 +107,7 @@ where
   type Output = ();
 
   #[inline]
-  fn truncate(&mut self, input: Self::Input) {
+  fn truncate(&mut self, input: Self::Input) -> Self::Output {
     self.truncate(input);
   }
 }
@@ -122,7 +123,7 @@ impl<T, const N: usize> Truncate for staticvec::StaticVec<T, N> {
   type Output = ();
 
   #[inline]
-  fn truncate(&mut self, input: Self::Input) {
+  fn truncate(&mut self, input: Self::Input) -> Self::Output {
     self.truncate(input);
   }
 }
@@ -142,7 +143,7 @@ where
   type Output = ();
 
   #[inline]
-  fn truncate(&mut self, input: Self::Input) {
+  fn truncate(&mut self, input: Self::Input) -> Self::Output {
     self.truncate(input);
   }
 }
@@ -162,7 +163,7 @@ where
   type Output = ();
 
   #[inline]
-  fn truncate(&mut self, input: Self::Input) {
+  fn truncate(&mut self, input: Self::Input) -> Self::Output {
     self.truncate(input);
   }
 }

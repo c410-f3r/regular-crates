@@ -10,7 +10,9 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Aclippy::len_without_is_empty",
   "-Aclippy::missing_docs_in_private_items",
   "-Aclippy::multiple_inherent_impl",
+  "-Aclippy::pub_use",
   "-Aclippy::self_named_module_files",
+  "-Aclippy::std_instead_of_core",
   "-Aclippy::unseparated_literal_suffix",
 ];
 

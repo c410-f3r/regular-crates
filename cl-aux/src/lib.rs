@@ -1,9 +1,4 @@
-//! Auxiliary elements for collections
-//!
-//! This crate provides a single method for each `trait` to achieve maximum flexibility and
-//! freedom instead of imposing an abstraction subset for all situations and users.
-
-#![cfg_attr(feature = "gat", feature(generic_associated_types))]
+#![doc = include_str!("../README.md")]
 #![cfg_attr(not(feature = "std"), no_std)]
 
 #[cfg(feature = "alloc")]

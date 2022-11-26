@@ -5,7 +5,7 @@
 #[macro_export]
 macro_rules! slice_mut {
   () => {
-    &mut [1, 2, 3]
+    &mut [1i32, 2, 3][..]
   };
 }
 

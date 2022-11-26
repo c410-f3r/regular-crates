@@ -15,6 +15,18 @@ pub trait Iter {
 }
 
 /// ```rust
+/// assert_eq!(cl_aux::Iter::iter(&()).next(), None);
+/// ```
+impl Iter for () {
+  type Output<'iter> = slice::Iter<'iter, ()>;
+
+  #[inline]
+  fn iter(&self) -> Self::Output<'_> {
+    [].as_ref().iter()
+  }
+}
+
+/// ```rust
 /// assert_eq!(cl_aux::Iter::iter(&Some(0)).next().unwrap(), &0);
 /// ```
 impl<T> Iter for Option<T> {

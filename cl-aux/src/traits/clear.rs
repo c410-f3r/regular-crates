@@ -7,6 +7,11 @@ pub trait Clear {
   fn clear(&mut self);
 }
 
+impl Clear for () {
+  #[inline]
+  fn clear(&mut self) {}
+}
+
 /// ```rust
 /// let mut opt = Some(0);
 /// cl_aux::Clear::clear(&mut opt);

@@ -6,16 +6,14 @@
 [![License](https://img.shields.io/badge/license-APACHE2-blue.svg)](./LICENSE)
 ![Rustc](https://img.shields.io/badge/rustc-1.52-lightgray)
 
-For traits, this crate provides a single method for each operation to achieve maximum flexibility and freedom instead of imposing abstract subsets.
-
-## Examples
+Provides well-defined traits with single methods that enable the achievement of maximum flexibility and freedom in several different operations instead of imposing abstract subsets.
 
 ```rust
-use cl_aux::*;
+use cl_aux::Length;
 
-struct SomeCustomVector(Vec<i32>, Vec<i32>);
+struct SomeCustomArray([i32; 2], [i32; 4]);
 
-impl Length for SomeCustomVector {
+impl Length for SomeCustomArray {
   #[inline]
   fn length(&self) -> usize {
     self.0.length() + self.1.length()
@@ -23,7 +21,17 @@ impl Length for SomeCustomVector {
 }
 
 fn main() {
-  let v = SomeCustomVector(vec![1, 2], vec![3, 4, 5, 6]);
+  let v = SomeCustomArray([1, 2], [3, 4, 5, 6]);
   assert_eq!(v.length(), 6);
+}
+```
+
+Also provides structures for common use-cases.
+
+```rust
+use cl_aux::ArrayWrapper;
+
+fn main() {
+  let _array: [usize; 1] = ArrayWrapper::from_fn(|idx| idx).0;
 }
 ```

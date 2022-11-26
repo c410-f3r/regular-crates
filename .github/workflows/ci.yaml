@@ -16,7 +16,7 @@ jobs:
         with:
           override: true
           profile: minimal
-          toolchain: nightly-2022-07-07
+          toolchain: nightly-2022-11-20
 
       - uses: actions-rs/install@v0.1
         with:
@@ -36,7 +36,7 @@ jobs:
           components: clippy, rustfmt
           override: true
           profile: minimal
-          toolchain: 1.61
+          toolchain: 1.65
 
       - uses: Swatinem/rust-cache@v1
 
