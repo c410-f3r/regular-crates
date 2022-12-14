@@ -12,7 +12,7 @@ mod coo_utils;
 use alloc::vec::Vec;
 use cl_aux::{ArrayWrapper, SingleTypeStorage};
 pub use coo_error::*;
-use coo_utils::*;
+use coo_utils::{does_not_have_duplicates_sorted, value, value_mut};
 
 /// COO backed by a static array.
 pub type CooArray<DATA, const D: usize, const DN: usize> = Coo<[([usize; D], DATA); DN], D>;
@@ -150,7 +150,7 @@ where
     + Default
     + SingleTypeStorage<Item = ([usize; D], DATA)>
     + cl_aux::CapacityUpperBound
-    + cl_aux::Push<<DS as SingleTypeStorage>::Item>,
+    + cl_aux::Push<<DS as SingleTypeStorage>::Item, Output = ()>,
 {
   /// Creates a new random and valid instance delimited by the passed arguments.
   ///
@@ -204,10 +204,12 @@ where
           // Capacity was already checked
           clippy::let_underscore_must_use
         )]
-        let _ = data.push({
-          let element = cb(rng, &indcs);
-          (indcs, element)
-        });
+        data
+          .push({
+            let element = cb(rng, &indcs);
+            (indcs, element)
+          })
+          .map_err(|_err| crate::Error::InsufficientCapacity)?;
       }
     }
     data.as_mut().sort_unstable_by(|a, b| a.0.cmp(&b.0));

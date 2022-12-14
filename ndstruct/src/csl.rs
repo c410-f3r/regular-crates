@@ -19,7 +19,7 @@ mod csl_line_iter;
 mod csl_rayon;
 #[cfg(feature = "rand")]
 mod csl_rnd;
-mod csl_utils;
+pub(crate) mod csl_utils;
 
 use crate::utils::{are_in_ascending_order, are_in_upper_bound, has_duplicates, max_nnz, windows2};
 #[cfg(feature = "alloc")]
@@ -29,7 +29,6 @@ use core::ops::Range;
 pub use csl_error::*;
 pub use csl_line_constructor::*;
 pub use csl_line_iter::*;
-use csl_utils::*;
 
 /// CSL backed by a static array.
 pub type CslArray<DATA, const D: usize, const N: usize, const O: usize> =
@@ -97,7 +96,7 @@ where
   pub fn with_capacity(nnz: usize, nolp1: usize) -> crate::Result<Self> {
     Ok(Self {
       data: DS::with_capacity(nnz)?,
-      dims: Default::default(),
+      dims: <_>::default(),
       indcs: IS::with_capacity(nnz)?,
       offs: OS::with_capacity(nolp1)?,
     })
@@ -188,14 +187,12 @@ where
       if !are_in_upper_bound {
         return Err(CslError::IndcsGreaterThanEqualDimLength.into());
       }
-      if offs_ref.len() != correct_offs_len(&dims)? {
+      if offs_ref.len() != csl_utils::correct_offs_len(&dims)? {
         return Err(CslError::InvalidOffsetsLength.into());
       }
     }
 
-    let first_off = if let Some(r) = offs_ref.first().copied() {
-      r
-    } else {
+    let Some(first_off) = offs_ref.first().copied() else {
       return Ok(Self { data, dims: dims.into(), indcs, offs });
     };
 
@@ -264,7 +261,7 @@ where
   /// ```
   #[inline]
   pub fn line(&self, indcs: [usize; D]) -> Option<CslRef<'_, DATA, 1>> {
-    line(self, indcs)
+    csl_utils::line(self, indcs)
   }
 
   /// Number of NonZero elements.
@@ -372,7 +369,7 @@ where
   /// ```
   #[inline]
   pub fn sub_dim<const TD: usize>(&self, range: Range<usize>) -> Option<CslRef<'_, DATA, TD>> {
-    sub_dim(self, range)
+    csl_utils::sub_dim(self, range)
   }
 
   /// Retrieves an immutable reference of a single data value.
@@ -392,7 +389,7 @@ where
   /// ```
   #[inline]
   pub fn value(&self, indcs: [usize; D]) -> Option<&DATA> {
-    let idx = data_idx(self, indcs)?;
+    let idx = csl_utils::data_idx(self, indcs)?;
     self.data.as_ref().get(idx)
   }
 }
@@ -420,7 +417,7 @@ where
     IS: Clear,
     OS: Clear,
   {
-    self.dims = Default::default();
+    self.dims = <_>::default();
     self.data.clear();
     self.indcs.clear();
     self.offs.clear();
@@ -430,9 +427,9 @@ where
   #[inline]
   pub fn constructor(&mut self) -> crate::Result<CslLineConstructor<'_, DS, IS, OS, D>>
   where
-    DS: Push<DATA>,
-    IS: Push<usize>,
-    OS: Push<usize>,
+    DS: Push<DATA, Output = ()>,
+    IS: Push<usize, Output = ()>,
+    OS: Push<usize, Output = ()>,
   {
     CslLineConstructor::new(self)
   }
@@ -446,7 +443,7 @@ where
   /// Mutable version of [`line`](#method.line).
   #[inline]
   pub fn line_mut(&mut self, indcs: [usize; D]) -> Option<CslMut<'_, DATA, 1>> {
-    line_mut(self, indcs)
+    csl_utils::line_mut(self, indcs)
   }
 
   /// Mutable version of [`outermost_line_iter`](#method.outermost_line_iter).
@@ -470,7 +467,7 @@ where
     &mut self,
     range: Range<usize>,
   ) -> Option<CslMut<'_, DATA, TD>> {
-    sub_dim_mut(self, range)
+    csl_utils::sub_dim_mut(self, range)
   }
 
   /// Intra-swap a single data value.
@@ -490,8 +487,8 @@ where
   /// ```
   #[inline]
   pub fn swap_value(&mut self, a: [usize; D], b: [usize; D]) -> bool {
-    if let Some(a_idx) = data_idx(self, a) {
-      if let Some(b_idx) = data_idx(self, b) {
+    if let Some(a_idx) = csl_utils::data_idx(self, a) {
+      if let Some(b_idx) = csl_utils::data_idx(self, b) {
         self.data.as_mut().swap(a_idx, b_idx);
         return true;
       }
@@ -515,19 +512,17 @@ where
   #[inline]
   pub fn truncate(&mut self, indcs: [usize; D])
   where
-    DS: Truncate<Input = usize>,
-    IS: Truncate<Input = usize>,
-    OS: AsMut<[usize]> + Truncate<Input = usize>,
+    DS: Truncate<Input = usize, Output = ()>,
+    IS: Truncate<Input = usize, Output = ()>,
+    OS: AsMut<[usize]> + Truncate<Input = usize, Output = ()>,
   {
-    let [offs_indcs, values] = if let Some(r) = line_offs(&self.dims, &indcs, self.offs.as_ref()) {
-      r
-    } else {
+    let Some([offs_indcs, values]) = csl_utils::line_offs(&self.dims, &indcs, self.offs.as_ref()) else {
       return;
     };
     let cut_point = values.start;
-    let _ = self.data.truncate(cut_point);
-    let _ = self.indcs.truncate(cut_point);
-    let _ = self.offs.truncate(offs_indcs.end);
+    self.data.truncate(cut_point);
+    self.indcs.truncate(cut_point);
+    self.offs.truncate(offs_indcs.end);
     let iter = indcs.iter().zip(self.dims.iter_mut()).rev().skip(1).rev();
     iter.filter(|&(a, _)| *a == 0).for_each(|(_, b)| *b = 0);
     let before_last = if let Some(rslt) = self.offs.as_ref().get(offs_indcs.end.saturating_sub(2)) {
@@ -543,7 +538,7 @@ where
   /// Mutable version of [`value`](#method.value).
   #[inline]
   pub fn value_mut(&mut self, indcs: [usize; D]) -> Option<&mut DATA> {
-    let idx = data_idx(self, indcs)?;
+    let idx = csl_utils::data_idx(self, indcs)?;
     self.data.as_mut().get_mut(idx)
   }
 }
@@ -551,9 +546,13 @@ where
 #[cfg(feature = "rand")]
 impl<DATA, DS, IS, OS, const D: usize> Csl<DS, IS, OS, D>
 where
-  DS: AsMut<[DATA]> + AsRef<[DATA]> + Default + Push<DATA> + SingleTypeStorage<Item = DATA>,
-  IS: AsMut<[usize]> + AsRef<[usize]> + Default + Push<usize>,
-  OS: AsMut<[usize]> + AsRef<[usize]> + Default + Push<usize>,
+  DS: AsMut<[DATA]>
+    + AsRef<[DATA]>
+    + Default
+    + Push<DATA, Output = ()>
+    + SingleTypeStorage<Item = DATA>,
+  IS: AsMut<[usize]> + AsRef<[usize]> + Default + Push<usize, Output = ()>,
+  OS: AsMut<[usize]> + AsRef<[usize]> + Default + Push<usize, Output = ()>,
 {
   /// Creates a new random and valid instance delimited by the passed arguments.
   ///

@@ -1,4 +1,4 @@
-use crate::csl::{manage_last_offset, Csl};
+use crate::csl::{csl_utils::manage_last_offset, Csl};
 use cl_aux::{Push, SingleTypeStorage};
 use core::fmt::{Debug, Display, Formatter};
 
@@ -13,9 +13,9 @@ pub struct CslLineConstructor<'csl, DS, IS, OS, const D: usize> {
 
 impl<'csl, DATA, DS, IS, OS, const D: usize> CslLineConstructor<'csl, DS, IS, OS, D>
 where
-  DS: AsRef<[DATA]> + Push<DATA> + SingleTypeStorage<Item = DATA>,
-  IS: AsRef<[usize]> + Push<usize>,
-  OS: AsRef<[usize]> + Push<usize>,
+  DS: AsRef<[DATA]> + Push<DATA, Output = ()> + SingleTypeStorage<Item = DATA>,
+  IS: AsRef<[usize]> + Push<usize, Output = ()>,
+  OS: AsRef<[usize]> + Push<usize, Output = ()>,
 {
   #[inline]
   pub(crate) fn new(csl: &'csl mut Csl<DS, IS, OS, D>) -> crate::Result<Self> {
@@ -74,7 +74,7 @@ where
   /// # Ok(()) }
   #[inline]
   pub fn push_empty_line(self) -> crate::Result<Self> {
-    let _ = self.csl.offs.push(self.last_off).map_err(|_err| crate::Error::InsufficientCapacity)?;
+    self.csl.offs.push(self.last_off).map_err(|_err| crate::Error::InsufficientCapacity)?;
     Ok(self)
   }
 
@@ -108,8 +108,8 @@ where
     let mut nnz = 0;
 
     let mut push = |curr_last_off, curr_nnz, idx, value| {
-      let _ = self.csl.indcs.push(idx).map_err(|_err| crate::Error::InsufficientCapacity)?;
-      let _ = self.csl.data.push(value).map_err(|_err| crate::Error::InsufficientCapacity)?;
+      self.csl.indcs.push(idx).map_err(|_err| crate::Error::InsufficientCapacity)?;
+      self.csl.data.push(value).map_err(|_err| crate::Error::InsufficientCapacity)?;
       nnz = curr_nnz;
       last_off = curr_last_off;
       Ok::<(), crate::Error>(())
@@ -133,7 +133,7 @@ where
     if nnz == 0 {
       return self.push_empty_line();
     }
-    let _ = self.csl.offs.push(last_off).map_err(|_err| crate::Error::InsufficientCapacity)?;
+    self.csl.offs.push(last_off).map_err(|_err| crate::Error::InsufficientCapacity)?;
     self.last_off = last_off;
     Ok(self)
   }

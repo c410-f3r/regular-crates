@@ -121,7 +121,10 @@ impl<V> Length for BTreeSet<V> {
 /// assert_eq!(cl_aux::Length::length(&structure), 3);
 /// ```
 #[cfg(feature = "std")]
-impl<K, V> Length for HashMap<K, V> {
+impl<K, V, S> Length for HashMap<K, V, S>
+where
+  S: core::hash::BuildHasher,
+{
   #[inline]
   fn length(&self) -> usize {
     self.len()
@@ -133,7 +136,10 @@ impl<K, V> Length for HashMap<K, V> {
 /// assert_eq!(cl_aux::Length::length(&structure), 3);
 /// ```
 #[cfg(feature = "std")]
-impl<V> Length for HashSet<V> {
+impl<V, S> Length for HashSet<V, S>
+where
+  S: core::hash::BuildHasher,
+{
   #[inline]
   fn length(&self) -> usize {
     self.len()

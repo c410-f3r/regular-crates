@@ -66,9 +66,7 @@ where
       break;
     }
 
-    let str_read = if let Some(rslt) = overall_buffer.get(bytes_read..) {
-      rslt
-    } else {
+    let Some(str_read) = overall_buffer.get(bytes_read..) else {
       break;
     };
     let trimmed = str_read.trim();

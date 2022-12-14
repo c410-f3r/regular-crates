@@ -120,7 +120,7 @@ mod here_be_dragons {
 
   use core::{
     mem::{self, MaybeUninit},
-    ptr,
+    ptr::{self, addr_of, addr_of_mut},
   };
 
   #[inline]
@@ -134,23 +134,22 @@ mod here_be_dragons {
     unsafe { try_collect_into_array(&mut iter).unwrap_unchecked() }
   }
 
-  // SAFETY:
-  // * The caller guarantees that all elements of the array are initialized
-  // * `MaybeUninit<T>` and T are guaranteed to have the same layout
-  // * `MaybeUninit` does not drop, so there are no double-frees
-  // And thus the conversion is safe
+  #[allow(
+    // Takes ownership to prevent a double reference.
+    clippy::needless_pass_by_value
+  )]
   unsafe fn array_assume_init<T, const N: usize>(array: [MaybeUninit<T>; N]) -> [T; N] {
-    (&array as *const _ as *const [T; N]).read()
+    // SAFETY:
+    // * The caller guarantees that all elements of the array are initialized
+    // * `MaybeUninit<T>` and T are guaranteed to have the same layout
+    // * `MaybeUninit` does not drop, so there are no double-frees
+    // And thus the conversion is safe
+    unsafe { (addr_of!(array).cast::<[T; N]>()).read() }
   }
 
   fn try_collect_into_array<E, T, const N: usize>(
     iter: &mut impl Iterator<Item = Result<T, E>>,
   ) -> Option<Result<[T; N], E>> {
-    if N == 0 {
-      // SAFETY: An empty array is always inhabited and has no validity invariants.
-      return unsafe { Some(mem::zeroed()) };
-    }
-
     struct Guard<'array, T, const N: usize> {
       array_mut: &'array mut [MaybeUninit<T>; N],
       initialized: usize,
@@ -167,6 +166,11 @@ mod here_be_dragons {
           ));
         }
       }
+    }
+
+    if N == 0 {
+      // SAFETY: An empty array is always inhabited and has no validity invariants.
+      return unsafe { Some(mem::zeroed()) };
     }
 
     let mut array = uninit_array::<T, N>();
@@ -202,10 +206,10 @@ mod here_be_dragons {
     None
   }
 
-  // SAFETY: similar to safety notes for `slice_get_ref`, but we have a
-  // mutable reference which is also guaranteed to be valid for writes.
   unsafe fn slice_assume_init_mut<T>(slice: &mut [MaybeUninit<T>]) -> &mut [T] {
-    &mut *(slice as *mut [MaybeUninit<T>] as *mut [T])
+    // SAFETY: similar to safety notes for `slice_get_ref`, but we have a
+    // mutable reference which is also guaranteed to be valid for writes.
+    unsafe { &mut *(addr_of_mut!(*slice) as *mut [T]) }
   }
 
   const fn uninit_array<T, const LEN: usize>() -> [MaybeUninit<T>; LEN] {
@@ -242,7 +246,7 @@ mod serde {
 
         #[inline]
         fn expecting(&self, formatter: &mut Formatter<'_>) -> Result<(), core::fmt::Error> {
-          formatter.write_fmt(format_args!("an array with {} elements", N))
+          formatter.write_fmt(format_args!("an array with {N} elements"))
         }
 
         #[inline]

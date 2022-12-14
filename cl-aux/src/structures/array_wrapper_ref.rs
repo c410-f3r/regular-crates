@@ -8,21 +8,21 @@ pub struct ArrayWrapperRef<'array, T, const N: usize>(
   pub &'array [T; N],
 );
 
-impl<'array, T, const N: usize> AsRef<[T; N]> for ArrayWrapperRef<'array, T, N> {
+impl<T, const N: usize> AsRef<[T; N]> for ArrayWrapperRef<'_, T, N> {
   #[inline]
   fn as_ref(&self) -> &[T; N] {
     self
   }
 }
 
-impl<'array, T, const N: usize> Borrow<[T; N]> for ArrayWrapperRef<'array, T, N> {
+impl<T, const N: usize> Borrow<[T; N]> for ArrayWrapperRef<'_, T, N> {
   #[inline]
   fn borrow(&self) -> &[T; N] {
     self
   }
 }
 
-impl<'array, T, const N: usize> Deref for ArrayWrapperRef<'array, T, N> {
+impl<T, const N: usize> Deref for ArrayWrapperRef<'_, T, N> {
   type Target = [T; N];
 
   #[inline]
@@ -53,7 +53,7 @@ mod serde {
   use crate::ArrayWrapperRef;
   use serde::{ser::SerializeTuple, Serialize, Serializer};
 
-  impl<'array, T, const N: usize> Serialize for ArrayWrapperRef<'array, T, N>
+  impl<T, const N: usize> Serialize for ArrayWrapperRef<'_, T, N>
   where
     T: Serialize,
   {

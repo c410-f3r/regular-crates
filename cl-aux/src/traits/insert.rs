@@ -16,7 +16,7 @@ macro_rules! _manage_hash {
     if $hash.contains_key(&$key) {
       Err(crate::Error::AlreadyExistingElement(stringify!($hash), stringify!($key)))
     } else {
-      let _ = $hash.insert($key, $value);
+      let _maybe_discarded = $hash.insert($key, $value);
       Ok(())
     }
   }};
@@ -92,9 +92,10 @@ where
 /// assert_eq!(structure.iter().find(|(k, v)| **k == 10), Some((&10, &100)));
 /// ```
 #[cfg(feature = "std")]
-impl<K, V> Insert for HashMap<K, V>
+impl<K, V, S> Insert for HashMap<K, V, S>
 where
   K: Eq + core::hash::Hash,
+  S: core::hash::BuildHasher,
 {
   type Error = crate::Error;
   type Input = (K, V);
@@ -112,9 +113,10 @@ where
 /// assert_eq!(structure.iter().find(|&&e| e == 10), Some(&10));
 /// ```
 #[cfg(feature = "std")]
-impl<V> Insert for HashSet<V>
+impl<V, S> Insert for HashSet<V, S>
 where
   V: core::hash::Hash + Eq,
+  S: core::hash::BuildHasher,
 {
   type Error = crate::Error;
   type Input = V;

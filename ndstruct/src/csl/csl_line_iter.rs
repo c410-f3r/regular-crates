@@ -1,4 +1,4 @@
-use crate::csl::{outermost_offs, CslError, CslMut, CslRef};
+use crate::csl::{csl_utils::outermost_offs, CslError, CslMut, CslRef};
 use core::mem;
 
 macro_rules! impl_iter {

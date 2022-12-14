@@ -30,22 +30,22 @@ type Result<T> = core::result::Result<T, Error>;
 
 fn main() -> Result<()> {
   let mut args = args();
-  let _ = req(&mut args)?;
-  let mut maybe_action = req(&mut args)?;
+  let _first_arg = arg(&mut args)?;
+  let mut maybe_action = arg(&mut args)?;
 
   let mut param = |name: &str| {
     Ok::<_, Error>(if maybe_action == name {
-      let rslt = req(&mut args)?;
-      maybe_action = req(&mut args)?;
+      let rslt = arg(&mut args)?;
+      maybe_action = arg(&mut args)?;
       rslt
     } else {
-      Default::default()
+      <_>::default()
     })
   };
 
   let file = param("--file")?;
   let (mut params, mut tp) =
-    if !file.is_empty() { parse_cfg(File::open(file)?)? } else { Default::default() };
+    if file.is_empty() { Default::default() } else { parse_cfg(File::open(file)?)? };
 
   let template = param("--template")?;
   if !template.is_empty() {
@@ -57,7 +57,7 @@ fn main() -> Result<()> {
     tp.toolchain = toolchain;
   }
 
-  parse_action(&mut args, maybe_action, params, tp)?;
+  parse_action(&mut args, &maybe_action, params, tp)?;
 
   Ok(())
 }
@@ -92,7 +92,7 @@ fn opt(args: &mut Args) -> String {
 
 fn parse_action(
   args: &mut Args,
-  action_string: String,
+  action_string: &str,
   params: Params,
   mut tp: TransformingParams,
 ) -> Result<()> {
@@ -100,29 +100,29 @@ fn parse_action(
   match action_string.parse()? {
     ActionOption::BuildGeneric => {
       actions.params.modify(&tp);
-      actions.build_generic(req(args)?)?;
+      actions.build_generic(arg(args)?)?;
     }
     ActionOption::BuildWithFeatures => {
       actions.params.modify(&tp);
-      actions.build_with_features(req(args)?, opt(args))?;
+      actions.build_with_features(arg(args)?, opt(args))?;
     }
     ActionOption::CheckGeneric => {
       actions.params.modify(&tp);
-      actions.check_generic(req(args)?)?;
+      actions.check_generic(arg(args)?)?;
     }
     ActionOption::CheckWithFeatures => {
       actions.params.modify(&tp);
-      actions.check_with_features(req(args)?, opt(args))?;
+      actions.check_with_features(arg(args)?, opt(args))?;
     }
     ActionOption::Clippy => {
-      tp.add_clippy_flags.extend(opt(args).split(',').map(|e| e.into()));
-      tp.rm_clippy_flags.extend(opt(args).split(',').map(|e| e.into()));
+      tp.add_clippy_flags.extend(opt(args).split(',').map(Into::into));
+      tp.rm_clippy_flags.extend(opt(args).split(',').map(Into::into));
       actions.params.modify(&tp);
       actions.clippy(args)?;
     }
     ActionOption::RustFlags => {
-      tp.add_rust_flags.extend(opt(args).split(',').map(|e| e.into()));
-      tp.rm_rust_flags.extend(opt(args).split(',').map(|e| e.into()));
+      tp.add_rust_flags.extend(opt(args).split(',').map(Into::into));
+      tp.rm_rust_flags.extend(opt(args).split(',').map(Into::into));
       actions.params.modify(&tp);
       actions.rust_flags()?;
     }
@@ -140,16 +140,16 @@ fn parse_action(
     }
     ActionOption::TestGeneric => {
       actions.params.modify(&tp);
-      actions.test_generic(req(args)?)?;
+      actions.test_generic(arg(args)?)?;
     }
     ActionOption::TestWithFeatures => {
       actions.params.modify(&tp);
-      actions.test_with_features(req(args)?, opt(args))?;
+      actions.test_with_features(arg(args)?, opt(args))?;
     }
   };
   Ok(())
 }
 
-fn req(args: &mut Args) -> Result<String> {
+fn arg(args: &mut Args) -> Result<String> {
   args.next().ok_or(Error::WrongNumberOfArgs { expected: 1, received: 0 })
 }

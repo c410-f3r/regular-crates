@@ -141,7 +141,10 @@ impl<V> SizeHint for BTreeSet<V> {
 /// assert_eq!(cl_aux::SizeHint::size_hint(&structure), (3, Some(3)));
 /// ```
 #[cfg(feature = "std")]
-impl<K, V> SizeHint for HashMap<K, V> {
+impl<K, V, S> SizeHint for HashMap<K, V, S>
+where
+  S: core::hash::BuildHasher,
+{
   #[inline]
   fn size_hint(&self) -> (usize, Option<usize>) {
     (self.len(), Some(self.len()))
@@ -153,7 +156,10 @@ impl<K, V> SizeHint for HashMap<K, V> {
 /// assert_eq!(cl_aux::SizeHint::size_hint(&structure), (3, Some(3)));
 /// ```
 #[cfg(feature = "std")]
-impl<V> SizeHint for HashSet<V> {
+impl<V, S> SizeHint for HashSet<V, S>
+where
+  S: core::hash::BuildHasher,
+{
   #[inline]
   fn size_hint(&self) -> (usize, Option<usize>) {
     (self.len(), Some(self.len()))

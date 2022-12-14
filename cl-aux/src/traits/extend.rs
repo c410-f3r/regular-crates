@@ -110,7 +110,7 @@ where
     &mut self,
     into_iter: impl IntoIterator<Item = char>,
   ) -> Result<Self::Output, Self::Error> {
-    for elem in into_iter.into_iter() {
+    for elem in into_iter {
       crate::Push::push(self, elem)?;
     }
     Ok(())
@@ -135,7 +135,7 @@ where
     &mut self,
     into_iter: impl IntoIterator<Item = T>,
   ) -> Result<Self::Output, Self::Error> {
-    for elem in into_iter.into_iter() {
+    for elem in into_iter {
       crate::Push::push(self, elem)?;
     }
     Ok(())
@@ -161,7 +161,7 @@ where
     &mut self,
     into_iter: impl IntoIterator<Item = A::Item>,
   ) -> Result<Self::Output, Self::Error> {
-    for elem in into_iter.into_iter() {
+    for elem in into_iter {
       crate::Push::push(self, elem)?;
     }
     Ok(())
@@ -212,7 +212,7 @@ where
     &mut self,
     into_iter: impl IntoIterator<Item = A::Item>,
   ) -> Result<Self::Output, Self::Error> {
-    for elem in into_iter.into_iter() {
+    for elem in into_iter {
       crate::Push::push(self, elem)?;
     }
     Ok(())
@@ -239,7 +239,7 @@ where
     &mut self,
     into_iter: impl IntoIterator<Item = A::Item>,
   ) -> Result<Self::Output, Self::Error> {
-    for elem in into_iter.into_iter() {
+    for elem in into_iter {
       crate::Push::push(self, elem)?;
     }
     Ok(())

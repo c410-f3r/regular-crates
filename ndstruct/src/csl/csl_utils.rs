@@ -196,12 +196,12 @@ pub(crate) fn outermost_stride<const D: usize>(dims: &[usize; D]) -> usize {
 #[inline]
 pub(crate) fn manage_last_offset<OS>(offs: &mut OS) -> crate::Result<usize>
 where
-  OS: AsRef<[usize]> + Push<usize>,
+  OS: AsRef<[usize]> + Push<usize, Output = ()>,
 {
   Ok(if let Some(rslt) = offs.as_ref().last() {
     *rslt
   } else {
-    let _ = offs.push(0).map_err(|_err| crate::Error::InsufficientCapacity)?;
+    offs.push(0).map_err(|_err| crate::Error::InsufficientCapacity)?;
     0
   })
 }
