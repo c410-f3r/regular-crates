@@ -247,7 +247,7 @@ dependencies = [
 
 [[package]]
 name = "rust-tools"
-version = "1.0.2"
+version = "1.0.3"
 
 [[package]]
 name = "scopeguard"
