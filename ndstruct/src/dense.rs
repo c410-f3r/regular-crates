@@ -4,11 +4,6 @@
 //! if 2d, then this structure is the same as a matrix; if 3d, then this structure is the same as
 //! a cube and so on for higher dimensions.
 
-#![allow(
-  // Serde
-  clippy::arithmetic_side_effects, clippy::integer_arithmetic
-)]
-
 mod dense_error;
 
 #[cfg(feature = "alloc")]

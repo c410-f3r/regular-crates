@@ -8,6 +8,20 @@ pub trait SingleTypeStorage {
   type Item;
 }
 
+impl<T> SingleTypeStorage for &T
+where
+  T: SingleTypeStorage,
+{
+  type Item = T::Item;
+}
+
+impl<T> SingleTypeStorage for &mut T
+where
+  T: SingleTypeStorage,
+{
+  type Item = T::Item;
+}
+
 impl<T> SingleTypeStorage for Option<T> {
   type Item = T;
 }

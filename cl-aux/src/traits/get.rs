@@ -17,6 +17,21 @@ pub trait Get {
   fn get(&self, input: Self::Input) -> Result<Self::Output<'_>, Self::Error>;
 }
 
+impl<T> Get for &T
+where
+  T: Get,
+{
+  type Error = T::Error;
+  type Input = T::Input;
+  type Output<'output> = T::Output<'output>
+  where
+    Self: 'output;
+
+  fn get(&self, input: Self::Input) -> Result<Self::Output<'_>, Self::Error> {
+    (*self).get(input)
+  }
+}
+
 /// ```rust
 /// let structure = cl_aux::doc_tests::single_item_storage();
 /// assert_eq!(cl_aux::Get::get(&structure, 0), Ok(&1));

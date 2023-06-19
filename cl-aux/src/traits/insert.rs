@@ -3,14 +3,6 @@
   clippy::map_entry
 )]
 
-#[cfg(feature = "alloc")]
-use alloc::{
-  collections::{BTreeMap, BTreeSet},
-  vec::Vec,
-};
-#[cfg(feature = "std")]
-use std::collections::{HashMap, HashSet};
-
 macro_rules! _manage_hash {
   ($hash:expr, $key:expr, $value:expr) => {{
     if $hash.contains_key(&$key) {
@@ -33,6 +25,14 @@ macro_rules! _manage_set {
   }};
 }
 
+#[cfg(feature = "alloc")]
+use alloc::{
+  collections::{BTreeMap, BTreeSet},
+  vec::Vec,
+};
+#[cfg(feature = "std")]
+use std::collections::{HashMap, HashSet};
+
 /// See [Insert::insert] for more information.
 pub trait Insert {
   /// Error
@@ -44,6 +44,19 @@ pub trait Insert {
 
   /// Inserts an `Input` element.
   fn insert(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error>;
+}
+
+impl<T> Insert for &mut T
+where
+  T: Insert,
+{
+  type Error = T::Error;
+  type Input = T::Input;
+  type Output = T::Output;
+
+  fn insert(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error> {
+    (*self).insert(input)
+  }
 }
 
 /// ```rust

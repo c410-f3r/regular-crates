@@ -11,7 +11,20 @@ pub trait Remove {
   type Output;
 
   /// Removes an element referenced by `Input`.
-  fn remove(&mut self, idx: Self::Input) -> Result<Self::Output, Self::Error>;
+  fn remove(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error>;
+}
+
+impl<T> Remove for &mut T
+where
+  T: Remove,
+{
+  type Error = T::Error;
+  type Input = T::Input;
+  type Output = T::Output;
+
+  fn remove(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error> {
+    (*self).remove(input)
+  }
 }
 
 /// ```rust
@@ -26,9 +39,9 @@ impl<T> Remove for Vec<T> {
   type Output = T;
 
   #[inline]
-  fn remove(&mut self, idx: Self::Input) -> Result<Self::Output, Self::Error> {
-    _check_indcs!(self, idx);
-    Ok(self.remove(idx))
+  fn remove(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error> {
+    _check_indcs!(self, input);
+    Ok(self.remove(input))
   }
 }
 
@@ -44,9 +57,9 @@ impl<T, const N: usize> Remove for arrayvec::ArrayVec<T, N> {
   type Output = T;
 
   #[inline]
-  fn remove(&mut self, idx: Self::Input) -> Result<Self::Output, Self::Error> {
-    _check_indcs!(self, idx);
-    Ok(self.remove(idx))
+  fn remove(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error> {
+    _check_indcs!(self, input);
+    Ok(self.remove(input))
   }
 }
 
@@ -65,9 +78,9 @@ where
   type Output = A::Item;
 
   #[inline]
-  fn remove(&mut self, idx: Self::Input) -> Result<Self::Output, Self::Error> {
-    _check_indcs!(self, idx);
-    Ok(self.remove(idx))
+  fn remove(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error> {
+    _check_indcs!(self, input);
+    Ok(self.remove(input))
   }
 }
 
@@ -83,9 +96,9 @@ impl<T, const N: usize> Remove for staticvec::StaticVec<T, N> {
   type Output = T;
 
   #[inline]
-  fn remove(&mut self, idx: Self::Input) -> Result<Self::Output, Self::Error> {
-    _check_indcs!(self, idx);
-    Ok(self.remove(idx))
+  fn remove(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error> {
+    _check_indcs!(self, input);
+    Ok(self.remove(input))
   }
 }
 
@@ -105,9 +118,9 @@ where
   type Output = A::Item;
 
   #[inline]
-  fn remove(&mut self, idx: Self::Input) -> Result<Self::Output, Self::Error> {
-    _check_indcs!(self, idx);
-    Ok(self.remove(idx))
+  fn remove(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error> {
+    _check_indcs!(self, input);
+    Ok(self.remove(input))
   }
 }
 
@@ -127,8 +140,8 @@ where
   type Output = A::Item;
 
   #[inline]
-  fn remove(&mut self, idx: Self::Input) -> Result<Self::Output, Self::Error> {
-    _check_indcs!(self, idx);
-    Ok(self.remove(idx))
+  fn remove(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error> {
+    _check_indcs!(self, input);
+    Ok(self.remove(input))
   }
 }

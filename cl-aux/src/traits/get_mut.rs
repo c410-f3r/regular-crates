@@ -17,6 +17,21 @@ pub trait GetMut {
   fn get_mut(&mut self, input: Self::Input) -> Result<Self::Output<'_>, Self::Error>;
 }
 
+impl<T> GetMut for &mut T
+where
+  T: GetMut,
+{
+  type Error = T::Error;
+  type Input = T::Input;
+  type Output<'output> = T::Output<'output>
+  where
+    Self: 'output;
+
+  fn get_mut(&mut self, input: Self::Input) -> Result<Self::Output<'_>, Self::Error> {
+    (*self).get_mut(input)
+  }
+}
+
 /// ```rust
 /// let mut structure = cl_aux::doc_tests::single_item_storage();
 /// assert_eq!(cl_aux::GetMut::get_mut(&mut structure, 0), Ok(&mut 1));

@@ -12,6 +12,18 @@ pub trait Truncate {
   fn truncate(&mut self, input: Self::Input) -> Self::Output;
 }
 
+impl<T> Truncate for &mut T
+where
+  T: Truncate,
+{
+  type Input = T::Input;
+  type Output = T::Output;
+
+  fn truncate(&mut self, input: Self::Input) -> Self::Output {
+    (*self).truncate(input)
+  }
+}
+
 /// ```rust
 /// let mut structure = Some(1);
 /// cl_aux::Truncate::truncate(&mut structure, 0);

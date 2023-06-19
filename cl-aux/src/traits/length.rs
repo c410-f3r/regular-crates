@@ -15,6 +15,15 @@ pub trait Length {
   fn length(&self) -> usize;
 }
 
+impl<T> Length for &T
+where
+  T: Length,
+{
+  fn length(&self) -> usize {
+    (*self).length()
+  }
+}
+
 /// ```rust
 /// assert_eq!(cl_aux::Length::length(&()), 0);
 /// ```
@@ -46,16 +55,6 @@ impl<T> Length for SingleItemStorage<T> {
   #[inline]
   fn length(&self) -> usize {
     1
-  }
-}
-
-impl<T> Length for &'_ T
-where
-  T: Length,
-{
-  #[inline]
-  fn length(&self) -> usize {
-    (*self).length()
   }
 }
 

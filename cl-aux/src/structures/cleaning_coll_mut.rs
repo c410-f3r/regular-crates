@@ -1,10 +1,13 @@
 use crate::Clear;
-use core::{ops::{Deref, DerefMut}, borrow::{Borrow, BorrowMut}};
+use core::{
+  borrow::{Borrow, BorrowMut},
+  ops::{Deref, DerefMut},
+};
 
 #[cfg(feature = "alloc")]
 pub type CleaningVecMut<'any, T> = CleaningCollMut<'any, T>;
 
-/// A collection that clears its internal data when dropped.
+/// A mutable collection reference that clears its internal data when dropped.
 pub struct CleaningCollMut<'any, T>(&'any mut T)
 where
   T: Clear;

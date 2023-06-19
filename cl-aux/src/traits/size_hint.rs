@@ -14,6 +14,15 @@ pub trait SizeHint {
   fn size_hint(&self) -> (usize, Option<usize>);
 }
 
+impl<T> SizeHint for &T
+where
+  T: SizeHint,
+{
+  fn size_hint(&self) -> (usize, Option<usize>) {
+    (*self).size_hint()
+  }
+}
+
 impl<T> SizeHint for IterWrapper<T>
 where
   T: Iterator,
@@ -55,16 +64,6 @@ impl<T> SizeHint for SingleItemStorage<T> {
   #[inline]
   fn size_hint(&self) -> (usize, Option<usize>) {
     (1, Some(1))
-  }
-}
-
-impl<T> SizeHint for &T
-where
-  T: SizeHint,
-{
-  #[inline]
-  fn size_hint(&self) -> (usize, Option<usize>) {
-    (*self).size_hint()
   }
 }
 

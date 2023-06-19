@@ -14,6 +14,18 @@ pub trait Push<I> {
   fn push(&mut self, input: I) -> Result<Self::Output, Self::Error>;
 }
 
+impl<I, T> Push<I> for &mut T
+where
+  T: Push<I>,
+{
+  type Error = T::Error;
+  type Output = T::Output;
+
+  fn push(&mut self, input: I) -> Result<Self::Output, Self::Error> {
+    (*self).push(input)
+  }
+}
+
 /// ```rust
 /// let mut opt = None;
 /// cl_aux::Push::push(&mut opt, 3);

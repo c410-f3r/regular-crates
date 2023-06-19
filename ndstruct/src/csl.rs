@@ -7,11 +7,6 @@
 //! [`CSC`]: en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_column_(CSC_or_CCS)
 //! [`CSR`]: en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)
 
-#![allow(
-  // Serde
-  clippy::arithmetic_side_effects, clippy::integer_arithmetic
-)]
-
 mod csl_error;
 mod csl_line_constructor;
 mod csl_line_iter;

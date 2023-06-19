@@ -14,6 +14,19 @@ pub trait Iter {
   fn iter(&self) -> Self::Output<'_>;
 }
 
+impl<T> Iter for &T
+where
+  T: Iter,
+{
+  type Output<'iter> = T::Output<'iter>
+  where
+    Self: 'iter;
+
+  fn iter(&self) -> Self::Output<'_> {
+    (*self).iter()
+  }
+}
+
 /// ```rust
 /// assert_eq!(cl_aux::Iter::iter(&()).next(), None);
 /// ```
@@ -52,20 +65,6 @@ impl<T> Iter for SingleItemStorage<T> {
   #[inline]
   fn iter(&self) -> Self::Output<'_> {
     slice::from_ref(&self.0).iter()
-  }
-}
-
-impl<T> Iter for &'_ T
-where
-  T: Iter,
-{
-  type Output<'iter> = T::Output<'iter>
-  where
-    Self: 'iter;
-
-  #[inline]
-  fn iter(&self) -> Self::Output<'_> {
-    (*self).iter()
   }
 }
 

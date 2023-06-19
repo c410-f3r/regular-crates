@@ -14,6 +14,19 @@ pub trait Swap {
   fn swap(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error>;
 }
 
+impl<T> Swap for &mut T
+where
+  T: Swap,
+{
+  type Error = T::Error;
+  type Input = T::Input;
+  type Output = T::Output;
+
+  fn swap(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error> {
+    (*self).swap(input)
+  }
+}
+
 /// ```rust
 /// let mut structure = cl_aux::doc_tests::array();
 /// cl_aux::Swap::swap(&mut structure, [0, 2]);

@@ -1,10 +1,5 @@
 //! COO (Coordinate) format for N-dimensions.
 
-#![allow(
-  // Serde
-  clippy::arithmetic_side_effects, clippy::integer_arithmetic
-)]
-
 mod coo_error;
 mod coo_utils;
 

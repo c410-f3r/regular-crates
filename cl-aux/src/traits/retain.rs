@@ -12,6 +12,18 @@ pub trait Retain {
   fn retain(&mut self, input: Self::Input) -> Self::Output;
 }
 
+impl<T> Retain for &mut T
+where
+  T: Retain,
+{
+  type Input = T::Input;
+  type Output = T::Output;
+
+  fn retain(&mut self, input: Self::Input) -> Self::Output {
+    (*self).retain(input)
+  }
+}
+
 /// ```rust
 /// let mut opt = Some(1);
 /// cl_aux::Retain::retain(&mut opt, |n| n % 2 == 0);

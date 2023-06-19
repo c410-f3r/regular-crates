@@ -15,6 +15,21 @@ pub trait Extend<IN> {
   ) -> Result<Self::Output, Self::Error>;
 }
 
+impl<IN, T> Extend<IN> for &mut T
+where
+  T: Extend<IN>,
+{
+  type Error = T::Error;
+  type Output = T::Output;
+
+  fn extend(
+    &mut self,
+    into_iter: impl IntoIterator<Item = IN>,
+  ) -> Result<Self::Output, Self::Error> {
+    (*self).extend(into_iter)
+  }
+}
+
 impl<T> Extend<T> for () {
   type Error = crate::Error;
   type Output = ();

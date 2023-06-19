@@ -9,6 +9,16 @@ pub trait Capacity {
   fn capacity(&self) -> usize;
 }
 
+impl<T> Capacity for &T
+where
+  T: Capacity,
+{
+  #[inline]
+  fn capacity(&self) -> usize {
+    (*self).capacity()
+  }
+}
+
 /// ```rust
 /// assert_eq!(cl_aux::Capacity::capacity(&()), 0);
 /// ```

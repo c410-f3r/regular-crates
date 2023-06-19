@@ -14,6 +14,18 @@ pub trait CapacityUpperBound {
   }
 }
 
+impl<T> CapacityUpperBound for &T
+where
+  T: CapacityUpperBound,
+{
+  const CAPACITY_UPPER_BOUND: usize = T::CAPACITY_UPPER_BOUND;
+
+  #[inline]
+  fn capacity_upper_bound(&self) -> usize {
+    (*self).capacity_upper_bound()
+  }
+}
+
 /// ```rust
 /// assert_eq!(cl_aux::CapacityUpperBound::capacity_upper_bound(&()), 0);
 /// ```
