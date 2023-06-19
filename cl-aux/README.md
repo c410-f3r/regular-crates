@@ -14,7 +14,6 @@ use cl_aux::Length;
 struct SomeCustomArray([i32; 2], [i32; 4]);
 
 impl Length for SomeCustomArray {
-  #[inline]
   fn length(&self) -> usize {
     self.0.length() + self.1.length()
   }

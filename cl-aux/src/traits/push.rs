@@ -1,5 +1,3 @@
-#![allow(unused_lifetimes)]
-
 #[cfg(feature = "alloc")]
 use alloc::{string::String, vec::Vec};
 
@@ -21,6 +19,7 @@ where
   type Error = T::Error;
   type Output = T::Output;
 
+  #[inline]
   fn push(&mut self, input: I) -> Result<Self::Output, Self::Error> {
     (*self).push(input)
   }

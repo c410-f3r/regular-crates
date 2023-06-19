@@ -22,6 +22,7 @@ where
   type Error = T::Error;
   type Output = T::Output;
 
+  #[inline]
   fn extend(
     &mut self,
     into_iter: impl IntoIterator<Item = IN>,

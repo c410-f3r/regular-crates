@@ -19,6 +19,7 @@ impl<T> Length for &T
 where
   T: Length,
 {
+  #[inline]
   fn length(&self) -> usize {
     (*self).length()
   }

@@ -19,6 +19,7 @@ where
   type Input = T::Input;
   type Output = T::Output;
 
+  #[inline]
   fn retain(&mut self, input: Self::Input) -> Self::Output {
     (*self).retain(input)
   }

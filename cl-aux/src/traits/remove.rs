@@ -22,6 +22,7 @@ where
   type Input = T::Input;
   type Output = T::Output;
 
+  #[inline]
   fn remove(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error> {
     (*self).remove(input)
   }

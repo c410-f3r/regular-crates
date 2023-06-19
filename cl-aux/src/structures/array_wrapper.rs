@@ -159,11 +159,13 @@ mod here_be_dragons {
       fn drop(&mut self) {
         debug_assert!(self.initialized <= N);
 
-        // SAFETY: this slice will contain only initialized objects.
+        // SAFETY: slice only contains initialized objects.
+        let slice = unsafe { self.array_mut.get_unchecked_mut(..self.initialized) };
+        // SAFETY: slice only contains initialized objects.
+        let init_slice = unsafe { slice_assume_init_mut(slice) };
+        // SAFETY: slice only contains initialized objects.
         unsafe {
-          ptr::drop_in_place(slice_assume_init_mut(
-            self.array_mut.get_unchecked_mut(..self.initialized),
-          ));
+          ptr::drop_in_place(init_slice);
         }
       }
     }

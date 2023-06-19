@@ -22,6 +22,7 @@ where
   where
     Self: 'iter;
 
+  #[inline]
   fn iter(&self) -> Self::Output<'_> {
     (*self).iter()
   }

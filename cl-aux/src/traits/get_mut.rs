@@ -27,6 +27,7 @@ where
   where
     Self: 'output;
 
+  #[inline]
   fn get_mut(&mut self, input: Self::Input) -> Result<Self::Output<'_>, Self::Error> {
     (*self).get_mut(input)
   }

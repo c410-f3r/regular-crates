@@ -19,9 +19,9 @@ impl From<std::io::Error> for Error {
 impl Debug for Error {
   #[inline]
   fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), core::fmt::Error> {
-    match *self {
+    match self {
       Self::FailedCommand => write!(f, "A command wasn't successful"),
-      Self::Io(ref e) => write!(f, "IO: {e}"),
+      Self::Io(e) => write!(f, "IO: {e}"),
       Self::UnknownAction => write!(
         f,
         "Unknown action, please select one of the following possibilities: {}",

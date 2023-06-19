@@ -5,32 +5,36 @@ use core::{
 };
 
 #[cfg(feature = "alloc")]
+/// [CleaningCollMut] with the std vector.
 pub type CleaningVecMut<'any, T> = CleaningCollMut<'any, T>;
 
 /// A mutable collection reference that clears its internal data when dropped.
+#[derive(Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct CleaningCollMut<'any, T>(&'any mut T)
 where
   T: Clear;
 
-impl<'any, T> AsMut<T> for CleaningCollMut<'any, T>
+impl<T> AsMut<T> for CleaningCollMut<'_, T>
 where
   T: Clear,
 {
+  #[inline]
   fn as_mut(&mut self) -> &mut T {
     self
   }
 }
 
-impl<'any, T> AsRef<T> for CleaningCollMut<'any, T>
+impl<T> AsRef<T> for CleaningCollMut<'_, T>
 where
   T: Clear,
 {
+  #[inline]
   fn as_ref(&self) -> &T {
     self
   }
 }
 
-impl<'any, T> Borrow<T> for CleaningCollMut<'any, T>
+impl<T> Borrow<T> for CleaningCollMut<'_, T>
 where
   T: Clear,
 {
@@ -40,7 +44,7 @@ where
   }
 }
 
-impl<'any, T> BorrowMut<T> for CleaningCollMut<'any, T>
+impl<T> BorrowMut<T> for CleaningCollMut<'_, T>
 where
   T: Clear,
 {
@@ -50,30 +54,33 @@ where
   }
 }
 
-impl<'any, T> Deref for CleaningCollMut<'any, T>
+impl<T> Deref for CleaningCollMut<'_, T>
 where
   T: Clear,
 {
   type Target = T;
 
+  #[inline]
   fn deref(&self) -> &Self::Target {
-    &self.0
+    self.0
   }
 }
 
-impl<'any, T> DerefMut for CleaningCollMut<'any, T>
+impl<T> DerefMut for CleaningCollMut<'_, T>
 where
   T: Clear,
 {
+  #[inline]
   fn deref_mut(&mut self) -> &mut Self::Target {
-    &mut self.0
+    self.0
   }
 }
 
-impl<'any, T> Drop for CleaningCollMut<'any, T>
+impl<T> Drop for CleaningCollMut<'_, T>
 where
   T: Clear,
 {
+  #[inline]
   fn drop(&mut self) {
     self.0.clear();
   }
@@ -83,6 +90,7 @@ impl<'any, T> From<&'any mut T> for CleaningCollMut<'any, T>
 where
   T: Clear,
 {
+  #[inline]
   fn from(from: &'any mut T) -> Self {
     Self(from)
   }

@@ -121,12 +121,10 @@ where
   // 1 * rows * cols * z
   // 1 * rows        * y
   // 1               * x
-  #[inline]
   fn dim_stride(&self, dim_idx: usize, target_dim_idx: usize) -> usize {
     self.dims.iter().copied().skip(1).rev().skip(dim_idx).chain([target_dim_idx]).product()
   }
 
-  #[inline]
   fn idx(&self, indcs: [usize; D]) -> usize {
     let mut rslt: usize = 0;
     for (dim_idx, target_dim_idx) in (0..self.dims.len()).zip(indcs) {

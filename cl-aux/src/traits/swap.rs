@@ -22,6 +22,7 @@ where
   type Input = T::Input;
   type Output = T::Output;
 
+  #[inline]
   fn swap(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error> {
     (*self).swap(input)
   }
@@ -180,7 +181,6 @@ where
   }
 }
 
-#[inline]
 fn manage_slice<T>(slice: &mut [T], a: usize, b: usize) -> crate::Result<()> {
   _check_indcs!(&slice, a, b);
   slice.as_mut().swap(a, b);

@@ -27,6 +27,7 @@ where
   where
     Self: 'output;
 
+  #[inline]
   fn get(&self, input: Self::Input) -> Result<Self::Output<'_>, Self::Error> {
     (*self).get(input)
   }

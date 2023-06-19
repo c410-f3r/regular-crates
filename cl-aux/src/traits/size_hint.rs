@@ -18,6 +18,7 @@ impl<T> SizeHint for &T
 where
   T: SizeHint,
 {
+  #[inline]
   fn size_hint(&self) -> (usize, Option<usize>) {
     (*self).size_hint()
   }

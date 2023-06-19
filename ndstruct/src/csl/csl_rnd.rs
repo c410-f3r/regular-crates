@@ -49,7 +49,6 @@ where
     Some(())
   }
 
-  #[inline]
   fn fill_data(
     &mut self,
     mut cb: impl FnMut(&mut R, [usize; D]) -> DATA,
@@ -78,7 +77,6 @@ where
     Some(())
   }
 
-  #[inline]
   fn fill_indcs(&mut self, last_dim_idx: usize) -> Option<()> {
     let dims = &self.csl.dims;
     let indcs = &mut self.csl.indcs;
@@ -97,7 +95,6 @@ where
     Some(())
   }
 
-  #[inline]
   fn fill_offs(&mut self, last_dim_idx: usize) -> Option<()> {
     let nnz = self.nnz;
     for _ in 1..correct_offs_len(&self.csl.dims).ok()? {
@@ -127,7 +124,6 @@ where
     Some(())
   }
 
-  #[inline]
   fn do_fill_offs(
     &mut self,
     last_dim_idx: usize,

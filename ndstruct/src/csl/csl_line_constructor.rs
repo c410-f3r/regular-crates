@@ -142,7 +142,6 @@ where
     // self.curr_dim_idx always points to a valid reference
     clippy::unwrap_used
   )]
-  #[inline]
   fn curr_dim(&mut self) -> &mut usize {
     self.csl.dims.get_mut(self.curr_dim_idx).unwrap()
   }
@@ -151,7 +150,6 @@ where
     // Constructor doesn't contain empty dimensions
     clippy::unwrap_used
   )]
-  #[inline]
   fn last_dim(&mut self) -> usize {
     *self.csl.dims.last().unwrap()
   }

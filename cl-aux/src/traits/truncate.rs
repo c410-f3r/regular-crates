@@ -19,6 +19,7 @@ where
   type Input = T::Input;
   type Output = T::Output;
 
+  #[inline]
   fn truncate(&mut self, input: Self::Input) -> Self::Output {
     (*self).truncate(input)
   }

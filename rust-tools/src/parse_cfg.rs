@@ -47,7 +47,6 @@ where
   Ok((params, tp))
 }
 
-#[inline]
 fn iterations<R>(
   overall_buffer: &mut String,
   br: &mut BufReader<R>,

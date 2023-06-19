@@ -13,7 +13,7 @@ where
 {
   #[inline]
   fn clear(&mut self) {
-    (*self).clear()
+    (*self).clear();
   }
 }
 

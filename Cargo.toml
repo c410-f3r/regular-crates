@@ -1,4 +1,4 @@
 [workspace]
-default-members = ["cl-aux", "ndstruct", "rust-tools"]
+default-members = ["rust-tools"]
 members = ["cl-aux", "ndstruct", "ndstruct-fuzz", "rust-tools"]
 resolver = "2"
