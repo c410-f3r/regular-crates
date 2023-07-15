@@ -7,9 +7,6 @@ serde = { default-features = false, features = ["derive"], optional = true, vers
 [features]
 alloc = ["cl-aux/alloc"]
 default = []
-rand = ["dep:rand"]
-rayon = ["dep:rayon"]
-serde = ["dep:serde"]
 std = ["alloc"]
 
 [package]

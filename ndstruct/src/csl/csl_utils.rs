@@ -1,6 +1,5 @@
 use crate::csl::{Csl, CslError, CslMut, CslRef};
-use cl_aux::ArrayWrapper;
-use cl_aux::Push;
+use cl_aux::{ArrayWrapper, Push};
 use core::ops::Range;
 
 macro_rules! create_sub_dim {

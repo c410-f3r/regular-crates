@@ -511,7 +511,8 @@ where
     IS: Truncate<Input = usize, Output = ()>,
     OS: AsMut<[usize]> + Truncate<Input = usize, Output = ()>,
   {
-    let Some([offs_indcs, values]) = csl_utils::line_offs(&self.dims, &indcs, self.offs.as_ref()) else {
+    let Some([offs_indcs, values]) = csl_utils::line_offs(&self.dims, &indcs, self.offs.as_ref())
+    else {
       return;
     };
     let cut_point = values.start;

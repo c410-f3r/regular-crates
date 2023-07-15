@@ -1,6 +1,8 @@
 use crate::{Capacity, Clear, Push, Truncate, WithCapacity};
-use core::fmt::Write;
-use core::ops::{Deref, DerefMut};
+use core::{
+  fmt::Write,
+  ops::{Deref, DerefMut},
+};
 
 /// Dynamic String
 ///

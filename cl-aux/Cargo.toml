@@ -7,11 +7,7 @@ tinyvec = { default-features = false, optional = true, version = "1.0" }
 
 [features]
 alloc = []
-arrayvec = ["dep:arrayvec"]
 default = []
-serde = ["dep:serde"]
-smallvec = ["dep:smallvec"]
-staticvec = ["dep:staticvec"]
 std = ["alloc"]
 tinyvec = ["dep:tinyvec", "tinyvec?/alloc"]
 

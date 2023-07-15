@@ -12,6 +12,7 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Aclippy::implicit_return",
   "-Aclippy::len_without_is_empty",
   "-Aclippy::let_underscore_untyped",
+  "-Aclippy::missing_assert_message",
   "-Aclippy::missing_docs_in_private_items",
   "-Aclippy::missing_errors_doc",
   "-Aclippy::missing_trait_methods",

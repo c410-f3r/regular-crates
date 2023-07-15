@@ -1,4 +1,6 @@
 use crate::Clear;
+#[cfg(feature = "alloc")]
+use alloc::vec::Vec;
 use core::{
   borrow::{Borrow, BorrowMut},
   ops::{Deref, DerefMut},
@@ -6,7 +8,7 @@ use core::{
 
 #[cfg(feature = "alloc")]
 /// [CleaningCollMut] with the std vector.
-pub type CleaningVecMut<'any, T> = CleaningCollMut<'any, T>;
+pub type CleaningVecMut<'any, T> = CleaningCollMut<'any, Vec<T>>;
 
 /// A mutable collection reference that clears its internal data when dropped.
 #[derive(Debug, Eq, Ord, PartialEq, PartialOrd)]
