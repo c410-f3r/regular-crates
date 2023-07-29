@@ -159,25 +159,6 @@ where
 }
 
 /// ```rust
-/// let structure = cl_aux::doc_tests::static_vec();
-/// assert_eq!(cl_aux::Get::get(&structure, 0), Ok(&1));
-/// ```
-#[cfg(feature = "staticvec")]
-impl<T, const N: usize> Get for staticvec::StaticVec<T, N> {
-  type Error = crate::Error;
-  type Input = usize;
-  type Output<'output> = &'output T
-  where
-    Self: 'output,
-    T: 'output;
-
-  #[inline]
-  fn get(&self, input: Self::Input) -> Result<Self::Output<'_>, Self::Error> {
-    _get!(self.as_ref(), input)
-  }
-}
-
-/// ```rust
 /// let structure = cl_aux::doc_tests::tiny_vec_array_vec();
 /// assert_eq!(cl_aux::Get::get(&structure, 0), Ok(&1));
 /// ```

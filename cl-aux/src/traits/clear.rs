@@ -103,19 +103,6 @@ where
 }
 
 /// ```rust
-/// let mut structure = cl_aux::doc_tests::static_vec();
-/// cl_aux::Clear::clear(&mut structure);
-/// assert_eq!(structure.len(), 0);
-/// ```
-#[cfg(feature = "staticvec")]
-impl<T, const N: usize> Clear for staticvec::StaticVec<T, N> {
-  #[inline]
-  fn clear(&mut self) {
-    self.clear();
-  }
-}
-
-/// ```rust
 /// let mut structure = cl_aux::doc_tests::tiny_vec_array_vec();
 /// cl_aux::Clear::clear(&mut structure);
 /// assert_eq!(structure.len(), 0);

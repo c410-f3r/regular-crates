@@ -60,11 +60,6 @@ where
   type Item = A::Item;
 }
 
-#[cfg(feature = "staticvec")]
-impl<T, const N: usize> SingleTypeStorage for staticvec::StaticVec<T, N> {
-  type Item = T;
-}
-
 #[cfg(feature = "tinyvec")]
 impl<A> SingleTypeStorage for tinyvec::ArrayVec<A>
 where

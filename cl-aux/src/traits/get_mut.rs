@@ -163,25 +163,6 @@ where
 }
 
 /// ```rust
-/// let mut structure = cl_aux::doc_tests::static_vec();
-/// assert_eq!(cl_aux::GetMut::get_mut(&mut structure, 0), Ok(&mut 1));
-/// ```
-#[cfg(feature = "staticvec")]
-impl<T, const N: usize> GetMut for staticvec::StaticVec<T, N> {
-  type Error = crate::Error;
-  type Input = usize;
-  type Output<'output> = &'output mut T
-  where
-    Self: 'output,
-    T: 'output;
-
-  #[inline]
-  fn get_mut(&mut self, input: Self::Input) -> Result<Self::Output<'_>, Self::Error> {
-    _get_mut!(self.as_mut(), input)
-  }
-}
-
-/// ```rust
 /// let mut structure = cl_aux::doc_tests::tiny_vec();
 /// assert_eq!(cl_aux::GetMut::get_mut(&mut structure, 0), Ok(&mut 1));
 /// ```

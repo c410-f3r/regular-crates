@@ -179,22 +179,6 @@ where
 }
 
 /// ```rust
-/// let mut structure = cl_aux::doc_tests::static_vec();
-/// assert_eq!(cl_aux::Iter::iter(&structure).next().unwrap(), &1);
-/// ```
-#[cfg(feature = "staticvec")]
-impl<T, const N: usize> Iter for staticvec::StaticVec<T, N> {
-  type Output<'iter> = slice::Iter<'iter, T>
-  where
-    T: 'iter;
-
-  #[inline]
-  fn iter(&self) -> Self::Output<'_> {
-    self.as_slice().iter()
-  }
-}
-
-/// ```rust
 /// let mut structure = cl_aux::doc_tests::tiny_vec_array_vec();
 /// assert_eq!(cl_aux::Iter::iter(&structure).next().unwrap(), &1);
 /// ```

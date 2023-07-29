@@ -116,22 +116,6 @@ where
 }
 
 /// ```rust
-/// let structure: staticvec::StaticVec<i32, 5>;
-/// structure = cl_aux::WithCapacity::with_capacity(0);
-/// assert_eq!(structure.capacity(), 5);
-/// ```
-#[cfg(feature = "staticvec")]
-impl<T, const N: usize> WithCapacity for staticvec::StaticVec<T, N> {
-  type Error = crate::Error;
-  type Input = usize;
-
-  #[inline]
-  fn with_capacity(_: Self::Input) -> Self {
-    staticvec::StaticVec::new()
-  }
-}
-
-/// ```rust
 /// let mut structure = cl_aux::doc_tests::tiny_vec_array_vec();
 /// structure = cl_aux::WithCapacity::with_capacity(0);
 /// assert_eq!(structure.capacity(), 5);

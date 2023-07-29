@@ -45,7 +45,6 @@ dependencies = [
  "arrayvec",
  "serde",
  "smallvec",
- "staticvec",
  "tinyvec",
 ]
 
@@ -280,12 +279,6 @@ name = "smallvec"
 version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a507befe795404456341dfab10cef66ead4c041f62b8b11bbb92bffe5d0953e0"
-
-[[package]]
-name = "staticvec"
-version = "0.11.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e6183943e8c03d78596895561edba95bfc9f1e4547a46f720439d714c4c3d08b"
 
 [[package]]
 name = "syn"

@@ -185,31 +185,6 @@ where
 }
 
 /// ```rust
-/// let mut structure = cl_aux::doc_tests::static_vec();
-/// cl_aux::Extend::extend(&mut structure, [20]);
-/// assert_eq!(&structure[..], &[1, 2, 3, 20][..]);
-/// ```
-#[cfg(feature = "staticvec")]
-impl<T, const N: usize> Extend<T> for staticvec::StaticVec<T, N>
-where
-  Self: crate::Push<T, Output = ()>,
-{
-  type Error = <Self as crate::Push<T>>::Error;
-  type Output = ();
-
-  #[inline]
-  fn extend(
-    &mut self,
-    into_iter: impl IntoIterator<Item = T>,
-  ) -> Result<Self::Output, Self::Error> {
-    for elem in into_iter.into_iter() {
-      crate::Push::push(self, elem)?;
-    }
-    Ok(())
-  }
-}
-
-/// ```rust
 /// let mut structure = cl_aux::doc_tests::tiny_vec_array_vec();
 /// cl_aux::Extend::extend(&mut structure, [20]);
 /// assert_eq!(&structure[..], &[1, 2, 3, 20][..]);

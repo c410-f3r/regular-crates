@@ -126,22 +126,6 @@ where
 }
 
 /// ```rust
-/// let mut structure = cl_aux::doc_tests::static_vec();
-/// cl_aux::Truncate::truncate(&mut structure, 1);
-/// assert_eq!(structure.len(), 1);
-/// ```
-#[cfg(feature = "staticvec")]
-impl<T, const N: usize> Truncate for staticvec::StaticVec<T, N> {
-  type Input = usize;
-  type Output = ();
-
-  #[inline]
-  fn truncate(&mut self, input: Self::Input) -> Self::Output {
-    self.truncate(input);
-  }
-}
-
-/// ```rust
 /// let mut structure = cl_aux::doc_tests::tiny_vec_array_vec();
 /// cl_aux::Truncate::truncate(&mut structure, 1);
 /// assert_eq!(structure.len(), 1);

@@ -86,24 +86,6 @@ where
 }
 
 /// ```rust
-/// let mut structure = cl_aux::doc_tests::static_vec();
-/// cl_aux::Remove::remove(&mut structure, 0);
-/// assert_eq!(structure.get(0), Some(&2));
-/// ```
-#[cfg(feature = "staticvec")]
-impl<T, const N: usize> Remove for staticvec::StaticVec<T, N> {
-  type Error = crate::Error;
-  type Input = usize;
-  type Output = T;
-
-  #[inline]
-  fn remove(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error> {
-    _check_indcs!(self, input);
-    Ok(self.remove(input))
-  }
-}
-
-/// ```rust
 /// let mut structure = cl_aux::doc_tests::tiny_vec_array_vec();
 /// cl_aux::Remove::remove(&mut structure, 0);
 /// assert_eq!(structure.get(0), Some(&2));

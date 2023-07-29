@@ -224,25 +224,6 @@ where
 }
 
 /// ```rust
-/// let mut structure = cl_aux::doc_tests::static_vec();
-/// cl_aux::Insert::insert(&mut structure, (0, 10));
-/// assert_eq!(structure.get(0), Some(&10));
-/// ```
-#[cfg(feature = "staticvec")]
-impl<T, const N: usize> Insert for staticvec::StaticVec<T, N> {
-  type Error = crate::Error;
-  type Input = (usize, T);
-  type Output = ();
-
-  #[inline]
-  fn insert(&mut self, (idx, elem): Self::Input) -> Result<Self::Output, Self::Error> {
-    _check_indcs!(self, idx);
-    self.insert(idx, elem);
-    Ok(())
-  }
-}
-
-/// ```rust
 /// let mut structure = cl_aux::doc_tests::tiny_vec_array_vec();
 /// cl_aux::Insert::insert(&mut structure, (0, 10));
 /// assert_eq!(structure.get(0), Some(&10));

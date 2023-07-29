@@ -96,22 +96,6 @@ where
 }
 
 /// ```rust
-/// let mut structure = cl_aux::doc_tests::static_vec();
-/// cl_aux::Retain::retain(&mut structure, |n| n % 2 == 0);
-/// assert_eq!(&structure[..], &[2]);
-/// ```
-#[cfg(feature = "staticvec")]
-impl<T, const N: usize> Retain for staticvec::StaticVec<T, N> {
-  type Input = fn(&T) -> bool;
-  type Output = ();
-
-  #[inline]
-  fn retain(&mut self, input: Self::Input) {
-    self.retain(input);
-  }
-}
-
-/// ```rust
 /// let mut structure = cl_aux::doc_tests::tiny_vec_array_vec();
 /// cl_aux::Retain::retain(&mut structure, |n| n % 2 == 0);
 /// assert_eq!(&structure[..], &[2]);

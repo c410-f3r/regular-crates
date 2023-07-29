@@ -190,22 +190,6 @@ where
 }
 
 /// ```rust
-/// let mut structure = cl_aux::doc_tests::static_vec();
-/// cl_aux::Push::push(&mut structure, 20);
-/// assert_eq!(structure.get(3), Some(&20));
-/// ```
-#[cfg(feature = "staticvec")]
-impl<T, const N: usize> Push<T> for staticvec::StaticVec<T, N> {
-  type Error = T;
-  type Output = ();
-
-  #[inline]
-  fn push(&mut self, input: T) -> Result<Self::Output, Self::Error> {
-    self.try_push(input).map_err(|e| e.into_value())
-  }
-}
-
-/// ```rust
 /// let mut structure = cl_aux::doc_tests::tiny_vec_array_vec();
 /// cl_aux::Push::push(&mut structure, 20);
 /// assert_eq!(structure.get(3), Some(&20));

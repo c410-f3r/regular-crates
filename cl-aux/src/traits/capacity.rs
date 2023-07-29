@@ -147,18 +147,6 @@ where
 }
 
 /// ```rust
-/// let mut structure = cl_aux::doc_tests::static_vec();
-/// assert_eq!(cl_aux::Capacity::capacity(&structure), 5);
-/// ```
-#[cfg(feature = "staticvec")]
-impl<T, const N: usize> Capacity for staticvec::StaticVec<T, N> {
-  #[inline]
-  fn capacity(&self) -> usize {
-    self.capacity()
-  }
-}
-
-/// ```rust
 /// let mut structure = cl_aux::doc_tests::tiny_vec_array_vec();
 /// assert_eq!(cl_aux::Capacity::capacity(&structure), 5);
 /// ```

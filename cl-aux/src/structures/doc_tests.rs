@@ -93,15 +93,6 @@ pub fn small_vec() -> smallvec::SmallVec<[i32; 5]> {
   vec
 }
 
-#[cfg(feature = "staticvec")]
-#[inline]
-/// `StaticVec` with three elements
-pub fn static_vec() -> staticvec::StaticVec<i32, 5> {
-  let mut vec = staticvec::StaticVec::new();
-  vec.extend([1, 2, 3].iter().copied());
-  vec
-}
-
 /// [String] filled with "Hello"
 #[cfg(feature = "alloc")]
 #[inline]

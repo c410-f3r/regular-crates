@@ -121,15 +121,6 @@ where
 }
 
 /// ```rust
-/// let mut structure = cl_aux::doc_tests::static_vec();
-/// assert_eq!(cl_aux::CapacityUpperBound::capacity_upper_bound(&structure), 5);
-/// ```
-#[cfg(feature = "staticvec")]
-impl<T, const N: usize> CapacityUpperBound for staticvec::StaticVec<T, N> {
-  const CAPACITY_UPPER_BOUND: usize = N;
-}
-
-/// ```rust
 /// let mut structure = cl_aux::doc_tests::tiny_vec_array_vec();
 /// assert_eq!(cl_aux::CapacityUpperBound::capacity_upper_bound(&structure), 5);
 /// ```

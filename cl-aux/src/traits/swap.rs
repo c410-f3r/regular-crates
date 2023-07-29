@@ -120,24 +120,6 @@ where
 }
 
 /// ```rust
-/// let mut structure = cl_aux::doc_tests::static_vec();
-/// cl_aux::Swap::swap(&mut structure, [0, 2]);
-/// assert_eq!(structure.get(0), Some(&3));
-/// assert_eq!(structure.get(2), Some(&1));
-/// ```
-#[cfg(feature = "staticvec")]
-impl<T, const N: usize> Swap for staticvec::StaticVec<T, N> {
-  type Error = crate::Error;
-  type Input = [usize; 2];
-  type Output = ();
-
-  #[inline]
-  fn swap(&mut self, [a, b]: Self::Input) -> Result<Self::Output, Self::Error> {
-    manage_slice(self, a, b)
-  }
-}
-
-/// ```rust
 /// let mut structure = cl_aux::doc_tests::tiny_vec_array_vec();
 /// cl_aux::Swap::swap(&mut structure, [0, 2]);
 /// assert_eq!(structure.get(0), Some(&3));

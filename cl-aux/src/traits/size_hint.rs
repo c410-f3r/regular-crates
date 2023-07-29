@@ -230,18 +230,6 @@ where
 }
 
 /// ```rust
-/// let structure = cl_aux::doc_tests::static_vec();
-/// assert_eq!(cl_aux::SizeHint::size_hint(&structure), (3, Some(3)));
-/// ```
-#[cfg(feature = "staticvec")]
-impl<T, const N: usize> SizeHint for staticvec::StaticVec<T, N> {
-  #[inline]
-  fn size_hint(&self) -> (usize, Option<usize>) {
-    (self.len(), Some(self.len()))
-  }
-}
-
-/// ```rust
 /// let structure = cl_aux::doc_tests::tiny_vec_array_vec();
 /// assert_eq!(cl_aux::SizeHint::size_hint(&structure), (3, Some(3)));
 /// ```

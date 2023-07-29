@@ -210,18 +210,6 @@ where
 }
 
 /// ```rust
-/// let structure = cl_aux::doc_tests::static_vec();
-/// assert_eq!(cl_aux::Length::length(&structure), 3);
-/// ```
-#[cfg(feature = "staticvec")]
-impl<T, const N: usize> Length for staticvec::StaticVec<T, N> {
-  #[inline]
-  fn length(&self) -> usize {
-    self.len()
-  }
-}
-
-/// ```rust
 /// let structure = cl_aux::doc_tests::tiny_vec_array_vec();
 /// assert_eq!(cl_aux::Length::length(&structure), 3);
 /// ```
