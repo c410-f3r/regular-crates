@@ -10,8 +10,10 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Aclippy::exhaustive_enums",
   "-Aclippy::exhaustive_structs",
   "-Aclippy::implicit_return",
+  "-Aclippy::integer_division",
   "-Aclippy::len_without_is_empty",
   "-Aclippy::let_underscore_untyped",
+  "-Aclippy::many_single_char_names",
   "-Aclippy::missing_assert_message",
   "-Aclippy::missing_docs_in_private_items",
   "-Aclippy::missing_errors_doc",
@@ -26,6 +28,7 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Aclippy::self_named_module_files",
   "-Aclippy::similar_names",
   "-Aclippy::std_instead_of_core",
+  "-Aclippy::struct_excessive_bools",
   "-Aclippy::unseparated_literal_suffix",
   "-Aclippy::unused_self",
 ];
@@ -55,8 +58,6 @@ const RUST_FLAGS: &[&str] = &[
   "-Dunreachable_pub",
   "-Dunsafe_code",
   "-Dunsafe_op_in_unsafe_fn",
-  "-Dunstable_features",
-  "-Dunused_crate_dependencies",
   "-Dunused_extern_crates",
   "-Dunused_import_braces",
   "-Dunused_lifetimes",
@@ -64,7 +65,6 @@ const RUST_FLAGS: &[&str] = &[
   "-Dunused_qualifications",
   "-Dunused_results",
   "-Dunused_tuple_struct_fields",
-  "-Dvariant_size_differences",
   "-Dwarnings",
 ];
 

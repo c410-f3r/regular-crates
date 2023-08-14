@@ -9,7 +9,12 @@ impl Actions {
     let mut cmd = Command::new("cargo");
     handle_cmd_output(
       cmd
-        .args([String::from("clippy")].into_iter().chain(args.by_ref()).chain([String::from("--")]))
+        .args(
+          [String::from("clippy"), String::from("--workspace")]
+            .into_iter()
+            .chain(args.by_ref())
+            .chain([String::from("--")]),
+        )
         .args(&self.params.clippy_flags),
     )?;
     Ok(())
