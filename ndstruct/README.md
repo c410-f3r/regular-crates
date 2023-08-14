@@ -66,7 +66,6 @@ fn main() -> ndstruct::Result<()> {
 ## Optional features
 
 - `alloc` and `std`
-- Bindings (Py03, wasm-bindgen)
 - Deserialization/Serialization (serde)
 - Parallel iterators (rayon)
 - Random instances (rand)

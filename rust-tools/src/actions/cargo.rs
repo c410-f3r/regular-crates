@@ -20,7 +20,7 @@ macro_rules! create_fns {
       handle_cmd_output(Command::new("cargo").args(&[
         $cargo_action,
         "--manifest-path",
-        &format!("{}/Cargo.toml", package),
+        &format!("{package}/Cargo.toml"),
         "--no-default-features",
         $($additional_arg)?
       ]))?;
@@ -36,7 +36,7 @@ macro_rules! create_fns {
         $cargo_action,
         "--all-features",
         "--manifest-path",
-        &format!("{}/Cargo.toml", package),
+        &format!("{package}/Cargo.toml"),
         $($additional_arg)?
       ]))?;
       Ok(())
@@ -55,7 +55,7 @@ macro_rules! create_fns {
         "--features",
         &features,
         "--manifest-path",
-        &format!("{}/Cargo.toml", package),
+        &format!("{package}/Cargo.toml"),
         "--no-default-features",
         $($additional_arg)?
       ]))?;

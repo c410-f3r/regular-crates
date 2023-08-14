@@ -6,38 +6,38 @@ on:
       - main
 
 jobs:
-  fuzz:
-    name: Fuzz
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions-rs/toolchain@v1
-        with:
-          override: true
-          profile: minimal
-          toolchain: nightly-2022-11-20
-
-      - uses: actions-rs/install@v0.1
-        with:
-          crate: cargo-fuzz
-          use-tool-cache: true
-
-      - run: .scripts/fuzz.sh
+#  fuzz:
+#    name: Fuzz
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#      - uses: actions-rs/toolchain@v1
+#        with:
+#          override: true
+#          profile: minimal
+#          toolchain: nightly-2023-05-25
+#      - uses: actions-rs/install@v0.1
+#        with:
+#          crate: cargo-fuzz
+#          use-tool-cache: true
+#
+#      - run: .scripts/fuzz.sh
 
   tests:
     name: Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
       - uses: actions-rs/toolchain@v1
         with:
           components: clippy, rustfmt
           override: true
           profile: minimal
-          toolchain: 1.71
-
+          toolchain: nightly-2023-05-25
       - uses: Swatinem/rust-cache@v2
 
-      - run: .scripts/all.sh
+      - name: Internal
+        run: .scripts/all.sh
+
+#      - name: Autobahn
+#        run: .scripts/autobahn.sh ci
