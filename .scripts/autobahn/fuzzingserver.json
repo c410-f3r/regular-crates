@@ -3,5 +3,5 @@
   "exclude-agent-cases": {},
   "exclude-cases": [],
   "outdir": "/autobahn/reports/fuzzingserver",
-  "url": "ws://127.0.0.1:8081"
+  "url": "ws://127.0.0.1:9080"
 }

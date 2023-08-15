@@ -17,7 +17,10 @@ use tokio::{
   runtime::Handle,
   sync::{oneshot, oneshot::Sender, Mutex},
 };
-use wtx::web_socket::{FrameBufferVec, Stream, WebSocketServer};
+use wtx::{
+  web_socket::{FrameBufferVec, WebSocketServer},
+  Stream,
+};
 
 static FBV: OnceLock<Mutex<FrameBufferVec>> = OnceLock::new();
 

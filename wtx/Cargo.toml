@@ -48,7 +48,6 @@ wtx = { default-features = false, features = ["std"], path = "." }
 default = []
 http-client = ["async-std", "base64", "dep:http-client", "http-types", "sha1", "std"]
 hyper = ["base64", "dep:hyper", "sha1", "std", "tokio"]
-nightly = []
 simdutf8 = ["dep:simdutf8", "simdutf8?/aarch64_neon"]
 std = []
 

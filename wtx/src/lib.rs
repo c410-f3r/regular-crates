@@ -1,5 +1,5 @@
 #![cfg_attr(
-  any(feature = "nightly", not(feature = "async-trait")),
+  not(feature = "async-trait"),
   feature(array_chunks, async_fn_in_trait, impl_trait_projections, inline_const)
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
@@ -12,6 +12,7 @@ mod misc;
 mod stream;
 pub mod web_socket;
 
+pub use crate::stream::{DummyStream, Stream};
 pub use error::Error;
 
 /// Shortcut of [core::result::Result<T, Error>].

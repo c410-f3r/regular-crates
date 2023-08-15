@@ -6,8 +6,20 @@ on:
       - main
 
 jobs:
+  autobahn:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          override: true
+          profile: minimal
+          toolchain: nightly-2023-05-25
+      - uses: Swatinem/rust-cache@v2
+
+      - run: .scripts/autobahn.sh ci
+
 #  fuzz:
-#    name: Fuzz
 #    runs-on: ubuntu-latest
 #    steps:
 #      - uses: actions/checkout@v3
@@ -23,8 +35,7 @@ jobs:
 #
 #      - run: .scripts/fuzz.sh
 
-  tests:
-    name: Tests
+  internal-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -36,8 +47,4 @@ jobs:
           toolchain: nightly-2023-05-25
       - uses: Swatinem/rust-cache@v2
 
-      - name: Internal
-        run: .scripts/all.sh
-
-#      - name: Autobahn
-#        run: .scripts/autobahn.sh ci
+      - run: .scripts/all.sh

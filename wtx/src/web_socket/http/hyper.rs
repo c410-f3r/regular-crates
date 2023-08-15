@@ -267,6 +267,7 @@ mod tests {
     }
   }
 
+  #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
   trait Test {
     async fn client(fb: &mut FrameBufferVec, ws: &mut WebSocketClient<Upgraded>);
 
@@ -274,10 +275,11 @@ mod tests {
   }
 
   struct LargeFragmentedMessage;
+  #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
   impl Test for LargeFragmentedMessage {
     async fn client(fb: &mut FrameBufferVec, ws: &mut WebSocketClient<Upgraded>) {
       async fn write(frame: FrameMut<'_, true>, ws: &mut WebSocketClient<Upgraded>) {
-        ws.write_frame(FrameMut::from(frame)).await.unwrap();
+        ws.write_frame(frame).await.unwrap();
       }
       let bytes = vec![51; 1024 * 1024];
       write(Frame::new_unfin(fb.into(), OpCode::Text, &bytes).unwrap(), ws).await;
@@ -300,10 +302,11 @@ mod tests {
   }
 
   struct SeveralBytes;
+  #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
   impl Test for SeveralBytes {
     async fn client(fb: &mut FrameBufferVec, ws: &mut WebSocketClient<Upgraded>) {
       async fn write(frame: FrameMut<'_, true>, ws: &mut WebSocketClient<Upgraded>) {
-        ws.write_frame(FrameMut::from(frame)).await.unwrap();
+        ws.write_frame(frame).await.unwrap();
       }
       write(Frame::new_unfin(fb.into(), OpCode::Text, &[206]).unwrap(), ws).await;
       write(Frame::new_unfin(fb.into(), OpCode::Continuation, &[186]).unwrap(), ws).await;
@@ -327,12 +330,11 @@ mod tests {
   }
 
   struct FragmentedMessage;
+  #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
   impl Test for FragmentedMessage {
     async fn client(fb: &mut FrameBufferVec, ws: &mut WebSocketClient<Upgraded>) {
-      ws.write_frame(Frame::new_unfin(<_>::from(&mut *fb), OpCode::Text, b"1").unwrap())
-        .await
-        .unwrap();
-      ws.write_frame(Frame::new_fin(<_>::from(&mut *fb), OpCode::Continuation, b"23").unwrap())
+      ws.write_frame(Frame::new_unfin(fb.into(), OpCode::Text, b"1").unwrap()).await.unwrap();
+      ws.write_frame(Frame::new_fin(fb.into(), OpCode::Continuation, b"23").unwrap())
         .await
         .unwrap();
     }
@@ -345,21 +347,18 @@ mod tests {
   }
 
   struct TwoPings;
+  #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
   impl Test for TwoPings {
     async fn client(fb: &mut FrameBufferVec, ws: &mut WebSocketClient<Upgraded>) {
-      ws.write_frame(Frame::new_fin(<_>::from(&mut *fb), OpCode::Ping, b"0").unwrap())
-        .await
-        .unwrap();
-      ws.write_frame(Frame::new_fin(<_>::from(&mut *fb), OpCode::Ping, b"1").unwrap())
-        .await
-        .unwrap();
+      ws.write_frame(Frame::new_fin(fb.into(), OpCode::Ping, b"0").unwrap()).await.unwrap();
+      ws.write_frame(Frame::new_fin(fb.into(), OpCode::Ping, b"1").unwrap()).await.unwrap();
       let _0 = ws.read_frame(fb).await.unwrap();
       assert_eq!(OpCode::Pong, _0.op_code());
       assert_eq!(b"0", _0.fb().payload());
       let _1 = ws.read_frame(fb).await.unwrap();
       assert_eq!(OpCode::Pong, _1.op_code());
       assert_eq!(b"1", _1.fb().payload());
-      let a = Frame::new_fin(<_>::from(&mut *fb), OpCode::Text, b"").unwrap();
+      let a = Frame::new_fin(fb.into(), OpCode::Text, b"").unwrap();
       ws.write_frame(a).await.unwrap();
     }
 
@@ -371,14 +370,11 @@ mod tests {
   }
 
   struct PingAndText;
+  #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
   impl Test for PingAndText {
     async fn client(fb: &mut FrameBufferVec, ws: &mut WebSocketClient<Upgraded>) {
-      ws.write_frame(Frame::new_fin(<_>::from(&mut *fb), OpCode::Ping, b"").unwrap())
-        .await
-        .unwrap();
-      ws.write_frame(Frame::new_fin(<_>::from(&mut *fb), OpCode::Text, b"ipat").unwrap())
-        .await
-        .unwrap();
+      ws.write_frame(Frame::new_fin(fb.into(), OpCode::Ping, b"").unwrap()).await.unwrap();
+      ws.write_frame(Frame::new_fin(fb.into(), OpCode::Text, b"ipat").unwrap()).await.unwrap();
       assert_eq!(OpCode::Pong, ws.read_frame(fb).await.unwrap().op_code());
     }
 
@@ -388,21 +384,18 @@ mod tests {
   }
 
   struct HelloAndGoodbye;
+  #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
   impl Test for HelloAndGoodbye {
     async fn client(fb: &mut FrameBufferVec, ws: &mut WebSocketClient<Upgraded>) {
       let hello = ws.read_frame(fb).await.unwrap();
       assert_eq!(OpCode::Text, hello.op_code());
       assert_eq!(b"Hello!", hello.fb().payload());
-      ws.write_frame(Frame::new_fin(<_>::from(&mut *fb), OpCode::Text, b"Goodbye!").unwrap())
-        .await
-        .unwrap();
+      ws.write_frame(Frame::new_fin(fb.into(), OpCode::Text, b"Goodbye!").unwrap()).await.unwrap();
       assert_eq!(OpCode::Close, ws.read_frame(fb).await.unwrap().op_code());
     }
 
     async fn server(fb: &mut FrameBufferVec, ws: &mut WebSocketServer<Upgraded>) {
-      ws.write_frame(Frame::new_fin(<_>::from(&mut *fb), OpCode::Text, b"Hello!").unwrap())
-        .await
-        .unwrap();
+      ws.write_frame(Frame::new_fin(fb.into(), OpCode::Text, b"Hello!").unwrap()).await.unwrap();
       assert_eq!(ws.read_frame(&mut *fb).await.unwrap().fb().payload(), b"Goodbye!");
       ws.write_frame(Frame::new_fin(fb.into(), OpCode::Close, &[]).unwrap()).await.unwrap();
     }
