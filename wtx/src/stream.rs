@@ -12,6 +12,22 @@ pub trait Stream {
   async fn write_all(&mut self, bytes: &[u8]) -> crate::Result<()>;
 }
 
+#[cfg_attr(feature = "async-trait", async_trait::async_trait)]
+impl<T> Stream for &mut T
+where
+  T: Send + Stream + Sync,
+{
+  #[inline]
+  async fn read(&mut self, bytes: &mut [u8]) -> crate::Result<usize> {
+    (*self).read(bytes).await
+  }
+
+  #[inline]
+  async fn write_all(&mut self, bytes: &[u8]) -> crate::Result<()> {
+    (*self).write_all(bytes).await
+  }
+}
+
 /// Does nothing.
 #[derive(Debug)]
 pub struct DummyStream;
@@ -35,7 +51,7 @@ impl Stream for DummyStream {
 
 #[cfg(feature = "http-client")]
 mod http_client {
-  use crate::web_socket::Stream;
+  use crate::Stream;
   #[cfg(feature = "async-trait")]
   use alloc::boxed::Box;
   use async_std::io::{ReadExt, WriteExt};
@@ -58,7 +74,7 @@ mod http_client {
 
 #[cfg(feature = "hyper")]
 mod hyper {
-  use crate::web_socket::Stream;
+  use crate::Stream;
   #[cfg(feature = "async-trait")]
   use alloc::boxed::Box;
   use hyper::upgrade::Upgraded;

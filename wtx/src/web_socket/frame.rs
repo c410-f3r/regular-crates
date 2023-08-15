@@ -12,9 +12,10 @@ use core::{
   str,
 };
 
-pub(crate) type FrameControlArray<const IS_CLIENT: bool> =
-  Frame<FrameBufferControlArray, IS_CLIENT>;
-pub(crate) type FrameMut<'bytes, const IS_CLIENT: bool> = Frame<FrameBufferMut<'bytes>, IS_CLIENT>;
+/// A [Frame] composed by an array with the maximum allowed size of a control frame.
+pub type FrameControlArray<const IS_CLIENT: bool> = Frame<FrameBufferControlArray, IS_CLIENT>;
+/// A [Frame] composed by a mutable sequence of opaque bytes.
+pub type FrameMut<'bytes, const IS_CLIENT: bool> = Frame<FrameBufferMut<'bytes>, IS_CLIENT>;
 
 /// Represents a WebSocket frame
 #[derive(Debug)]

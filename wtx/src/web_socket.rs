@@ -14,16 +14,13 @@ mod mask;
 mod op_code;
 mod read_buffer;
 
-pub use crate::stream::{DummyStream, Stream};
 use crate::{
   misc::{from_utf8_ext_rslt, from_utf8_opt, CompleteErr, ExtUtf8Error, Rng},
-  web_socket::{
-    close_code::CloseCode,
-    frame::{FrameControlArray, FrameMut},
-  },
+  web_socket::close_code::CloseCode,
+  Stream,
 };
 use core::borrow::BorrowMut;
-pub use frame::Frame;
+pub use frame::{Frame, FrameControlArray, FrameMut};
 pub use frame_buffer::{FrameBuffer, FrameBufferMut, FrameBufferVec};
 #[cfg(feature = "http-client")]
 pub use http::http_client::{

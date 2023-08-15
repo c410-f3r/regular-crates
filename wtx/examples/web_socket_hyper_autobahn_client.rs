@@ -9,7 +9,7 @@ use wtx::web_socket::{
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<(), Error> {
-  let mut fb = FrameBufferVec::default();
+  let mut fb = &mut FrameBufferVec::default();
   let count = get_case_count(&mut fb).await?;
 
   for case in 1..=count {
@@ -18,7 +18,7 @@ async fn main() -> Result<(), Error> {
       let frame = match ws.read_msg(&mut fb).await {
         Err(err) => {
           println!("Error: {err}");
-          ws.write_frame(Frame::new_fin(<_>::from(&mut fb), OpCode::Close, &[])?).await?;
+          ws.write_frame(Frame::new_fin(fb.into(), OpCode::Close, &[])?).await?;
           break;
         }
         Ok(elem) => elem,
@@ -32,7 +32,7 @@ async fn main() -> Result<(), Error> {
   }
 
   let mut ws = connect("updateReports?agent=wtx").await?;
-  ws.write_frame(Frame::close_from_params(1000, fb, &[])?).await?;
+  ws.write_frame(Frame::close_from_params(1000, fb.into(), &[])?).await?;
   Ok(())
 }
 
@@ -70,10 +70,10 @@ where
 }
 
 async fn connect(path: &str) -> Result<WebSocketClient<Upgraded>, Error> {
-  let addr = "localhost:8081";
+  let addr = "localhost:9080";
   let stream = TcpStream::connect(addr).await.map_err(wtx::Error::from)?;
-  let req =
-    Request::get(format!("http://{addr}/{path}")).body(Body::empty()).map_err(wtx::Error::from)?;
+  let uri = format!("http://{addr}/{path}");
+  let req = Request::get(uri).body(Body::empty()).map_err(wtx::Error::from)?;
   Ok(WebSocketHandshakeHyper::default().handshake((&SpawnExecutor, req, stream)).await?.1)
 }
 

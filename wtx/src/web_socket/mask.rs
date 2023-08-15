@@ -27,15 +27,7 @@ fn unmask_aligned_slice(bytes: &mut [u8], mask: [u8; 4]) {
 
 fn unmask_chunks_of_slice(bytes: &mut [u8], mask: [u8; 4]) {
   let mut bytes_skip: usize = 0;
-  #[cfg(feature = "nightly")]
-  for [a, b, c, d] in bytes.array_chunks_mut::<4>() {
-    *a ^= mask[0];
-    *b ^= mask[1];
-    *c ^= mask[2];
-    *d ^= mask[3];
-    bytes_skip = bytes_skip.wrapping_add(1);
-  }
-  #[cfg(not(feature = "nightly"))]
+  #[cfg(feature = "async-trait")]
   {
     let mut iter = bytes.chunks_exact_mut(4);
     while let Some([a, b, c, d]) = iter.next() {
@@ -45,6 +37,14 @@ fn unmask_chunks_of_slice(bytes: &mut [u8], mask: [u8; 4]) {
       *d ^= mask[3];
       bytes_skip = bytes_skip.wrapping_add(1);
     }
+  }
+  #[cfg(not(feature = "async-trait"))]
+  for [a, b, c, d] in bytes.array_chunks_mut::<4>() {
+    *a ^= mask[0];
+    *b ^= mask[1];
+    *c ^= mask[2];
+    *d ^= mask[3];
+    bytes_skip = bytes_skip.wrapping_add(1);
   }
   bytes_skip = bytes_skip.wrapping_mul(4);
   bytes.get_mut(bytes_skip..).into_iter().flatten().zip(mask).for_each(|(byte, mask_el)| {

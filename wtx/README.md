@@ -13,8 +13,7 @@ Intended to group different web transport implementations.
 [fastwebsockets](https://github.com/denoland/fastwebsockets) served as an initial inspiration for the skeleton of this implementation so thanks to the authors.
 
 ```rust
-use core::str;
-use wtx::web_socket::{Frame, FrameBufferVec, OpCode, Stream, WebSocketClient};
+use wtx::{Stream, web_socket::{Frame, FrameBufferVec, OpCode, WebSocketClient}};
 
 pub async fn handle_client_frames(ws: &mut WebSocketClient<impl Stream>) -> wtx::Result<()> {
   let mut fb = FrameBufferVec::default();
