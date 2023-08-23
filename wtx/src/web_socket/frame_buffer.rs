@@ -211,7 +211,7 @@ where
   }
 }
 
-impl<'bytes> From<Vec<u8>> for FrameBufferVec {
+impl From<Vec<u8>> for FrameBufferVec {
   #[inline]
   fn from(from: Vec<u8>) -> Self {
     Self::new(from)

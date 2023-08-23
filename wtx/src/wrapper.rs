@@ -58,10 +58,10 @@ mod tests {
   fn reads_accept_frame_buffers_composed_by_different_types() {
     let mut ws = WebSocketClientOwned::new(<_>::default(), DummyStream);
 
-    let _ = ws.read_frame(&mut FrameBufferVecMut::from(&mut Vec::new()));
-    let _ = ws.read_msg(&mut FrameBufferVecMut::from(&mut Vec::new()));
+    drop(ws.read_frame(&mut FrameBufferVecMut::from(&mut Vec::new())));
+    drop(ws.read_msg(&mut FrameBufferVecMut::from(&mut Vec::new())));
 
-    let _ = ws.read_frame(&mut FrameBufferVec::new(Vec::new()));
-    let _ = ws.read_msg(&mut FrameBufferVec::new(Vec::new()));
+    drop(ws.read_frame(&mut FrameBufferVec::new(Vec::new())));
+    drop(ws.read_msg(&mut FrameBufferVec::new(Vec::new())));
   }
 }
