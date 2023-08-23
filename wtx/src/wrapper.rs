@@ -16,10 +16,24 @@ impl Borrow<[u8]> for Wrapper<&mut Vec<u8>> {
   }
 }
 
+impl Borrow<Vec<u8>> for Wrapper<&mut Vec<u8>> {
+  #[inline]
+  fn borrow(&self) -> &Vec<u8> {
+    self.0
+  }
+}
+
 impl BorrowMut<[u8]> for Wrapper<&mut Vec<u8>> {
   #[inline]
   fn borrow_mut(&mut self) -> &mut [u8] {
     self.0.as_mut_slice()
+  }
+}
+
+impl BorrowMut<Vec<u8>> for Wrapper<&mut Vec<u8>> {
+  #[inline]
+  fn borrow_mut(&mut self) -> &mut Vec<u8> {
+    self.0
   }
 }
 
@@ -30,5 +44,24 @@ where
   #[inline]
   fn expand(&mut self, len: usize) {
     self.0.expand(len);
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use crate::{
+    web_socket::{FrameBufferVec, FrameBufferVecMut, WebSocketClientOwned},
+    DummyStream,
+  };
+
+  #[test]
+  fn reads_accept_frame_buffers_composed_by_different_types() {
+    let mut ws = WebSocketClientOwned::new(<_>::default(), DummyStream);
+
+    drop(ws.read_frame(&mut FrameBufferVecMut::from(&mut Vec::new())));
+    drop(ws.read_msg(&mut FrameBufferVecMut::from(&mut Vec::new())));
+
+    drop(ws.read_frame(&mut FrameBufferVec::new(Vec::new())));
+    drop(ws.read_msg(&mut FrameBufferVec::new(Vec::new())));
   }
 }

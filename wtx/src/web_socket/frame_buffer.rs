@@ -211,6 +211,13 @@ where
   }
 }
 
+impl From<Vec<u8>> for FrameBufferVec {
+  #[inline]
+  fn from(from: Vec<u8>) -> Self {
+    Self::new(from)
+  }
+}
+
 impl<'bytes> From<&'bytes mut Vec<u8>> for FrameBufferVecMut<'bytes> {
   #[inline]
   fn from(from: &'bytes mut Vec<u8>) -> Self {
