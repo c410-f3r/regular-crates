@@ -1,4 +1,5 @@
 use crate::misc::Expand;
+use alloc::vec::Vec;
 use core::borrow::{Borrow, BorrowMut};
 
 /// Internal utility used to workaround coherence. Doesn't have any public meaning.
