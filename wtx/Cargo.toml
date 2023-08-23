@@ -33,13 +33,13 @@ hyper = { default-features = false, features = ["client", "http1", "server"], op
 rand = { default-features = false, features = ["getrandom", "small_rng"], version = "0.8" }
 sha1 = { default-features = false, optional = true, version = "0.10" }
 simdutf8 = { default-features = false, optional = true, version = "0.1" }
-tokio = { default-features = false, features = ["io-util"], optional = true, version = "1.0" }
+tokio = { default-features = false, features = ["io-util"], optional = true, version = "1.32" }
 
 [dev-dependencies]
 async-h1 = { default-features = false, version = "2.0" }
 hyper = { default-features = false, features = ["client", "http1", "server", "tcp"], version = "0.14" }
 rustls-pemfile = { default-features = false, version = "1.0" }
-tokio = { default-features = false, features = ["macros"], version = "1.0" }
+tokio = { default-features = false, features = ["macros"], version = "1.32" }
 tokio-rustls = { default-features = false, features = ["tls12"], version = "0.24" }
 webpki-roots = { default-features = false, version = "0.23" }
 wtx = { default-features = false, features = ["std"], path = "." }
