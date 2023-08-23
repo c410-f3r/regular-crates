@@ -1,75 +1,67 @@
-#[cfg(feature = "http-client")]
-use alloc::boxed::Box;
+use crate::ExpectedHeader;
 use core::{
   fmt::{Debug, Display, Formatter},
   num::TryFromIntError,
 };
 
 /// Grouped individual errors
+//
+// * `Invalid` Something is present but has invalid state.
+// * `Missing`: Not present when expected to be.
+// * `Unexpected`: Received something that was not intended.
 #[derive(Debug)]
 pub enum Error {
-  /// It it not possible to read a frame of a connection that was previously closed.
-  ConnectionClosed,
-  /// Control frames must not be fragmented.
-  FragmentedControlFrame,
-  /// Received close frame has invalid parameters.
-  InvalidCloseFrame,
-  /// Received header of a handshake does not contain `connection`.
-  InvalidConnectionHeader,
-  /// Received frame wasn't supposed be to a continuation.
-  InvalidContinuationFrame,
-  /// Header indices are out-of-bounds or the number of bytes are too small.
-  InvalidHeaderBounds,
-  /// Following frames that compose a message must be a continuation.
-  InvalidMsgFrame,
-  /// No op code can be represented with the provided byte.
-  InvalidOpCodeByte {
-    /// Provided byte
-    byte: u8,
-  },
-  /// Payload indices are out-of-bounds or the number of bytes are too small.
-  InvalidPayloadBounds,
-  /// Sec-Websocket-Version must be 13.
-  InvalidSecWebsocketVersion,
   /// Invalid UTF-8.
   InvalidUTF8,
-  /// Received header of a upgrade does not contain `Sec-WebSocket-Key`.
-  MissingSecWebSocketKey,
-  /// Received status code of a handshake differs from `SwitchingProtocols`.
-  MissingSwitchingProtocols,
-  /// Received header of a handshake does not contain `upgrade`.
-  MissingUpgradeHeader,
-  /// Url does not contain an authority.
-  NoAuthority,
-  /// Server received a frame without a mask.
-  NoFrameMask,
-  /// It wasn't possible to establish a upgrade.
-  NoUpgradeConnection,
-  /// Reserved bits are not zero.
-  ReservedBitsAreNotZero,
+
+  /// Missing Header
+  MissingHeader {
+    /// See [ExpectedHeader].
+    expected: ExpectedHeader,
+  },
+  /// Url does not contain a host.
+  MissingHost,
+
+  /// HTTP version does not match the expected method.
+  UnexpectedHttpMethod,
+  /// HTTP version does not match the expected value.
+  UnexpectedHttpVersion,
   /// Unexpected end of file when reading.
   UnexpectedEOF,
-  /// Control frames have a maximum allowed size.
-  VeryLargeControlFrame,
-  /// Frame payload exceeds the defined threshold.
-  VeryLargePayload,
+
+  /// The system does not process HTTP messages greater than 2048 bytes.
+  VeryLargeHttp,
 
   // External
   //
+  #[cfg(feature = "http")]
+  /// See [hyper::Error]
+  HttpError(http::Error),
+  /// See [http::header::InvalidHeaderName]
+  #[cfg(feature = "http")]
+  HttpInvalidHeaderName(http::header::InvalidHeaderName),
+  /// See [http::header::InvalidHeaderValue]
+  #[cfg(feature = "http")]
+  HttpInvalidHeaderValue(http::header::InvalidHeaderValue),
+  /// See [http::status::InvalidStatusCode]
+  #[cfg(feature = "http")]
+  HttpInvalidStatusCode(http::status::InvalidStatusCode),
+  #[cfg(feature = "web-socket-handshake")]
+  /// See [httparse::Error].
+  HttpParse(httparse::Error),
   #[cfg(feature = "hyper")]
   /// See [hyper::Error]
   HyperError(hyper::Error),
-  #[cfg(feature = "hyper")]
-  /// See [hyper::Error]
-  HyperHttpError(hyper::http::Error),
-  #[cfg(feature = "http-client")]
-  /// See [http_types::Error]
-  HttpTypesError(Box<http_types::Error>),
   #[cfg(feature = "std")]
   /// See [std::io::Error]
   IoError(std::io::Error),
+  #[cfg(feature = "tokio-rustls")]
+  /// See [tokio_rustls::rustls::Error].
+  TokioRustLsError(Box<tokio_rustls::rustls::Error>),
   /// See [TryFromIntError]
   TryFromIntError(TryFromIntError),
+  /// See [crate::web_socket::WebSocketError].
+  WebSocketError(crate::web_socket::WebSocketError),
 }
 
 impl Display for Error {
@@ -90,19 +82,43 @@ impl From<hyper::Error> for Error {
   }
 }
 
-#[cfg(feature = "hyper")]
-impl From<hyper::http::Error> for Error {
+#[cfg(feature = "http")]
+impl From<http::Error> for Error {
   #[inline]
-  fn from(from: hyper::http::Error) -> Self {
-    Self::HyperHttpError(from)
+  fn from(from: http::Error) -> Self {
+    Self::HttpError(from)
   }
 }
 
-#[cfg(feature = "http-client")]
-impl From<http_types::Error> for Error {
+#[cfg(feature = "http")]
+impl From<http::header::InvalidHeaderName> for Error {
   #[inline]
-  fn from(from: http_types::Error) -> Self {
-    Self::HttpTypesError(from.into())
+  fn from(from: http::header::InvalidHeaderName) -> Self {
+    Self::HttpInvalidHeaderName(from)
+  }
+}
+
+#[cfg(feature = "http")]
+impl From<http::header::InvalidHeaderValue> for Error {
+  #[inline]
+  fn from(from: http::header::InvalidHeaderValue) -> Self {
+    Self::HttpInvalidHeaderValue(from)
+  }
+}
+
+#[cfg(feature = "http")]
+impl From<http::status::InvalidStatusCode> for Error {
+  #[inline]
+  fn from(from: http::status::InvalidStatusCode) -> Self {
+    Self::HttpInvalidStatusCode(from)
+  }
+}
+
+#[cfg(feature = "web-socket-handshake")]
+impl From<httparse::Error> for Error {
+  #[inline]
+  fn from(from: httparse::Error) -> Self {
+    Self::HttpParse(from)
   }
 }
 
@@ -113,10 +129,25 @@ impl From<core::str::Utf8Error> for Error {
   }
 }
 
+#[cfg(feature = "tokio-rustls")]
+impl From<tokio_rustls::rustls::Error> for Error {
+  #[inline]
+  fn from(from: tokio_rustls::rustls::Error) -> Self {
+    Self::TokioRustLsError(from.into())
+  }
+}
+
 impl From<TryFromIntError> for Error {
   #[inline]
   fn from(from: TryFromIntError) -> Self {
     Self::TryFromIntError(from)
+  }
+}
+
+impl From<crate::web_socket::WebSocketError> for Error {
+  #[inline]
+  fn from(from: crate::web_socket::WebSocketError) -> Self {
+    Self::WebSocketError(from)
   }
 }
 

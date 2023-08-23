@@ -1,8 +1,9 @@
-// Readers and writes expect a pre-filled buffer so `expand` here means filling
-// the inner buffer with zeros and `fill` means setting `payload_end` to the desired
-// length.
-
-use crate::web_socket::{DFLT_FRAME_BUFFER_VEC_LEN, MAX_CONTROL_FRAME_LEN, MAX_HEADER_LEN_U8};
+use crate::{
+  web_socket::{
+    WebSocketError, DFLT_FRAME_BUFFER_VEC_LEN, MAX_CONTROL_FRAME_LEN, MAX_HEADER_LEN_U8,
+  },
+  Wrapper,
+};
 use alloc::{vec, vec::Vec};
 use core::{
   array,
@@ -14,6 +15,7 @@ pub type FrameBufferMut<'bytes> = FrameBuffer<&'bytes mut [u8]>;
 /// Composed by a vector
 pub type FrameBufferVec = FrameBuffer<Vec<u8>>;
 pub(crate) type FrameBufferControlArray = FrameBuffer<[u8; MAX_CONTROL_FRAME_LEN]>;
+pub(crate) type FrameBufferVecMut<'bytes> = FrameBuffer<Wrapper<&'bytes mut Vec<u8>>>;
 
 /// Concentrates all data necessary to read or write to a stream.
 //
@@ -31,6 +33,20 @@ pub struct FrameBuffer<B> {
 }
 
 impl<B> FrameBuffer<B> {
+  pub(crate) fn _buffer(&self) -> &B {
+    &self.buffer
+  }
+
+  pub(crate) fn buffer_mut(&mut self) -> &mut B {
+    &mut self.buffer
+  }
+
+  pub(crate) fn clear(&mut self) {
+    self.header_begin_idx = 0;
+    self.header_end_idx = 0;
+    self.payload_end_idx = 0;
+  }
+
   fn header_end_idx_from_parts(header_begin_idx: u8, header_len: u8) -> u8 {
     header_begin_idx.saturating_add(header_len)
   }
@@ -71,7 +87,7 @@ where
   pub(crate) fn set_header_indcs(&mut self, begin_idx: u8, len: u8) -> crate::Result<()> {
     let header_end_idx = Self::header_end_idx_from_parts(begin_idx, len);
     if len > MAX_HEADER_LEN_U8 || usize::from(header_end_idx) > self.buffer.borrow().len() {
-      return Err(crate::Error::InvalidHeaderBounds);
+      return Err(WebSocketError::InvalidFrameHeaderBounds.into());
     }
     self.header_begin_idx = begin_idx;
     self.header_end_idx = header_end_idx;
@@ -82,7 +98,7 @@ where
   pub(crate) fn set_payload_len(&mut self, payload_len: usize) -> crate::Result<()> {
     let payload_end_idx = Self::payload_end_idx_from_parts(self.header_end_idx, payload_len);
     if payload_end_idx > self.buffer.borrow().len() {
-      return Err(crate::Error::InvalidPayloadBounds);
+      return Err(WebSocketError::InvalidPayloadBounds.into());
     }
     self.payload_end_idx = payload_end_idx;
     Ok(())
@@ -93,10 +109,6 @@ impl<B> FrameBuffer<B>
 where
   B: BorrowMut<[u8]>,
 {
-  pub(crate) fn buffer_mut(&mut self) -> &mut [u8] {
-    self.buffer.borrow_mut()
-  }
-
   pub(crate) fn header_mut(&mut self) -> &mut [u8] {
     self
       .buffer
@@ -173,11 +185,26 @@ where
 {
   #[inline]
   fn from(from: &'fb mut FrameBuffer<B>) -> Self {
-    FrameBufferMut {
+    Self {
       header_begin_idx: from.header_begin_idx,
       header_end_idx: from.header_end_idx,
       payload_end_idx: from.payload_end_idx,
       buffer: from.buffer.borrow_mut(),
+    }
+  }
+}
+
+impl<'bytes, 'fb> From<&'fb mut FrameBufferVec> for FrameBufferVecMut<'bytes>
+where
+  'fb: 'bytes,
+{
+  #[inline]
+  fn from(from: &'fb mut FrameBufferVec) -> Self {
+    Self {
+      header_begin_idx: from.header_begin_idx,
+      header_end_idx: from.header_end_idx,
+      payload_end_idx: from.payload_end_idx,
+      buffer: Wrapper(&mut from.buffer),
     }
   }
 }

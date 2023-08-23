@@ -1,10 +1,10 @@
 use crate::{
-  misc::from_utf8_opt,
+  misc::{from_utf8_opt, Expand},
   web_socket::{
     copy_header_params_to_buffer,
-    frame_buffer::{FrameBufferControlArray, FrameBufferMut},
-    op_code, FrameBuffer, OpCode, MAX_CONTROL_FRAME_PAYLOAD_LEN, MAX_HEADER_LEN_USIZE,
-    MIN_HEADER_LEN_USIZE,
+    frame_buffer::{FrameBufferControlArray, FrameBufferMut, FrameBufferVecMut},
+    op_code, FrameBuffer, OpCode, WebSocketError, MAX_CONTROL_FRAME_PAYLOAD_LEN,
+    MAX_HEADER_LEN_USIZE, MIN_HEADER_LEN_USIZE,
   },
 };
 use core::{
@@ -16,6 +16,8 @@ use core::{
 pub type FrameControlArray<const IS_CLIENT: bool> = Frame<FrameBufferControlArray, IS_CLIENT>;
 /// A [Frame] composed by a mutable sequence of opaque bytes.
 pub type FrameMut<'bytes, const IS_CLIENT: bool> = Frame<FrameBufferMut<'bytes>, IS_CLIENT>;
+/// A [Frame] composed by a mutable vector reference.
+pub type FrameVecMut<'bytes, const IS_CLIENT: bool> = Frame<FrameBufferVecMut<'bytes>, IS_CLIENT>;
 
 /// Represents a WebSocket frame
 #[derive(Debug)]
@@ -50,7 +52,7 @@ where
   /// Checks if the frame payload is valid UTF-8, regardless of its type.
   #[inline]
   pub fn is_utf8(&self) -> bool {
-    from_utf8_opt(self.fb.payload()).is_some()
+    self.op_code.is_text() || from_utf8_opt(self.fb.payload()).is_some()
   }
 
   /// See [OpCode].
@@ -62,19 +64,19 @@ where
   /// If the frame is of type [OpCode::Text], returns its payload interpreted as a string.
   #[inline]
   pub fn text_payload(&self) -> Option<&str> {
-    if let OpCode::Text = self.op_code {
+    self.op_code.is_text().then(|| {
       #[allow(unsafe_code)]
       // SAFETY: All text frames have valid UTF-8 contents when read.
-      Some(unsafe { str::from_utf8_unchecked(self.fb.payload()) })
-    } else {
-      None
-    }
+      unsafe {
+        str::from_utf8_unchecked(self.fb.payload())
+      }
+    })
   }
 }
 
 impl<FB, const IS_CLIENT: bool> Frame<FrameBuffer<FB>, IS_CLIENT>
 where
-  FB: BorrowMut<[u8]>,
+  FB: BorrowMut<[u8]> + Expand,
 {
   /// Creates a new instance based on the contained bytes of `fb`.
   #[inline]
@@ -82,7 +84,7 @@ where
     let len = fb.header().len();
     let has_valid_header = (MIN_HEADER_LEN_USIZE..=MAX_HEADER_LEN_USIZE).contains(&len);
     let (true, Some(first_header_byte)) = (has_valid_header, fb.header().first().copied()) else {
-      return Err(crate::Error::InvalidHeaderBounds);
+      return Err(WebSocketError::InvalidFrameHeaderBounds.into());
     };
     Ok(Self { fb, fin: first_header_byte & 0b1000_0000 != 0, op_code: op_code(first_header_byte)? })
   }
@@ -107,7 +109,6 @@ where
     let reason_len = reason.len().min(MAX_CONTROL_FRAME_PAYLOAD_LEN - 2);
     let payload_len = reason_len.wrapping_add(2);
     Self::build_frame(fb, true, OpCode::Close, payload_len, |local_fb| {
-      local_fb.set_payload_len(payload_len)?;
       let payload = local_fb.payload_mut();
       payload.get_mut(..2).unwrap_or_default().copy_from_slice(&code.to_be_bytes());
       payload
@@ -125,8 +126,16 @@ where
     payload_len: usize,
     cb: impl FnOnce(&mut FrameBuffer<FB>) -> crate::Result<()>,
   ) -> crate::Result<Self> {
-    let n = copy_header_params_to_buffer::<IS_CLIENT>(fb.buffer_mut(), fin, op_code, payload_len)?;
+    fb.clear();
+    fb.buffer_mut().expand(MAX_HEADER_LEN_USIZE.saturating_add(payload_len));
+    let n = copy_header_params_to_buffer::<IS_CLIENT>(
+      fb.buffer_mut().borrow_mut(),
+      fin,
+      op_code,
+      payload_len,
+    )?;
     fb.set_header_indcs(0, n)?;
+    fb.set_payload_len(payload_len)?;
     cb(&mut fb)?;
     Ok(Self { fin, op_code, fb })
   }
@@ -138,7 +147,6 @@ where
       payload.len()
     };
     Self::build_frame(fb, fin, op_code, payload_len, |local_fb| {
-      local_fb.set_payload_len(payload_len)?;
       local_fb.payload_mut().copy_from_slice(payload.get(..payload_len).unwrap_or_default());
       Ok(())
     })

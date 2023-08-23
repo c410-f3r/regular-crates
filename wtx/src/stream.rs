@@ -1,5 +1,7 @@
 #[cfg(feature = "async-trait")]
 use alloc::boxed::Box;
+use alloc::vec::Vec;
+use core::cmp::Ordering;
 
 /// A stream of values produced asynchronously.
 #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
@@ -28,14 +30,58 @@ where
   }
 }
 
+/// Stores written data to transfer when read.
+#[derive(Debug, Default)]
+pub struct BytesStream {
+  buffer: Vec<u8>,
+  idx: usize,
+}
+
+impl BytesStream {
+  /// Empties the internal buffer.
+  #[inline]
+  pub fn clear(&mut self) {
+    self.buffer.clear();
+    self.idx = 0;
+  }
+}
+
+#[cfg_attr(feature = "async-trait", async_trait::async_trait)]
+impl Stream for BytesStream {
+  #[inline]
+  async fn read(&mut self, bytes: &mut [u8]) -> crate::Result<usize> {
+    let working_buffer = self.buffer.get(self.idx..).unwrap_or_default();
+    let working_buffer_len = working_buffer.len();
+    Ok(match working_buffer_len.cmp(&bytes.len()) {
+      Ordering::Less => {
+        bytes.get_mut(..working_buffer_len).unwrap_or_default().copy_from_slice(working_buffer);
+        self.clear();
+        working_buffer_len
+      }
+      Ordering::Equal => {
+        bytes.copy_from_slice(working_buffer);
+        self.clear();
+        working_buffer_len
+      }
+      Ordering::Greater => {
+        bytes.copy_from_slice(working_buffer.get(..bytes.len()).unwrap_or_default());
+        self.idx = self.idx.wrapping_add(bytes.len());
+        bytes.len()
+      }
+    })
+  }
+
+  #[inline]
+  async fn write_all(&mut self, bytes: &[u8]) -> crate::Result<()> {
+    self.buffer.extend_from_slice(bytes);
+    Ok(())
+  }
+}
+
 /// Does nothing.
 #[derive(Debug)]
 pub struct DummyStream;
 
-#[allow(
-  // False positive
-  clippy::unused_async
-)]
 #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
 impl Stream for DummyStream {
   #[inline]
@@ -49,16 +95,18 @@ impl Stream for DummyStream {
   }
 }
 
-#[cfg(feature = "http-client")]
-mod http_client {
+#[cfg(feature = "async-std")]
+mod async_std {
   use crate::Stream;
   #[cfg(feature = "async-trait")]
   use alloc::boxed::Box;
-  use async_std::io::{ReadExt, WriteExt};
-  use http_types::upgrade::Connection;
+  use async_std::{
+    io::{ReadExt, WriteExt},
+    net::TcpStream,
+  };
 
   #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
-  impl Stream for Connection {
+  impl Stream for TcpStream {
     #[inline]
     async fn read(&mut self, bytes: &mut [u8]) -> crate::Result<usize> {
       Ok(<Self as ReadExt>::read(self, bytes).await?)
@@ -82,6 +130,98 @@ mod hyper {
 
   #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
   impl Stream for Upgraded {
+    #[inline]
+    async fn read(&mut self, bytes: &mut [u8]) -> crate::Result<usize> {
+      Ok(<Self as AsyncReadExt>::read(self, bytes).await?)
+    }
+
+    #[inline]
+    async fn write_all(&mut self, bytes: &[u8]) -> crate::Result<()> {
+      <Self as AsyncWriteExt>::write_all(self, bytes).await?;
+      Ok(())
+    }
+  }
+}
+
+#[cfg(feature = "std")]
+mod std {
+  use crate::Stream;
+  #[cfg(feature = "async-trait")]
+  use alloc::boxed::Box;
+  use std::{
+    io::{Read, Write},
+    net::TcpStream,
+  };
+
+  #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
+  impl Stream for TcpStream {
+    #[inline]
+    async fn read(&mut self, bytes: &mut [u8]) -> crate::Result<usize> {
+      Ok(<Self as Read>::read(self, bytes)?)
+    }
+
+    #[inline]
+    async fn write_all(&mut self, bytes: &[u8]) -> crate::Result<()> {
+      <Self as Write>::write_all(self, bytes)?;
+      Ok(())
+    }
+  }
+}
+
+#[cfg(feature = "tokio")]
+mod tokio {
+  use crate::Stream;
+  #[cfg(feature = "async-trait")]
+  use alloc::boxed::Box;
+  use tokio::{
+    io::{AsyncReadExt, AsyncWriteExt},
+    net::TcpStream,
+  };
+
+  #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
+  impl Stream for TcpStream {
+    #[inline]
+    async fn read(&mut self, bytes: &mut [u8]) -> crate::Result<usize> {
+      Ok(<Self as AsyncReadExt>::read(self, bytes).await?)
+    }
+
+    #[inline]
+    async fn write_all(&mut self, bytes: &[u8]) -> crate::Result<()> {
+      <Self as AsyncWriteExt>::write_all(self, bytes).await?;
+      Ok(())
+    }
+  }
+}
+
+#[cfg(feature = "tokio-rustls")]
+mod tokio_rustls {
+  use crate::Stream;
+  #[cfg(feature = "async-trait")]
+  use alloc::boxed::Box;
+  use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
+
+  #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
+  impl<T> Stream for tokio_rustls::client::TlsStream<T>
+  where
+    T: AsyncRead + AsyncWrite + Send + Unpin,
+  {
+    #[inline]
+    async fn read(&mut self, bytes: &mut [u8]) -> crate::Result<usize> {
+      Ok(<Self as AsyncReadExt>::read(self, bytes).await?)
+    }
+
+    #[inline]
+    async fn write_all(&mut self, bytes: &[u8]) -> crate::Result<()> {
+      <Self as AsyncWriteExt>::write_all(self, bytes).await?;
+      Ok(())
+    }
+  }
+
+  #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
+  impl<T> Stream for tokio_rustls::server::TlsStream<T>
+  where
+    T: AsyncRead + AsyncWrite + Send + Unpin,
+  {
     #[inline]
     async fn read(&mut self, bytes: &mut [u8]) -> crate::Result<usize> {
       Ok(<Self as AsyncReadExt>::read(self, bytes).await?)

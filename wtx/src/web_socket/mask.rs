@@ -1,15 +1,11 @@
 /// Unmasks a sequence of bytes using the given 4-byte `mask`.
 #[inline]
 pub fn unmask(bytes: &mut [u8], mask: [u8; 4]) {
-  unmask_aligned_slice(bytes, mask);
-}
-
-fn unmask_aligned_slice(bytes: &mut [u8], mask: [u8; 4]) {
   let mut mask_u32 = u32::from_ne_bytes(mask);
   #[allow(unsafe_code)]
   // SAFETY: Changing a sequence of `u8` to `u32` should be fine
   let (prefix, words, suffix) = unsafe { bytes.align_to_mut::<u32>() };
-  unmask_chunks_of_slice(prefix, mask);
+  unmask_u8_slice(prefix, mask);
   let mut shift = u32::try_from(prefix.len() & 3).unwrap_or_default();
   if shift > 0 {
     shift = shift.wrapping_mul(8);
@@ -19,37 +15,45 @@ fn unmask_aligned_slice(bytes: &mut [u8], mask: [u8; 4]) {
       mask_u32 = mask_u32.rotate_right(shift);
     }
   }
-  for word in words.iter_mut() {
-    *word ^= mask_u32;
-  }
-  unmask_chunks_of_slice(suffix, mask_u32.to_ne_bytes());
+  unmask_u32_slice(words, mask_u32);
+  unmask_u8_slice(suffix, mask_u32.to_ne_bytes());
 }
 
-fn unmask_chunks_of_slice(bytes: &mut [u8], mask: [u8; 4]) {
-  let mut bytes_skip: usize = 0;
-  #[cfg(feature = "async-trait")]
-  {
-    let mut iter = bytes.chunks_exact_mut(4);
-    while let Some([a, b, c, d]) = iter.next() {
-      *a ^= mask[0];
-      *b ^= mask[1];
-      *c ^= mask[2];
-      *d ^= mask[3];
-      bytes_skip = bytes_skip.wrapping_add(1);
-    }
+#[allow(
+  // Index will always by in-bounds.
+  clippy::indexing_slicing
+)]
+fn unmask_u8_slice(bytes: &mut [u8], mask: [u8; 4]) {
+  for (idx, elem) in bytes.iter_mut().enumerate() {
+    *elem ^= mask[idx & 3];
   }
-  #[cfg(not(feature = "async-trait"))]
-  for [a, b, c, d] in bytes.array_chunks_mut::<4>() {
-    *a ^= mask[0];
-    *b ^= mask[1];
-    *c ^= mask[2];
-    *d ^= mask[3];
-    bytes_skip = bytes_skip.wrapping_add(1);
+}
+
+fn unmask_u32_slice(bytes: &mut [u32], mask: u32) {
+  macro_rules! loop_chunks {
+    ($bytes:expr, $mask:expr, $($elem:ident),* $(,)?) => {{
+      let mut iter;
+      #[cfg(feature = "async-trait")]
+      {
+        iter = $bytes.chunks_exact_mut(0 $( + { let $elem = 1; $elem })*);
+        while let Some([$($elem,)*]) = iter.next() {
+          $( *$elem ^= $mask; )*
+        }
+      }
+      #[cfg(not(feature = "async-trait"))]
+      {
+        iter = $bytes.array_chunks_mut::<{ 0 $( + { let $elem = 1; $elem })* }>();
+        for [$($elem,)*] in iter.by_ref() {
+          $( *$elem ^= $mask; )*
+        }
+      }
+      iter
+    }};
   }
-  bytes_skip = bytes_skip.wrapping_mul(4);
-  bytes.get_mut(bytes_skip..).into_iter().flatten().zip(mask).for_each(|(byte, mask_el)| {
-    *byte ^= mask_el;
-  });
+  loop_chunks!(bytes, mask, _1, _2, _3, _4)
+    .into_remainder()
+    .iter_mut()
+    .for_each(|elem| *elem ^= mask);
 }
 
 #[cfg(test)]

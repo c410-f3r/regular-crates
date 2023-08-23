@@ -1,6 +1,10 @@
 use crate::{CfgOption, Params, TransformingParams};
 use std::io::{BufRead, BufReader, Read};
 
+#[allow(
+  // False positive
+  clippy::redundant_closure_call
+)]
 pub(crate) fn parse_cfg<R>(read: R) -> crate::Result<(Params, TransformingParams)>
 where
   R: Read,
@@ -91,14 +95,14 @@ mod tests {
   #[test]
   fn parsed_configuration_has_correct_params() {
     let cfg = br#"
-            add_clippy_flags A
-            rm_clippy_flags B, C
-            add_rust_flags D
-            rm_rust_flags E
-            add_rustfmt_flags F
-            template you-rust
-            toolchain nightly-2020-11-11
-        "#;
+        add_clippy_flags A
+        rm_clippy_flags B, C
+        add_rust_flags D
+        rm_rust_flags E
+        add_rustfmt_flags F
+        template you-rust
+        toolchain nightly-2023-08-01
+    "#;
     let (params, tp) = parse_cfg(&cfg[..]).unwrap();
     assert_eq!(params, YouRust::default().0);
     assert_eq!(tp.add_clippy_flags, vec!["A"]);
@@ -107,6 +111,6 @@ mod tests {
     assert_eq!(tp.rm_rust_flags, vec!["E"]);
     assert_eq!(tp.add_rustfmt_flags, vec!["F"]);
     assert_eq!(tp.rm_rustfmt_flags, Vec::<String>::new());
-    assert_eq!(tp.toolchain, "nightly-2020-11-11");
+    assert_eq!(tp.toolchain, "nightly-2023-08-01");
   }
 }

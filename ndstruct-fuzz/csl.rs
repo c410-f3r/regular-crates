@@ -21,7 +21,9 @@ struct Values {
 }
 
 fuzz_target!(|values: Values| {
-  let Ok(csl) = CslVec::new(values.dims, values.data, values.indcs, values.offs) else { return; };
+  let Ok(csl) = CslVec::new(values.dims, values.data, values.indcs, values.offs) else {
+    return;
+  };
 
   let _ = csl.line(values.line);
 

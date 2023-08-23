@@ -9,7 +9,7 @@ impl Actions {
       stdout.write_all(first.as_bytes())?;
     }
     for element in iter {
-      stdout.write_all(br#" "#)?;
+      stdout.write_all(b" ")?;
       stdout.write_all(element.as_bytes())?;
     }
     stdout.flush()?;

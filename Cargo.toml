@@ -1,3 +1,7 @@
+[profile.profiling]
+inherits = "release"
+debug = true
+
 [profile.release]
 codegen-units = 1
 debug = false
@@ -11,5 +15,5 @@ rpath = false
 strip = "debuginfo"
 
 [workspace]
-members = ["cl-aux", "ndstruct", "ndstruct-fuzz", "rust-tools", "wtx", "wtx-fuzz"]
+members = ["cl-aux", "ndstruct", "ndstruct-fuzz", "rust-tools", "ws-bench", "wtx", "wtx-fuzz"]
 resolver = "2"
