@@ -41,7 +41,7 @@ hyper = { default-features = false, features = ["client", "http1", "server", "tc
 rustls-pemfile = { default-features = false, version = "1.0" }
 tokio = { default-features = false, features = ["macros"], version = "1.0" }
 tokio-rustls = { default-features = false, features = ["tls12"], version = "0.24" }
-webpki-roots = { default-features = false, version = "0.23" }
+webpki-roots = { default-features = false, version = "0.25" }
 wtx = { default-features = false, features = ["std"], path = "." }
 
 [features]
