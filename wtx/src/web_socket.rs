@@ -15,6 +15,7 @@ use crate::{
   web_socket::close_code::CloseCode,
   ReadBuffer, Stream,
 };
+use alloc::vec::Vec;
 use core::borrow::BorrowMut;
 pub use frame::{Frame, FrameControlArray, FrameMut, FrameVecMut};
 pub use frame_buffer::{
@@ -105,10 +106,13 @@ where
 
   /// Reads a frame from the stream unmasking and validating its payload.
   #[inline]
-  pub async fn read_frame<'fb>(
+  pub async fn read_frame<'fb, B>(
     &mut self,
-    fb: &'fb mut FrameBufferVec,
-  ) -> crate::Result<FrameMut<'fb, IS_CLIENT>> {
+    fb: &'fb mut FrameBuffer<B>,
+  ) -> crate::Result<FrameMut<'fb, IS_CLIENT>>
+  where
+    B: BorrowMut<[u8]> + BorrowMut<Vec<u8>>,
+  {
     let rbfi = self.do_read_frame::<true>().await?;
     Self::copy_from_rb_to_fb(CopyType::Normal, fb, self.rb.borrow(), &rbfi);
     self.rb.borrow_mut().clear_if_following_is_empty();
@@ -117,10 +121,13 @@ where
 
   /// Collects frames and returns the completed message once all fragments have been received.
   #[inline]
-  pub async fn read_msg<'fb>(
+  pub async fn read_msg<'fb, B>(
     &mut self,
-    fb: &'fb mut FrameBufferVec,
-  ) -> crate::Result<FrameMut<'fb, IS_CLIENT>> {
+    fb: &'fb mut FrameBuffer<B>,
+  ) -> crate::Result<FrameMut<'fb, IS_CLIENT>>
+  where
+    B: BorrowMut<[u8]> + BorrowMut<Vec<u8>>,
+  {
     let mut iuc_opt = None;
     let mut is_binary = true;
     let rbfi = self.do_read_frame::<false>().await?;
@@ -156,7 +163,7 @@ where
     if should_stop_at_the_first_frame {
       Self::copy_from_rb_to_fb(CopyType::Normal, fb, self.rb.borrow(), &rbfi);
       self.rb.borrow_mut().clear_if_following_is_empty();
-      return FrameMut::from_fb(fb.into());
+      return FrameMut::from_fb(fb.borrow_mut().into());
     }
     let mut total_frame_len = msg_header_placeholder::<IS_CLIENT>().into();
     Self::copy_from_rb_to_fb(CopyType::Msg(&mut total_frame_len), fb, self.rb.borrow(), &rbfi);
@@ -208,12 +215,14 @@ where
     Self::do_write_frame(frame, &mut self.is_stream_closed, &mut self.rng, &mut self.stream).await
   }
 
-  fn copy_from_rb_to_fb(
+  fn copy_from_rb_to_fb<B>(
     ct: CopyType<'_>,
-    fb: &mut FrameBufferVec,
+    fb: &mut FrameBuffer<B>,
     rb: &ReadBuffer,
     rbfi: &ReadBufferFrameInfo,
-  ) {
+  ) where
+    B: BorrowMut<Vec<u8>>,
+  {
     let current_frame = rb.current();
     let range = match ct {
       CopyType::Msg(total_frame_len) => {
@@ -231,9 +240,13 @@ where
           header_len_total,
           rbfi.payload_len.wrapping_add(header_len_total_usize),
         );
-        fb.buffer_mut().get_mut(..rbfi.header_len.into()).unwrap_or_default().copy_from_slice(
-          current_frame.get(rbfi.header_begin_idx..rbfi.header_end_idx).unwrap_or_default(),
-        );
+        fb.buffer_mut()
+          .borrow_mut()
+          .get_mut(..rbfi.header_len.into())
+          .unwrap_or_default()
+          .copy_from_slice(
+            current_frame.get(rbfi.header_begin_idx..rbfi.header_end_idx).unwrap_or_default(),
+          );
         let start = header_len_total_usize;
         let end = current_frame
           .len()
@@ -243,6 +256,7 @@ where
       }
     };
     fb.buffer_mut()
+      .borrow_mut()
       .get_mut(range)
       .unwrap_or_default()
       .copy_from_slice(current_frame.get(rbfi.header_end_idx..).unwrap_or_default());
@@ -472,14 +486,15 @@ where
     Ok(rbfi)
   }
 
-  async fn manage_read_msg_loop(
+  async fn manage_read_msg_loop<B>(
     &mut self,
-    fb: &mut FrameBufferVec,
+    fb: &mut FrameBuffer<B>,
     first_frame_op_code: OpCode,
     total_frame_len: &mut usize,
     mut cb: impl FnMut(&[u8]) -> crate::Result<()>,
   ) -> crate::Result<()>
   where
+    B: BorrowMut<[u8]> + BorrowMut<Vec<u8>>,
     S: Stream,
   {
     loop {
