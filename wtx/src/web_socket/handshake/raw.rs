@@ -180,7 +180,7 @@ fn build_upgrade_req<'fb, 'kb>(
   let uri_parts = UriParts::from(uri);
   let key = gen_key(key_buffer);
 
-  let idx = fb._buffer().len();
+  let idx = fb.buffer().len();
   fb.buffer_mut().extend(b"GET ");
   fb.buffer_mut().extend(uri_parts.href.as_bytes());
   fb.buffer_mut().extend(b" HTTP/1.1\r\n");
@@ -197,11 +197,11 @@ fn build_upgrade_req<'fb, 'kb>(
 
   fb.buffer_mut().extend(b"\r\n");
 
-  (key, fb._buffer().get(idx..).unwrap_or_default())
+  (key, fb.buffer().get(idx..).unwrap_or_default())
 }
 
 fn build_101_res<'fb>(fb: &'fb mut FrameBufferVec, headers: &[Header<'_>]) -> &'fb [u8] {
-  let idx = fb._buffer().len();
+  let idx = fb.buffer().len();
   fb.buffer_mut().extend(b"HTTP/1.1 101 Switching Protocols\r\n");
   for header in headers {
     fb.buffer_mut().extend(header.name.as_bytes());
@@ -210,7 +210,7 @@ fn build_101_res<'fb>(fb: &'fb mut FrameBufferVec, headers: &[Header<'_>]) -> &'
     fb.buffer_mut().extend(b"\r\n");
   }
   fb.buffer_mut().extend(b"\r\n");
-  fb._buffer().get(idx..).unwrap_or_default()
+  fb.buffer().get(idx..).unwrap_or_default()
 }
 
 fn has_header_key_and_value(buffer: &[Header<'_>], key: &str, value: &[u8]) -> bool {

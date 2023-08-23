@@ -34,8 +34,29 @@ pub struct FrameBuffer<B> {
 }
 
 impl<B> FrameBuffer<B> {
-  pub(crate) fn _buffer(&self) -> &B {
+  /// The underlying byte collection.
+  #[inline]
+  pub fn buffer(&self) -> &B {
     &self.buffer
+  }
+
+  /// The indices that represent all frame parts contained in the underlying byte collection.
+  ///
+  /// ```rust
+  /// let fb = wtx::web_socket::FrameBufferVec::default();
+  /// let (header_begin_idx, header_end_idx, payload_end_idx) = fb.indcs();
+  /// assert_eq!(
+  ///   fb.buffer().get(header_begin_idx.into()..header_end_idx.into()).unwrap_or_default(),
+  ///   fb.header()
+  /// );
+  /// assert_eq!(
+  ///   fb.buffer().get(header_end_idx.into()..payload_end_idx).unwrap_or_default(),
+  ///   fb.payload()
+  /// );
+  /// ```
+  #[inline]
+  pub fn indcs(&self) -> (u8, u8, usize) {
+    (self.header_begin_idx, self.header_end_idx, self.payload_end_idx)
   }
 
   pub(crate) fn buffer_mut(&mut self) -> &mut B {
@@ -67,6 +88,16 @@ where
     Self { header_begin_idx: 0, header_end_idx: 0, payload_end_idx: 0, buffer }
   }
 
+  /// Sequence of bytes that composes the frame header.
+  #[inline]
+  pub fn header(&self) -> &[u8] {
+    self
+      .buffer
+      .as_ref()
+      .get(self.header_begin_idx.into()..self.header_end_idx.into())
+      .unwrap_or_default()
+  }
+
   /// Sequence of bytes that composes the frame payload.
   #[inline]
   pub fn payload(&self) -> &[u8] {
@@ -75,14 +106,6 @@ where
 
   pub(crate) fn frame(&self) -> &[u8] {
     self.buffer.as_ref().get(self.header_begin_idx.into()..self.payload_end_idx).unwrap_or_default()
-  }
-
-  pub(crate) fn header(&self) -> &[u8] {
-    self
-      .buffer
-      .as_ref()
-      .get(self.header_begin_idx.into()..self.header_end_idx.into())
-      .unwrap_or_default()
   }
 
   pub(crate) fn set_header_indcs(&mut self, begin_idx: u8, len: u8) -> crate::Result<()> {
