@@ -10,12 +10,14 @@ use core::{
   borrow::{Borrow, BorrowMut},
 };
 
-/// Composed by a sequence of mutable bytes
+/// Composed by an array with the maximum allowed size of a frame control.
+pub type FrameBufferControlArray = FrameBuffer<[u8; MAX_CONTROL_FRAME_LEN]>;
+/// Composed by a sequence of mutable bytes.
 pub type FrameBufferMut<'bytes> = FrameBuffer<&'bytes mut [u8]>;
-/// Composed by a vector
+/// Composed by a vector.
 pub type FrameBufferVec = FrameBuffer<Vec<u8>>;
-pub(crate) type FrameBufferControlArray = FrameBuffer<[u8; MAX_CONTROL_FRAME_LEN]>;
-pub(crate) type FrameBufferVecMut<'bytes> = FrameBuffer<Wrapper<&'bytes mut Vec<u8>>>;
+/// Composed by a mutable vector reference.
+pub type FrameBufferVecMut<'bytes> = FrameBuffer<Wrapper<&'bytes mut Vec<u8>>>;
 
 /// Concentrates all data necessary to read or write to a stream.
 //
@@ -60,7 +62,7 @@ impl<B> FrameBuffer<B>
 where
   B: Borrow<[u8]>,
 {
-  /// Creates a new instance that has at least 14 bytes.
+  /// Creates a new instance from the given `buffer`.
   #[inline]
   pub fn new(buffer: B) -> Self {
     Self { header_begin_idx: 0, header_end_idx: 0, payload_end_idx: 0, buffer }
@@ -206,5 +208,12 @@ where
       payload_end_idx: from.payload_end_idx,
       buffer: Wrapper(&mut from.buffer),
     }
+  }
+}
+
+impl<'bytes> From<&'bytes mut Vec<u8>> for FrameBufferVecMut<'bytes> {
+  #[inline]
+  fn from(from: &'bytes mut Vec<u8>) -> Self {
+    Self::new(Wrapper(from))
   }
 }

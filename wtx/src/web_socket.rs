@@ -17,7 +17,9 @@ use crate::{
 };
 use core::borrow::BorrowMut;
 pub use frame::{Frame, FrameControlArray, FrameMut, FrameVecMut};
-pub use frame_buffer::{FrameBuffer, FrameBufferMut, FrameBufferVec};
+pub use frame_buffer::{
+  FrameBuffer, FrameBufferControlArray, FrameBufferMut, FrameBufferVec, FrameBufferVecMut,
+};
 pub use mask::unmask;
 pub use op_code::OpCode;
 pub use web_socket_error::WebSocketError;
