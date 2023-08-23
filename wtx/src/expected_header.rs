@@ -4,7 +4,7 @@
 pub enum ExpectedHeader {
   /// `connection` key with `upgrade` value.
   Connection_Upgrade,
-  /// `sec-websocket-key`.
+  /// `sec-websocket-key` key.
   SecWebSocketKey,
   /// `sec-websocket-version` key with `13` value.
   SecWebSocketVersion_13,

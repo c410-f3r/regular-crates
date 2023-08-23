@@ -2,7 +2,7 @@
 
 use std::hint::black_box;
 use wtx::{
-  web_socket::{FrameBufferVec, FrameVecMut, OpCode, WebSocket, WebSocketClient, WebSocketServer},
+  web_socket::{FrameBufferVec, FrameMutVec, OpCode, WebSocket, WebSocketClient, WebSocketServer},
   BytesStream, ReadBuffer,
 };
 
@@ -41,7 +41,7 @@ async fn read<const IS_CLIENT: bool>(
   fb: &mut FrameBufferVec,
   mut ws: WebSocket<ReadBuffer, &mut BytesStream, IS_CLIENT>,
 ) -> wtx::Result<()> {
-  let _frame = ws.read_msg(fb.into()).await?;
+  let _frame = ws.read_msg(fb).await?;
   Ok(())
 }
 
@@ -50,8 +50,8 @@ async fn write<const IS_CLIENT: bool>(
   fb: &mut FrameBufferVec,
   mut ws: WebSocket<ReadBuffer, &mut BytesStream, IS_CLIENT>,
 ) -> wtx::Result<()> {
-  ws.write_frame(FrameVecMut::new_unfin(fb.into(), OpCode::Text, data)?).await?;
-  ws.write_frame(FrameVecMut::new_unfin(fb.into(), OpCode::Continuation, data)?).await?;
-  ws.write_frame(FrameVecMut::new_fin(fb.into(), OpCode::Continuation, data)?).await?;
+  ws.write_frame(&mut FrameMutVec::new_unfin(fb, OpCode::Text, data)?).await?;
+  ws.write_frame(&mut FrameMutVec::new_unfin(fb, OpCode::Continuation, data)?).await?;
+  ws.write_frame(&mut FrameMutVec::new_fin(fb, OpCode::Continuation, data)?).await?;
   Ok(())
 }

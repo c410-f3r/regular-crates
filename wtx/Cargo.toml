@@ -64,4 +64,7 @@ edition = "2021"
 license = "Apache-2.0"
 name = "wtx"
 repository = "https://github.com/c410-f3r/regular-crates"
-version = "0.3.3"
+version = "0.5.0"
+
+[package.metadata.docs.rs]
+all-features = true

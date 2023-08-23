@@ -4,34 +4,34 @@ mod common;
 
 use tokio::net::TcpStream;
 use wtx::{
-  web_socket::{FrameBufferVec, FrameVecMut, OpCode},
+  web_socket::{FrameBufferVec, FrameMutVec, OpCode},
   ReadBuffer,
 };
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
+  let fb = &mut <_>::default();
   let host = &common::_host_from_args();
-  let mut fb = &mut <_>::default();
-  let mut rb = <_>::default();
-  for case in 1..=get_case_count(&mut fb, &host, &mut rb).await? {
+  let rb = &mut <_>::default();
+  for case in 1..=get_case_count(fb, &host, rb).await? {
     let mut ws = common::_connect(
       fb,
       &format!("http://{host}/runCase?case={case}&agent=wtx"),
-      &mut rb,
+      &mut *rb,
       TcpStream::connect(host).await.map_err(wtx::Error::from)?,
     )
     .await?;
     loop {
-      let frame = match ws.read_msg(&mut fb).await {
+      let mut frame = match ws.read_msg(fb).await {
         Err(err) => {
           println!("Error: {err}");
-          ws.write_frame(FrameVecMut::new_fin(fb.into(), OpCode::Close, &[])?).await?;
+          ws.write_frame(&mut FrameMutVec::new_fin(fb, OpCode::Close, &[])?).await?;
           break;
         }
         Ok(elem) => elem,
       };
       match frame.op_code() {
-        OpCode::Binary | OpCode::Text => ws.write_frame(frame).await?,
+        OpCode::Binary | OpCode::Text => ws.write_frame(&mut frame).await?,
         OpCode::Close => break,
         _ => {}
       }
@@ -40,11 +40,11 @@ async fn main() -> Result<(), Error> {
   common::_connect(
     fb,
     &format!("http://{host}/updateReports?agent=wtx"),
-    &mut rb,
+    rb,
     TcpStream::connect(host).await.map_err(wtx::Error::from)?,
   )
   .await?
-  .write_frame(FrameVecMut::close_from_params(1000, fb.into(), &[])?)
+  .write_frame(&mut FrameMutVec::close_from_params(1000, fb, &[])?)
   .await?;
   Ok(())
 }
@@ -83,6 +83,6 @@ async fn get_case_count(
   )
   .await?;
   let rslt = ws.read_msg(fb).await?.text_payload().unwrap_or_default().parse()?;
-  ws.write_frame(FrameVecMut::close_from_params(1000, fb.into(), &[])?).await?;
+  ws.write_frame(&mut FrameMutVec::close_from_params(1000, fb, &[])?).await?;
   Ok(rslt)
 }
