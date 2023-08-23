@@ -66,33 +66,39 @@ async fn bench(addr: &str, agent: &mut Agent, uri: &str) {
           match NUM_FRAMES {
             0 => {}
             1 => {
-              ws.write_frame(FrameVecMut::new_fin(fb.into(), OpCode::Text, FRAME_DATA).unwrap())
-                .await
-                .unwrap();
+              ws.write_frame(
+                &mut FrameVecMut::new_fin(fb.into(), OpCode::Text, FRAME_DATA).unwrap(),
+              )
+              .await
+              .unwrap();
             }
             2 => {
-              ws.write_frame(FrameVecMut::new_unfin(fb.into(), OpCode::Text, FRAME_DATA).unwrap())
-                .await
-                .unwrap();
               ws.write_frame(
-                FrameVecMut::new_fin(fb.into(), OpCode::Continuation, FRAME_DATA).unwrap(),
+                &mut FrameVecMut::new_unfin(fb.into(), OpCode::Text, FRAME_DATA).unwrap(),
+              )
+              .await
+              .unwrap();
+              ws.write_frame(
+                &mut FrameVecMut::new_fin(fb.into(), OpCode::Continuation, FRAME_DATA).unwrap(),
               )
               .await
               .unwrap();
             }
             _ => {
-              ws.write_frame(FrameVecMut::new_unfin(fb.into(), OpCode::Text, FRAME_DATA).unwrap())
-                .await
-                .unwrap();
+              ws.write_frame(
+                &mut FrameVecMut::new_unfin(fb.into(), OpCode::Text, FRAME_DATA).unwrap(),
+              )
+              .await
+              .unwrap();
               for _ in (0..NUM_FRAMES).skip(2) {
                 ws.write_frame(
-                  FrameVecMut::new_unfin(fb.into(), OpCode::Continuation, FRAME_DATA).unwrap(),
+                  &mut FrameVecMut::new_unfin(fb.into(), OpCode::Continuation, FRAME_DATA).unwrap(),
                 )
                 .await
                 .unwrap();
               }
               ws.write_frame(
-                FrameVecMut::new_fin(fb.into(), OpCode::Continuation, FRAME_DATA).unwrap(),
+                &mut FrameVecMut::new_fin(fb.into(), OpCode::Continuation, FRAME_DATA).unwrap(),
               )
               .await
               .unwrap();
@@ -100,7 +106,9 @@ async fn bench(addr: &str, agent: &mut Agent, uri: &str) {
           }
           assert_eq!(ws.read_frame(fb).await.unwrap().fb().payload().len(), FRAME_LEN * NUM_FRAMES);
         }
-        ws.write_frame(FrameVecMut::new_fin(fb.into(), OpCode::Close, &[]).unwrap()).await.unwrap();
+        ws.write_frame(&mut FrameVecMut::new_fin(fb.into(), OpCode::Close, &[]).unwrap())
+          .await
+          .unwrap();
       }
     });
   }

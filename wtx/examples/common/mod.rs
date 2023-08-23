@@ -51,10 +51,10 @@ where
   RB: BorrowMut<ReadBuffer>,
 {
   loop {
-    let frame = ws.read_msg(fb).await?;
+    let mut frame = ws.read_msg(fb).await?;
     match frame.op_code() {
       OpCode::Binary | OpCode::Text => {
-        ws.write_frame(frame).await?;
+        ws.write_frame(&mut frame).await?;
       }
       OpCode::Close => break,
       _ => {}

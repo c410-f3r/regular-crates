@@ -15,15 +15,15 @@ Provides low and high level abstractions to dispatch frames, as such, it is up t
 [fastwebsockets](https://github.com/denoland/fastwebsockets) served as an initial inspiration for the skeleton of this implementation so thanks to the authors.
 
 ```rust
-use wtx::{Stream, web_socket::{FrameBufferVec, FrameVecMut, OpCode, WebSocketClientOwned}};
+use wtx::{Stream, web_socket::{FrameMutVec, FrameVecMut, OpCode, WebSocketClientOwned}};
 
 pub async fn handle_client_frames(ws: &mut WebSocketClientOwned<impl Stream>) -> wtx::Result<()> {
-  let fb = &mut FrameBufferVec::default();
+  let fb = &mut <_>::default();
   loop {
     let frame = match ws.read_msg(fb).await {
       Err(err) => {
         println!("Error: {err}");
-        ws.write_frame(FrameVecMut::new_fin(fb.into(), OpCode::Close, &[])?).await?;
+        ws.write_frame(&mut FrameMutVec::new_fin(fb, OpCode::Close, &[])?).await?;
         break;
       }
       Ok(elem) => elem,

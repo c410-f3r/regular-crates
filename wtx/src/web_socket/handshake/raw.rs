@@ -1,7 +1,6 @@
 use core::borrow::BorrowMut;
 
 use crate::{
-  misc::UriParts,
   web_socket::{
     handshake::{
       misc::{derived_key, gen_key, trim},
@@ -9,7 +8,7 @@ use crate::{
     },
     FrameBufferVec, WebSocketClient, WebSocketError, WebSocketServer,
   },
-  ExpectedHeader, ReadBuffer, Stream,
+  ExpectedHeader, ReadBuffer, Stream, UriParts,
 };
 #[cfg(feature = "async-trait")]
 use alloc::boxed::Box;

@@ -9,7 +9,7 @@ extern crate alloc;
 
 mod cache;
 mod error;
-mod header;
+mod expected_header;
 mod misc;
 mod read_buffer;
 #[cfg(feature = "web-socket-handshake")]
@@ -18,19 +18,17 @@ mod request;
 mod response;
 mod stream;
 pub mod web_socket;
-mod wrapper;
 
 pub use crate::stream::{BytesStream, DummyStream, Stream};
 pub use cache::Cache;
 pub use error::Error;
-pub use header::ExpectedHeader;
-pub use misc::UriParts;
+pub use expected_header::ExpectedHeader;
+pub use misc::uri_parts::UriParts;
 pub use read_buffer::ReadBuffer;
 #[cfg(feature = "web-socket-handshake")]
 pub use request::Request;
 #[cfg(feature = "web-socket-handshake")]
 pub use response::Response;
-pub use wrapper::Wrapper;
 
 /// Shortcut of [core::result::Result<T, Error>].
 pub type Result<T> = core::result::Result<T, Error>;

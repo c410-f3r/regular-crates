@@ -17,9 +17,13 @@ use crate::{
 };
 use alloc::vec::Vec;
 use core::borrow::BorrowMut;
-pub use frame::{Frame, FrameControlArray, FrameMut, FrameVecMut};
+pub use frame::{
+  Frame, FrameControlArray, FrameControlArrayMut, FrameMut, FrameMutControlArray,
+  FrameMutControlArrayMut, FrameMutMut, FrameMutVec, FrameMutVecMut, FrameVec, FrameVecMut,
+};
 pub use frame_buffer::{
-  FrameBuffer, FrameBufferControlArray, FrameBufferMut, FrameBufferVec, FrameBufferVecMut,
+  FrameBuffer, FrameBufferControlArray, FrameBufferControlArrayMut, FrameBufferMut, FrameBufferVec,
+  FrameBufferVecMut,
 };
 pub use mask::unmask;
 pub use op_code::OpCode;
@@ -109,14 +113,14 @@ where
   pub async fn read_frame<'fb, B>(
     &mut self,
     fb: &'fb mut FrameBuffer<B>,
-  ) -> crate::Result<FrameMut<'fb, IS_CLIENT>>
+  ) -> crate::Result<Frame<&'fb mut FrameBuffer<B>, IS_CLIENT>>
   where
-    B: BorrowMut<[u8]> + BorrowMut<Vec<u8>>,
+    B: AsMut<Vec<u8>> + AsRef<[u8]>,
   {
     let rbfi = self.do_read_frame::<true>().await?;
     Self::copy_from_rb_to_fb(CopyType::Normal, fb, self.rb.borrow(), &rbfi);
     self.rb.borrow_mut().clear_if_following_is_empty();
-    FrameMut::from_fb(fb.into())
+    Frame::from_fb(fb)
   }
 
   /// Collects frames and returns the completed message once all fragments have been received.
@@ -124,9 +128,9 @@ where
   pub async fn read_msg<'fb, B>(
     &mut self,
     fb: &'fb mut FrameBuffer<B>,
-  ) -> crate::Result<FrameMut<'fb, IS_CLIENT>>
+  ) -> crate::Result<Frame<&'fb mut FrameBuffer<B>, IS_CLIENT>>
   where
-    B: BorrowMut<[u8]> + BorrowMut<Vec<u8>>,
+    B: AsMut<[u8]> + AsMut<Vec<u8>> + AsRef<[u8]>,
   {
     let mut iuc_opt = None;
     let mut is_binary = true;
@@ -163,7 +167,7 @@ where
     if should_stop_at_the_first_frame {
       Self::copy_from_rb_to_fb(CopyType::Normal, fb, self.rb.borrow(), &rbfi);
       self.rb.borrow_mut().clear_if_following_is_empty();
-      return FrameMut::from_fb(fb.borrow_mut().into());
+      return Frame::from_fb(fb);
     }
     let mut total_frame_len = msg_header_placeholder::<IS_CLIENT>().into();
     Self::copy_from_rb_to_fb(CopyType::Msg(&mut total_frame_len), fb, self.rb.borrow(), &rbfi);
@@ -200,17 +204,15 @@ where
         })
         .await?;
     };
-    FrameMut::from_fb(fb.into())
+    Frame::from_fb(fb)
   }
 
   /// Writes a frame to the stream without masking its payload.
   #[inline]
-  pub async fn write_frame<B>(
-    &mut self,
-    frame: Frame<FrameBuffer<B>, IS_CLIENT>,
-  ) -> crate::Result<()>
+  pub async fn write_frame<B, FB>(&mut self, frame: &mut Frame<FB, IS_CLIENT>) -> crate::Result<()>
   where
-    B: BorrowMut<[u8]> + core::fmt::Debug,
+    B: AsMut<[u8]> + AsRef<[u8]>,
+    FB: BorrowMut<FrameBuffer<B>>,
   {
     Self::do_write_frame(frame, &mut self.is_stream_closed, &mut self.rng, &mut self.stream).await
   }
@@ -221,7 +223,7 @@ where
     rb: &ReadBuffer,
     rbfi: &ReadBufferFrameInfo,
   ) where
-    B: BorrowMut<Vec<u8>>,
+    B: AsMut<Vec<u8>>,
   {
     let current_frame = rb.current();
     let range = match ct {
@@ -241,7 +243,7 @@ where
           rbfi.payload_len.wrapping_add(header_len_total_usize),
         );
         fb.buffer_mut()
-          .borrow_mut()
+          .as_mut()
           .get_mut(..rbfi.header_len.into())
           .unwrap_or_default()
           .copy_from_slice(
@@ -256,7 +258,7 @@ where
       }
     };
     fb.buffer_mut()
-      .borrow_mut()
+      .as_mut()
       .get_mut(range)
       .unwrap_or_default()
       .copy_from_slice(current_frame.get(rbfi.header_end_idx..).unwrap_or_default());
@@ -295,7 +297,7 @@ where
               let is_not_allowed = !CloseCode::from(u16::from_be_bytes([*a, *b])).is_allowed();
               if is_not_allowed || rest.len() > MAX_CONTROL_FRAME_PAYLOAD_LEN - 2 {
                 Self::write_control_frame(
-                  FrameControlArray::close_from_params(1002, <_>::default(), rest)?,
+                  &mut FrameControlArray::close_from_params(1002, <_>::default(), rest)?,
                   &mut self.is_stream_closed,
                   &mut self.rng,
                   &mut self.stream,
@@ -306,7 +308,7 @@ where
             }
           }
           Self::write_control_frame(
-            FrameControlArray::new_fin(<_>::default(), OpCode::Close, payload)?,
+            &mut FrameControlArray::new_fin(<_>::default(), OpCode::Close, payload)?,
             &mut self.is_stream_closed,
             &mut self.rng,
             &mut self.stream,
@@ -316,7 +318,7 @@ where
         }
         OpCode::Ping if self.auto_pong => {
           Self::write_control_frame(
-            FrameControlArray::new_fin(<_>::default(), OpCode::Pong, payload)?,
+            &mut FrameControlArray::new_fin(<_>::default(), OpCode::Pong, payload)?,
             &mut self.is_stream_closed,
             &mut self.rng,
             &mut self.stream,
@@ -336,18 +338,19 @@ where
     }
   }
 
-  async fn do_write_frame<B>(
-    mut frame: Frame<FrameBuffer<B>, IS_CLIENT>,
+  async fn do_write_frame<B, FB>(
+    frame: &mut Frame<FB, IS_CLIENT>,
     is_stream_closed: &mut bool,
     rng: &mut Rng,
     stream: &mut S,
   ) -> crate::Result<()>
   where
-    B: BorrowMut<[u8]> + core::fmt::Debug,
+    B: AsMut<[u8]> + AsRef<[u8]>,
+    FB: BorrowMut<FrameBuffer<B>>,
   {
     if IS_CLIENT {
       let mut mask_opt = None;
-      if let [_, second_byte, .., a, b, c, d] = frame.fb_mut().header_mut() {
+      if let [_, second_byte, .., a, b, c, d] = frame.fb_mut().borrow_mut().header_mut() {
         if !has_masked_frame(*second_byte) {
           *second_byte |= 0b1000_0000;
           let mask = rng.random_u8_4();
@@ -359,13 +362,13 @@ where
         }
       }
       if let Some(mask) = mask_opt {
-        unmask(frame.fb_mut().payload_mut(), mask);
+        unmask(frame.fb_mut().borrow_mut().payload_mut(), mask);
       }
     }
     if frame.op_code() == OpCode::Close {
       *is_stream_closed = true;
     }
-    stream.write_all(frame.fb().frame()).await?;
+    stream.write_all(frame.fb().borrow().frame()).await?;
     Ok(())
   }
 
@@ -494,7 +497,7 @@ where
     mut cb: impl FnMut(&[u8]) -> crate::Result<()>,
   ) -> crate::Result<()>
   where
-    B: BorrowMut<[u8]> + BorrowMut<Vec<u8>>,
+    B: AsMut<[u8]> + AsMut<Vec<u8>> + AsRef<[u8]>,
     S: Stream,
   {
     loop {
@@ -530,7 +533,7 @@ where
   }
 
   async fn write_control_frame(
-    frame: FrameControlArray<IS_CLIENT>,
+    frame: &mut FrameControlArray<IS_CLIENT>,
     is_stream_closed: &mut bool,
     rng: &mut Rng,
     stream: &mut S,
