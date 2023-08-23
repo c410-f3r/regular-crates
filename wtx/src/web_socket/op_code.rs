@@ -23,7 +23,7 @@ macro_rules! create_enum {
       fn try_from(from: u8) -> Result<Self, Self::Error> {
         match from {
           $(x if x == u8::from($name::$variant_ident) => Ok($name::$variant_ident),)*
-          _ => Err(crate::Error::InvalidOpCodeByte { byte: from }),
+          _ => Err(crate::web_socket::WebSocketError::InvalidOpCodeByte { provided: from }.into()),
         }
       }
     }
@@ -59,5 +59,10 @@ impl OpCode {
   #[inline]
   pub(crate) fn is_control(self) -> bool {
     matches!(self, OpCode::Close | OpCode::Ping | OpCode::Pong)
+  }
+
+  #[inline]
+  pub(crate) fn is_text(self) -> bool {
+    matches!(self, OpCode::Text)
   }
 }

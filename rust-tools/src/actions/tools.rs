@@ -4,7 +4,7 @@ use std::{env::Args, process::Command};
 impl Actions {
   pub(crate) fn clippy(&self, args: &mut Args) -> crate::Result<()> {
     handle_cmd_output(
-      Command::new("echo").args(["-e", r#"\e[0;33m***** Running clippy *****\e[0m\n"#]),
+      Command::new("echo").args(["-e", r"\e[0;33m***** Running clippy *****\e[0m\n"]),
     )?;
     let mut cmd = Command::new("cargo");
     handle_cmd_output(
@@ -22,7 +22,7 @@ impl Actions {
 
   pub(crate) fn rustfmt(&self) -> crate::Result<()> {
     handle_cmd_output(
-      Command::new("echo").args(["-e", r#"\e[0;33m***** Running rustfmt *****\e[0m\n"#]),
+      Command::new("echo").args(["-e", r"\e[0;33m***** Running rustfmt *****\e[0m\n"]),
     )?;
     handle_cmd_output(Command::new("cargo").args(["fmt", "--all", "--", "--check"]))?;
     Ok(())

@@ -1,55 +1,61 @@
 [[example]]
-name = "web-socket-http-client-echo-server"
-path = "examples/web_socket_http_client_echo_server.rs"
-required-features = ["http-client"]
+name = "web_socket_client_autobahn_raw_tokio"
+required-features = ["tokio", "web-socket-handshake"]
 
 [[example]]
-name = "web-socket-hyper-autobahn-client"
-path = "examples/web_socket_hyper_autobahn_client.rs"
-required-features = ["hyper"]
+name = "web_socket_client_cli_raw_tokio_rustls"
+required-features = ["tokio-rustls", "web-socket-handshake"]
 
 [[example]]
-name = "web-socket-hyper-echo-server"
-path = "examples/web_socket_hyper_echo_server.rs"
-required-features = ["hyper"]
+name = "web_socket_server_echo_hyper"
+required-features = ["web-socket-hyper"]
 
 [[example]]
-name = "web-socket-hyper-tls-client"
-path = "examples/web_socket_hyper_tls_client.rs"
-required-features = ["hyper"]
+name = "web_socket_server_echo_raw_async_std"
+required-features = ["async-std", "web-socket-handshake"]
 
 [[example]]
-name = "web-socket-hyper-tls-server"
-path = "examples/web_socket_hyper_tls_server.rs"
-required-features = ["hyper"]
+name = "web_socket_server_echo_raw_tokio"
+required-features = ["tokio", "web-socket-handshake"]
+
+[[example]]
+name = "web_socket_server_echo_raw_tokio_rustls"
+required-features = ["tokio-rustls", "web-socket-handshake"]
+
+[[example]]
+name = "web_socket"
+path = "profiling/web_socket.rs"
 
 [dependencies]
 async-std = { default-features = false, features = ["default"], optional = true, version = "1.0" }
 async-trait = { default-features = false, optional = true, version = "0.1" }
 base64 = { default-features = false, features = ["alloc"], optional = true, version = "0.21" }
-http-client = { default-features = false, optional = true, version = "6.0" }
-http-types = { default-features = false, optional = true, version = "2.0" }
+http = { default-features = false, optional = true, version = "0.2" }
+httparse = { default-features = false, optional = true, version = "1.0" }
 hyper = { default-features = false, features = ["client", "http1", "server"], optional = true, version = "0.14" }
 rand = { default-features = false, features = ["getrandom", "small_rng"], version = "0.8" }
 sha1 = { default-features = false, optional = true, version = "0.10" }
-simdutf8 = { default-features = false, optional = true, version = "0.1" }
-tokio = { default-features = false, features = ["io-util"], optional = true, version = "1.0" }
+simdutf8 = { default-features = false, features = ["aarch64_neon"], optional = true, version = "0.1" }
+tokio = { default-features = false, features = ["io-util", "net"], optional = true, version = "1.0" }
+tokio-rustls = { default-features = false, optional = true, version = "0.24" }
 
 [dev-dependencies]
-async-h1 = { default-features = false, version = "2.0" }
-hyper = { default-features = false, features = ["client", "http1", "server", "tcp"], version = "0.14" }
-rustls-pemfile = { default-features = false, version = "1.0" }
-tokio = { default-features = false, features = ["macros"], version = "1.0" }
+async-std = { default-features = false, features = ["attributes"], version = "1.0" }
+tokio = { default-features = false, features = ["macros", "rt-multi-thread", "time"], version = "1.0" }
 tokio-rustls = { default-features = false, features = ["tls12"], version = "0.24" }
-webpki-roots = { default-features = false, version = "0.23" }
-wtx = { default-features = false, features = ["std"], path = "." }
+rustls-pemfile = { default-features = false, version = "1.0" }
+webpki-roots = { default-features = false, version = "0.25" }
+wtx = { default-features = false, features = ["std", "tokio"], path = "." }
 
 [features]
+async-std = ["dep:async-std", "std"]
 default = []
-http-client = ["async-std", "base64", "dep:http-client", "http-types", "sha1", "std"]
-hyper = ["base64", "dep:hyper", "sha1", "std", "tokio"]
-simdutf8 = ["dep:simdutf8", "simdutf8?/aarch64_neon"]
+hyper = ["http", "dep:hyper", "tokio"]
 std = []
+tokio = ["std", "dep:tokio"]
+tokio-rustls = ["tokio", "dep:tokio-rustls"]
+web-socket-handshake = ["base64", "httparse", "sha1"]
+web-socket-hyper = ["hyper", "web-socket-handshake"]
 
 [package]
 authors = ["Caio Fernandes <c410.f3r@gmail.com>"]
@@ -58,4 +64,4 @@ edition = "2021"
 license = "Apache-2.0"
 name = "wtx"
 repository = "https://github.com/c410-f3r/regular-crates"
-version = "0.2.0"
+version = "0.3.0"

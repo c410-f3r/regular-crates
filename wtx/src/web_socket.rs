@@ -1,65 +1,63 @@
 //! A computer communications protocol, providing full-duplex communication channels over a single
 //! TCP connection.
-//
-// # Mask bytes
-//
-// Client: Creates masked frames, receives unmasked frames and writes masked frames
-// Server: Creates unmasked frames, receives masked frames and writes unmasked frames
 
 mod close_code;
 mod frame;
 mod frame_buffer;
-mod http;
+#[cfg(feature = "web-socket-handshake")]
+pub mod handshake;
 mod mask;
 mod op_code;
-mod read_buffer;
+mod web_socket_error;
 
 use crate::{
   misc::{from_utf8_ext_rslt, from_utf8_opt, CompleteErr, ExtUtf8Error, Rng},
   web_socket::close_code::CloseCode,
-  Stream,
+  ReadBuffer, Stream,
 };
 use core::borrow::BorrowMut;
-pub use frame::{Frame, FrameControlArray, FrameMut};
+pub use frame::{Frame, FrameControlArray, FrameMut, FrameVecMut};
 pub use frame_buffer::{FrameBuffer, FrameBufferMut, FrameBufferVec};
-#[cfg(feature = "http-client")]
-pub use http::http_client::{
-  UpgradeFutHttpClient, WebSocketHandshakeHttpClient, WebSocketUpgradeHttpClient,
-};
-#[cfg(feature = "hyper")]
-pub use http::hyper::{UpgradeFutHyper, WebSocketHandshakeHyper, WebSocketUpgradeHyper};
-pub use http::{WebSocketHandshake, WebSocketUpgrade};
 pub use mask::unmask;
 pub use op_code::OpCode;
-use read_buffer::ReadBuffer;
+pub use web_socket_error::WebSocketError;
 
-pub(crate) const DFLT_FRAME_BUFFER_VEC_LEN: usize = 32 * 1024 * 1024;
-pub(crate) const DFLT_READ_BUFFER_LEN: usize = 128 * 1024 * 1024;
+pub(crate) const DFLT_FRAME_BUFFER_VEC_LEN: usize = 512 * 1024;
+pub(crate) const DFLT_READ_BUFFER_LEN: usize = 512 * 1024;
 pub(crate) const MAX_CONTROL_FRAME_LEN: usize =
   MAX_HEADER_LEN_USIZE + MAX_CONTROL_FRAME_PAYLOAD_LEN;
 pub(crate) const MAX_CONTROL_FRAME_PAYLOAD_LEN: usize = 125;
 pub(crate) const MAX_HEADER_LEN_U8: u8 = 14;
 pub(crate) const MAX_HEADER_LEN_USIZE: usize = 14;
+pub(crate) const MAX_PAYLOAD_LEN: usize = 64 * 1024 * 1024;
 pub(crate) const MIN_HEADER_LEN_USIZE: usize = 2;
 
 /// Always masks the payload before sending.
-pub type WebSocketClient<S> = WebSocket<S, true>;
+pub type WebSocketClient<RB, S> = WebSocket<RB, S, true>;
+/// [WebSocketClient] with a mutable reference of [ReadBuffer].
+pub type WebSocketClientMut<'rb, S> = WebSocketClient<&'rb mut ReadBuffer, S>;
+/// [WebSocketClient] with an owned [ReadBuffer].
+pub type WebSocketClientOwned<S> = WebSocketClient<ReadBuffer, S>;
 /// Always decode the payload after receiving.
-pub type WebSocketServer<S> = WebSocket<S, false>;
+pub type WebSocketServer<RB, S> = WebSocket<RB, S, false>;
+/// [WebSocketServer] with a mutable reference of [ReadBuffer].
+pub type WebSocketServerMut<'rb, S> = WebSocketServer<&'rb mut ReadBuffer, S>;
+/// [WebSocketServer] with an owned [ReadBuffer].
+pub type WebSocketServerOwned<S> = WebSocketServer<ReadBuffer, S>;
 
 /// WebSocket protocol implementation over an asynchronous stream.
 #[derive(Debug)]
-pub struct WebSocket<S, const IS_CLIENT: bool> {
+pub struct WebSocket<RB, S, const IS_CLIENT: bool> {
   auto_close: bool,
   auto_pong: bool,
   is_stream_closed: bool,
-  max_payload_size: usize,
-  rb: ReadBuffer,
+  max_payload_len: usize,
+  rb: RB,
   rng: Rng,
   stream: S,
 }
 
-impl<S, const IS_CLIENT: bool> WebSocket<S, IS_CLIENT> {
+impl<RB, S, const IS_CLIENT: bool> WebSocket<RB, S, IS_CLIENT> {
   /// Sets whether to automatically close the connection when a close frame is received. Defaults
   /// to `true`.
   #[inline]
@@ -75,27 +73,29 @@ impl<S, const IS_CLIENT: bool> WebSocket<S, IS_CLIENT> {
   }
 
   /// Sets whether to automatically close the connection when a received frame payload length
-  /// exceeds `max_payload_size`. Defaults to `64 * 1024 * 1024` bytes (64 MiB).
+  /// exceeds `max_payload_len`. Defaults to `64 * 1024 * 1024` bytes (64 MiB).
   #[inline]
-  pub fn set_max_payload_size(&mut self, max_payload_size: usize) {
-    self.max_payload_size = max_payload_size;
+  pub fn set_max_payload_len(&mut self, max_payload_len: usize) {
+    self.max_payload_len = max_payload_len;
   }
 }
 
-impl<S, const IS_CLIENT: bool> WebSocket<S, IS_CLIENT>
+impl<RB, S, const IS_CLIENT: bool> WebSocket<RB, S, IS_CLIENT>
 where
+  RB: BorrowMut<ReadBuffer>,
   S: Stream,
 {
   /// Creates a new instance from a stream that supposedly has already completed the WebSocket
   /// handshake.
   #[inline]
-  pub fn new(stream: S) -> Self {
+  pub fn new(mut rb: RB, stream: S) -> Self {
+    rb.borrow_mut().clear_if_following_is_empty();
     Self {
       auto_close: true,
       auto_pong: true,
       is_stream_closed: false,
-      max_payload_size: 32 * 1024 * 1024,
-      rb: ReadBuffer::with_capacity(DFLT_READ_BUFFER_LEN),
+      max_payload_len: MAX_PAYLOAD_LEN,
+      rb,
       rng: Rng::default(),
       stream,
     }
@@ -108,11 +108,9 @@ where
     fb: &'fb mut FrameBufferVec,
   ) -> crate::Result<FrameMut<'fb, IS_CLIENT>> {
     let rbfi = self.do_read_frame::<true>().await?;
-    Self::copy_from_rb_to_fb(CopyType::Normal, fb, &self.rb, &rbfi);
-    if !self.rb.has_following_frames() {
-      self.rb.clear();
-    }
-    Frame::from_fb(fb.into())
+    Self::copy_from_rb_to_fb(CopyType::Normal, fb, self.rb.borrow(), &rbfi);
+    self.rb.borrow_mut().clear_if_following_is_empty();
+    FrameMut::from_fb(fb.into())
   }
 
   /// Collects frames and returns the completed message once all fragments have been received.
@@ -125,12 +123,13 @@ where
     let mut is_binary = true;
     let rbfi = self.do_read_frame::<false>().await?;
     if rbfi.op_code.is_continuation() {
-      return Err(crate::Error::InvalidContinuationFrame);
+      return Err(WebSocketError::UnexpectedMessageFrame.into());
     }
     let should_stop_at_the_first_frame = match rbfi.op_code {
       OpCode::Binary => rbfi.fin,
       OpCode::Text => {
-        let curr_payload = self.rb.current_frame().get(rbfi.header_end_idx..).unwrap_or_default();
+        let range = rbfi.header_end_idx..;
+        let curr_payload = self.rb.borrow().current().get(range).unwrap_or_default();
         if rbfi.fin {
           if from_utf8_opt(curr_payload).is_none() {
             return Err(crate::Error::InvalidUTF8);
@@ -153,14 +152,12 @@ where
       OpCode::Continuation | OpCode::Close | OpCode::Ping | OpCode::Pong => true,
     };
     if should_stop_at_the_first_frame {
-      Self::copy_from_rb_to_fb(CopyType::Normal, fb, &self.rb, &rbfi);
-      if !self.rb.has_following_frames() {
-        self.rb.clear();
-      }
-      return Frame::from_fb(fb.into());
+      Self::copy_from_rb_to_fb(CopyType::Normal, fb, self.rb.borrow(), &rbfi);
+      self.rb.borrow_mut().clear_if_following_is_empty();
+      return FrameMut::from_fb(fb.into());
     }
     let mut total_frame_len = msg_header_placeholder::<IS_CLIENT>().into();
-    Self::copy_from_rb_to_fb(CopyType::Msg(&mut total_frame_len), fb, &self.rb, &rbfi);
+    Self::copy_from_rb_to_fb(CopyType::Msg(&mut total_frame_len), fb, self.rb.borrow(), &rbfi);
     if is_binary {
       self.manage_read_msg_loop(fb, rbfi.op_code, &mut total_frame_len, |_| Ok(())).await?;
     } else {
@@ -194,7 +191,7 @@ where
         })
         .await?;
     };
-    Frame::from_fb(fb.into())
+    FrameMut::from_fb(fb.into())
   }
 
   /// Writes a frame to the stream without masking its payload.
@@ -215,7 +212,7 @@ where
     rb: &ReadBuffer,
     rbfi: &ReadBufferFrameInfo,
   ) {
-    let current_frame = rb.current_frame();
+    let current_frame = rb.current();
     let range = match ct {
       CopyType::Msg(total_frame_len) => {
         let prev = *total_frame_len;
@@ -255,11 +252,11 @@ where
   ) -> crate::Result<ReadBufferFrameInfo> {
     loop {
       let mut rbfi = self.fill_rb_from_stream().await?;
-      let curr_frame = self.rb.current_frame_mut();
+      let curr_frame = self.rb.borrow_mut().current_mut();
       if !IS_CLIENT {
         unmask(
           curr_frame.get_mut(rbfi.header_end_idx..).unwrap_or_default(),
-          rbfi.mask.ok_or(crate::Error::NoFrameMask)?,
+          rbfi.mask.ok_or(WebSocketError::MissingFrameMask)?,
         );
         let n = remove_mask(
           curr_frame.get_mut(rbfi.header_begin_idx..rbfi.header_end_idx).unwrap_or_default(),
@@ -274,7 +271,7 @@ where
         OpCode::Close if self.auto_close && !self.is_stream_closed => {
           match payload {
             [] => {}
-            [_] => return Err(crate::Error::InvalidCloseFrame),
+            [_] => return Err(WebSocketError::InvalidCloseFrame.into()),
             [a, b, rest @ ..] => {
               if from_utf8_opt(rest).is_none() {
                 return Err(crate::Error::InvalidUTF8);
@@ -282,18 +279,18 @@ where
               let is_not_allowed = !CloseCode::from(u16::from_be_bytes([*a, *b])).is_allowed();
               if is_not_allowed || rest.len() > MAX_CONTROL_FRAME_PAYLOAD_LEN - 2 {
                 Self::write_control_frame(
-                  Frame::close_from_params(1002, <_>::default(), rest)?,
+                  FrameControlArray::close_from_params(1002, <_>::default(), rest)?,
                   &mut self.is_stream_closed,
                   &mut self.rng,
                   &mut self.stream,
                 )
                 .await?;
-                return Err(crate::Error::InvalidCloseFrame);
+                return Err(WebSocketError::InvalidCloseFrame.into());
               }
             }
           }
           Self::write_control_frame(
-            Frame::new_fin(<_>::default(), OpCode::Close, payload)?,
+            FrameControlArray::new_fin(<_>::default(), OpCode::Close, payload)?,
             &mut self.is_stream_closed,
             &mut self.rng,
             &mut self.stream,
@@ -303,7 +300,7 @@ where
         }
         OpCode::Ping if self.auto_pong => {
           Self::write_control_frame(
-            Frame::new_fin(<_>::default(), OpCode::Pong, payload)?,
+            FrameControlArray::new_fin(<_>::default(), OpCode::Pong, payload)?,
             &mut self.is_stream_closed,
             &mut self.rng,
             &mut self.stream,
@@ -358,7 +355,7 @@ where
 
   async fn fill_initial_rb_from_stream(
     buffer: &mut [u8],
-    max_payload_size: usize,
+    max_payload_len: usize,
     read: &mut usize,
     stream: &mut S,
   ) -> crate::Result<ReadBufferFrameInfo>
@@ -395,7 +392,7 @@ where
     let rsv3 = first_two[0] & 0b0001_0000 != 0;
 
     if rsv1 || rsv2 || rsv3 {
-      return Err(crate::Error::ReservedBitsAreNotZero);
+      return Err(WebSocketError::ReservedBitsAreNotZero.into());
     }
 
     let is_masked = has_masked_frame(first_two[1]);
@@ -418,13 +415,13 @@ where
     }
 
     if op_code.is_control() && !fin {
-      return Err(crate::Error::FragmentedControlFrame);
+      return Err(WebSocketError::UnexpectedFragmentedControlFrame.into());
     }
     if op_code == OpCode::Ping && payload_len > MAX_CONTROL_FRAME_PAYLOAD_LEN {
-      return Err(crate::Error::VeryLargeControlFrame);
+      return Err(WebSocketError::VeryLargeControlFrame.into());
     }
-    if payload_len >= max_payload_size {
-      return Err(crate::Error::VeryLargePayload);
+    if payload_len >= max_payload_len {
+      return Err(WebSocketError::VeryLargePayload.into());
     }
 
     Ok(ReadBufferFrameInfo {
@@ -440,34 +437,35 @@ where
   }
 
   async fn fill_rb_from_stream(&mut self) -> crate::Result<ReadBufferFrameInfo> {
-    let mut read = self.rb.following_frames_len();
-    self.rb.merge_current_frame_with_antecedent_frames();
-    self.rb.expand_after_current_frame(MAX_HEADER_LEN_USIZE);
+    let mut read = self.rb.borrow().following_len();
+    self.rb.borrow_mut().merge_current_with_antecedent();
+    self.rb.borrow_mut().expand_after_current(MAX_HEADER_LEN_USIZE);
     let rbfi = Self::fill_initial_rb_from_stream(
-      self.rb.after_current_frame_mut(),
-      self.max_payload_size,
+      self.rb.borrow_mut().after_current_mut(),
+      self.max_payload_len,
       &mut read,
       &mut self.stream,
     )
     .await?;
     if self.is_stream_closed && rbfi.op_code != OpCode::Close {
-      return Err(crate::Error::ConnectionClosed);
+      return Err(WebSocketError::ConnectionClosed.into());
     }
     loop {
       if read >= rbfi.frame_len {
         break;
       }
-      self.rb.expand_after_current_frame(rbfi.frame_len);
+      self.rb.borrow_mut().expand_after_current(rbfi.frame_len);
       let local_read = self
         .stream
-        .read(self.rb.after_current_frame_mut().get_mut(read..).unwrap_or_default())
+        .read(self.rb.borrow_mut().after_current_mut().get_mut(read..).unwrap_or_default())
         .await?;
       read = read.wrapping_add(local_read);
     }
-    self.rb.set_indices_through_expansion(
-      self.rb.antecedent_frames_end_idx(),
-      self.rb.antecedent_frames_end_idx().wrapping_add(rbfi.frame_len),
-      self.rb.antecedent_frames_end_idx().wrapping_add(read),
+    let rb = self.rb.borrow_mut();
+    rb.set_indices_through_expansion(
+      rb.antecedent_end_idx(),
+      rb.antecedent_end_idx().wrapping_add(rbfi.frame_len),
+      rb.antecedent_end_idx().wrapping_add(read),
     );
     Ok(rbfi)
   }
@@ -484,10 +482,10 @@ where
   {
     loop {
       let rbfi = self.do_read_frame::<false>().await?;
-      Self::copy_from_rb_to_fb(CopyType::Msg(total_frame_len), fb, &self.rb, &rbfi);
+      Self::copy_from_rb_to_fb(CopyType::Msg(total_frame_len), fb, self.rb.borrow(), &rbfi);
       match rbfi.op_code {
         OpCode::Continuation => {
-          cb(self.rb.current_frame().get(rbfi.header_end_idx..).unwrap_or_default())?;
+          cb(self.rb.borrow().current().get(rbfi.header_end_idx..).unwrap_or_default())?;
           if rbfi.fin {
             let mut buffer = [0; MAX_HEADER_LEN_USIZE];
             let header_len = copy_header_params_to_buffer::<IS_CLIENT>(
@@ -502,14 +500,12 @@ where
               .unwrap_or_default()
               .copy_from_slice(buffer.get(..header_len.into()).unwrap_or_default());
             fb.set_params_through_expansion(start_idx, header_len, *total_frame_len);
-            if !self.rb.has_following_frames() {
-              self.rb.clear();
-            }
+            self.rb.borrow_mut().clear_if_following_is_empty();
             break;
           }
         }
         OpCode::Binary | OpCode::Close | OpCode::Ping | OpCode::Pong | OpCode::Text => {
-          return Err(crate::Error::InvalidMsgFrame);
+          return Err(WebSocketError::UnexpectedMessageFrame.into());
         }
       }
     }
@@ -561,7 +557,9 @@ pub(crate) fn copy_header_params_to_buffer<const IS_CLIENT: bool>(
   ) -> crate::Result<u8> {
     Ok(if IS_CLIENT {
       *second_byte &= 0b0111_1111;
-      let [a, b, c, d, ..] = rest else { return Err(crate::Error::InvalidHeaderBounds); };
+      let [a, b, c, d, ..] = rest else {
+        return Err(WebSocketError::InvalidFrameHeaderBounds.into());
+      };
       *a = 0;
       *b = 0;
       *c = 0;
@@ -571,7 +569,6 @@ pub(crate) fn copy_header_params_to_buffer<const IS_CLIENT: bool>(
       N
     })
   }
-
   match payload_len {
     0..=125 => {
       if let ([a, b, rest @ ..], Ok(u8_len)) = (buffer, u8::try_from(payload_len)) {
@@ -611,7 +608,7 @@ pub(crate) fn copy_header_params_to_buffer<const IS_CLIENT: bool>(
     }
   }
 
-  Err(crate::Error::InvalidHeaderBounds)
+  Err(WebSocketError::InvalidFrameHeaderBounds.into())
 }
 
 pub(crate) fn has_masked_frame(second_header_byte: u8) -> bool {
