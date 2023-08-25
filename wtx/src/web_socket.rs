@@ -29,13 +29,12 @@ pub use mask::unmask;
 pub use op_code::OpCode;
 pub use web_socket_error::WebSocketError;
 
-pub(crate) const DFLT_FRAME_BUFFER_VEC_LEN: usize = 512 * 1024;
-pub(crate) const DFLT_READ_BUFFER_LEN: usize = 512 * 1024;
-pub(crate) const MAX_CONTROL_FRAME_LEN: usize =
-  MAX_HEADER_LEN_USIZE + MAX_CONTROL_FRAME_PAYLOAD_LEN;
+pub(crate) const DFLT_FRAME_BUFFER_VEC_LEN: usize = 16 * 1024;
+pub(crate) const DFLT_READ_BUFFER_LEN: usize = 2 * DFLT_FRAME_BUFFER_VEC_LEN;
+pub(crate) const MAX_CONTROL_FRAME_LEN: usize = MAX_HDR_LEN_USIZE + MAX_CONTROL_FRAME_PAYLOAD_LEN;
 pub(crate) const MAX_CONTROL_FRAME_PAYLOAD_LEN: usize = 125;
-pub(crate) const MAX_HEADER_LEN_U8: u8 = 14;
-pub(crate) const MAX_HEADER_LEN_USIZE: usize = 14;
+pub(crate) const MAX_HDR_LEN_U8: u8 = 14;
+pub(crate) const MAX_HDR_LEN_USIZE: usize = 14;
 pub(crate) const MAX_PAYLOAD_LEN: usize = 64 * 1024 * 1024;
 pub(crate) const MIN_HEADER_LEN_USIZE: usize = 2;
 
@@ -458,7 +457,7 @@ where
   async fn fill_rb_from_stream(&mut self) -> crate::Result<ReadBufferFrameInfo> {
     let mut read = self.rb.borrow().following_len();
     self.rb.borrow_mut().merge_current_with_antecedent();
-    self.rb.borrow_mut().expand_after_current(MAX_HEADER_LEN_USIZE);
+    self.rb.borrow_mut().expand_after_current(MAX_HDR_LEN_USIZE);
     let rbfi = Self::fill_initial_rb_from_stream(
       self.rb.borrow_mut().after_current_mut(),
       self.max_payload_len,
@@ -507,7 +506,7 @@ where
         OpCode::Continuation => {
           cb(self.rb.borrow().current().get(rbfi.header_end_idx..).unwrap_or_default())?;
           if rbfi.fin {
-            let mut buffer = [0; MAX_HEADER_LEN_USIZE];
+            let mut buffer = [0; MAX_HDR_LEN_USIZE];
             let header_len = copy_header_params_to_buffer::<IS_CLIENT>(
               &mut buffer,
               true,
@@ -640,9 +639,9 @@ pub(crate) fn op_code(first_header_byte: u8) -> crate::Result<OpCode> {
 }
 const fn msg_header_placeholder<const IS_CLIENT: bool>() -> u8 {
   if IS_CLIENT {
-    MAX_HEADER_LEN_U8
+    MAX_HDR_LEN_U8
   } else {
-    MAX_HEADER_LEN_U8 - 4
+    MAX_HDR_LEN_U8 - 4
   }
 }
 
@@ -656,7 +655,7 @@ fn remove_mask(header: &mut [u8]) -> u8 {
   *second_header_byte &= 0b0111_1111;
   let prev_header_len = header.len();
   let until_mask = header.get_mut(..prev_header_len.wrapping_sub(4)).unwrap_or_default();
-  let mut buffer = [0u8; MAX_HEADER_LEN_USIZE - 4];
+  let mut buffer = [0u8; MAX_HDR_LEN_USIZE - 4];
   let swap_bytes = buffer.get_mut(..until_mask.len()).unwrap_or_default();
   swap_bytes.copy_from_slice(until_mask);
   let new_header = header.get_mut(4..prev_header_len).unwrap_or_default();

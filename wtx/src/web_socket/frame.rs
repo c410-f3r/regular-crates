@@ -6,7 +6,7 @@ use crate::{
       FrameBufferControlArray, FrameBufferControlArrayMut, FrameBufferMut, FrameBufferVecMut,
     },
     op_code, FrameBuffer, FrameBufferVec, OpCode, WebSocketError, MAX_CONTROL_FRAME_PAYLOAD_LEN,
-    MAX_HEADER_LEN_USIZE, MIN_HEADER_LEN_USIZE,
+    MAX_HDR_LEN_USIZE, MIN_HEADER_LEN_USIZE,
   },
 };
 use core::{
@@ -83,7 +83,7 @@ where
   pub fn from_fb(fb: FB) -> crate::Result<Self> {
     let header = fb.borrow().header();
     let len = header.len();
-    let has_valid_header = (MIN_HEADER_LEN_USIZE..=MAX_HEADER_LEN_USIZE).contains(&len);
+    let has_valid_header = (MIN_HEADER_LEN_USIZE..=MAX_HDR_LEN_USIZE).contains(&len);
     let (true, Some(first_header_byte)) = (has_valid_header, header.first().copied()) else {
       return Err(WebSocketError::InvalidFrameHeaderBounds.into());
     };
@@ -155,7 +155,7 @@ where
     cb: impl FnOnce(&mut FB) -> crate::Result<()>,
   ) -> crate::Result<Self> {
     fb.borrow_mut().clear();
-    fb.borrow_mut().buffer_mut().expand(MAX_HEADER_LEN_USIZE.saturating_add(payload_len));
+    fb.borrow_mut().buffer_mut().expand(MAX_HDR_LEN_USIZE.saturating_add(payload_len));
     let n = copy_header_params_to_buffer::<IS_CLIENT>(
       fb.borrow_mut().buffer_mut().as_mut(),
       fin,

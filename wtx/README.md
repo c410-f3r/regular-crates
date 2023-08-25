@@ -15,10 +15,14 @@ Provides low and high level abstractions to dispatch frames, as such, it is up t
 [fastwebsockets](https://github.com/denoland/fastwebsockets) served as an initial inspiration for the skeleton of this implementation so thanks to the authors.
 
 ```rust
-use wtx::{Stream, web_socket::{FrameMutVec, FrameVecMut, OpCode, WebSocketClientOwned}};
+use wtx::{
+  Stream, web_socket::{FrameBufferVec, FrameMutVec, FrameVecMut, OpCode, WebSocketClientOwned}
+};
 
-pub async fn handle_client_frames(ws: &mut WebSocketClientOwned<impl Stream>) -> wtx::Result<()> {
-  let fb = &mut <_>::default();
+pub async fn handle_client_frames(
+  fb: &mut FrameBufferVec,
+  ws: &mut WebSocketClientOwned<impl Stream>
+  ) -> wtx::Result<()> {
   loop {
     let frame = match ws.read_msg(fb).await {
       Err(err) => {
@@ -39,3 +43,9 @@ pub async fn handle_client_frames(ws: &mut WebSocketClientOwned<impl Stream>) ->
 ```
 
 See the `examples` directory for more suggestions.
+
+## Performance
+
+There are mainly 2 things that impact performance, the chosen runtime and the number of pre-allocated bytes. Specially for servers that have to create a new `WebSocket` instance for each handshake, pre-allocating a high number of bytes for short-lived or low-transfer connections can have a negative impact.
+
+![Benchmark](https://i.imgur.com/ZZU3Hay.jpeg)

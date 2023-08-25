@@ -34,6 +34,12 @@ pub enum Error {
 
   // External
   //
+  /// See [glommio::GlommioError].
+  #[cfg(all(feature = "glommio", feature = "hyper"))]
+  Glommio(std::sync::Mutex<glommio::GlommioError<()>>),
+  /// See [glommio::GlommioError].
+  #[cfg(all(feature = "glommio", not(feature = "hyper")))]
+  Glommio(Box<glommio::GlommioError<()>>),
   #[cfg(feature = "http")]
   /// See [hyper::Error]
   HttpError(http::Error),
@@ -73,6 +79,14 @@ impl Display for Error {
 
 #[cfg(feature = "std")]
 impl std::error::Error for Error {}
+
+#[cfg(feature = "glommio")]
+impl From<glommio::GlommioError<()>> for Error {
+  #[inline]
+  fn from(from: glommio::GlommioError<()>) -> Self {
+    Self::Glommio(from.into())
+  }
+}
 
 #[cfg(feature = "hyper")]
 impl From<hyper::Error> for Error {

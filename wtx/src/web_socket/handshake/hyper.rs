@@ -1,4 +1,5 @@
 use crate::{
+  misc::AsyncBounds,
   web_socket::{
     handshake::{
       misc::{derived_key, gen_key, trim},
@@ -59,9 +60,9 @@ pub struct WebSocketHandshakeHyper<'executor, E, RB, S> {
 #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
 impl<'executor, E, RB, S> WebSocketHandshake<RB> for WebSocketHandshakeHyper<'executor, E, RB, S>
 where
-  E: Executor<Connection<S, Body>> + Send + Sync + 'executor,
-  RB: BorrowMut<ReadBuffer> + Send + Sync,
-  S: AsyncRead + AsyncWrite + Send + Sync + Unpin + 'static,
+  E: AsyncBounds + Executor<Connection<S, Body>> + 'executor,
+  RB: AsyncBounds + BorrowMut<ReadBuffer>,
+  S: AsyncRead + AsyncWrite + Send + Unpin + 'static,
 {
   type Response = Response<Body>;
   type Stream = Upgraded;
@@ -103,7 +104,7 @@ pub struct WebSocketUpgradeHyper<T> {
 #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
 impl<T> WebSocketUpgrade for WebSocketUpgradeHyper<T>
 where
-  T: Send + Sync,
+  T: AsyncBounds,
 {
   type Response = Response<Body>;
   type Stream = Upgraded;

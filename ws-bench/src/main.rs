@@ -25,11 +25,21 @@ use wtx::{
   UriParts,
 };
 
+// Verifies the handling of concurrent calls.
 const CONNECTIONS: usize = 1;
-const NUM_MSGS: usize = 1;
-const FRAME_LEN: usize = 1024;
+// Some applications use WebSocket to perform streaming so the length of a frame can be quite large
+// but statistically it is generally low.
+const FRAME_LEN: usize = 1;
+// For each message, the client always verifies the content sent back from a server and this
+// leads to a sequential-like behavior.
+//
+// If this is the only high metric, all different servers end-up performing similarly effectively
+// making this criteria an "augmenting factor" when combined with other parameters.
+const NUM_MESSAGES: usize = 1;
+
+// Automatically calculated.
 const NUM_FRAMES: usize = {
-  let n = NUM_MSGS / 4;
+  let n = NUM_MESSAGES / 4;
   if n == 0 {
     1
   } else {
@@ -62,9 +72,9 @@ async fn bench(addr: &str, agent: &mut Agent, uri: &str) {
       async move {
         let fb = &mut FrameBufferVec::default();
         let mut ws = ws(&local_addr, fb, &local_uri).await;
-        for _ in 0..NUM_MSGS {
+        for _ in 0..NUM_MESSAGES {
           match NUM_FRAMES {
-            0 => {}
+            0 => break,
             1 => {
               ws.write_frame(
                 &mut FrameVecMut::new_fin(fb.into(), OpCode::Text, FRAME_DATA).unwrap(),
@@ -127,13 +137,18 @@ fn flush(agents: &[Agent]) {
   root.fill(&WHITE).unwrap();
   let mut ctx = ChartBuilder::on(&root)
     .caption(
-      format!("{CONNECTIONS} connection(s) sending {NUM_MSGS} message(s) composed by {NUM_FRAMES} frame(s) of {FRAME_LEN} byte(s)"),
+      format!("{CONNECTIONS} connection(s) sending {NUM_MESSAGES} message(s) composed by {NUM_FRAMES} frame(s) of {FRAME_LEN} byte(s)"),
       ("sans-serif", (4).percent_height()),
     )
     .margin((1).percent())
     .set_label_area_size(LabelAreaPosition::Left, (15).percent())
     .set_label_area_size(LabelAreaPosition::Bottom, (5).percent())
-    .build_cartesian_2d(x_spec.into_segmented(), 0u128..5000)
+    .build_cartesian_2d(x_spec.into_segmented(), {
+      let start = 0u128;
+      let exact_end = agents.iter().map(|el| el.result).max().unwrap_or(5000);
+      let surplus_end = ((exact_end / 500) + 1) * 500;
+      start..surplus_end
+    })
     .unwrap();
   ctx
     .configure_mesh()

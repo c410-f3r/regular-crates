@@ -30,18 +30,19 @@ cd uWebSockets
 git checkout -t origin/bench || true
 if [ ! -e ./EchoServer ]
 then
-    g++ -march=native -O3 -Wpedantic -Wall -Wextra -Wsign-conversion -Wconversion -std=c++20 -Isrc -IuSockets/src -flto examples/EchoServer.cpp  uSockets/*.o -lz -o EchoServer
+    make examples
 fi
 ./EchoServer 8083 &
 popd
 
-python3 ws-bench/_websockets.py 8084 &
-
 RUSTFLAGS='-C target-cpu=native' cargo build --example web_socket_server_echo_hyper --features simdutf8,web-socket-hyper --release
-RUSTFLAGS='-C target-cpu=native' cargo run --example web_socket_server_echo_hyper --features simdutf8,web-socket-hyper --release 127.0.0.1:8085 &
+RUSTFLAGS='-C target-cpu=native' cargo run --example web_socket_server_echo_hyper --features simdutf8,web-socket-hyper --release 127.0.0.1:8084 &
 
 RUSTFLAGS='-C target-cpu=native' cargo build --example web_socket_server_echo_raw_async_std --features async-std,simdutf8,web-socket-handshake --release
-RUSTFLAGS='-C target-cpu=native' cargo run --example web_socket_server_echo_raw_async_std --features async-std,simdutf8,web-socket-handshake --release 127.0.0.1:8086 &
+RUSTFLAGS='-C target-cpu=native' cargo run --example web_socket_server_echo_raw_async_std --features async-std,simdutf8,web-socket-handshake --release 127.0.0.1:8085 &
+
+RUSTFLAGS='-C target-cpu=native' cargo build --example web_socket_server_echo_raw_glommio --features glommio,simdutf8,web-socket-handshake --release
+RUSTFLAGS='-C target-cpu=native' cargo run --example web_socket_server_echo_raw_glommio --features glommio,simdutf8,web-socket-handshake --release 127.0.0.1:8086 &
 
 RUSTFLAGS='-C target-cpu=native' cargo build --example web_socket_server_echo_raw_tokio --features simdutf8,tokio,web-socket-handshake --release
 RUSTFLAGS='-C target-cpu=native' cargo run --example web_socket_server_echo_raw_tokio --features simdutf8,tokio,web-socket-handshake --release 127.0.0.1:8087 &
@@ -53,7 +54,7 @@ RUSTFLAGS='-C target-cpu=native' cargo run --bin ws-bench --release -- \
     http://127.0.0.1:8081/gorilla-websocket \
     http://127.0.0.1:8082/tokio-tungstenite \
     http://127.0.0.1:8083/uWebSockets \
-    http://127.0.0.1:8084/websockets \
-    http://127.0.0.1:8085/wtx-hyper \
-    http://127.0.0.1:8086/wtx-raw-async-std \
+    http://127.0.0.1:8084/wtx-hyper \
+    http://127.0.0.1:8085/wtx-raw-async-std \
+    http://127.0.0.1:8086/wtx-raw-glommio \
     http://127.0.0.1:8087/wtx-raw-tokio

@@ -1,6 +1,20 @@
 use alloc::vec::Vec;
 
 /// Internal trait not intended for public usage
+#[cfg(not(feature = "async-trait"))]
+pub trait AsyncBounds {}
+
+#[cfg(not(feature = "async-trait"))]
+impl<T> AsyncBounds for T where T: ?Sized {}
+
+/// Internal trait not intended for public usage
+#[cfg(feature = "async-trait")]
+pub trait AsyncBounds: Send + Sync {}
+
+#[cfg(feature = "async-trait")]
+impl<T> AsyncBounds for T where T: Send + Sync + ?Sized {}
+
+/// Internal trait not intended for public usage
 pub trait Expand {
   /// Internal method not intended for public usage
   fn expand(&mut self, len: usize);

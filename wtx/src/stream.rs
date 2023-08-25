@@ -1,3 +1,4 @@
+use crate::misc::AsyncBounds;
 #[cfg(feature = "async-trait")]
 use alloc::boxed::Box;
 use alloc::vec::Vec;
@@ -17,7 +18,7 @@ pub trait Stream {
 #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
 impl<T> Stream for &mut T
 where
-  T: Send + Stream + Sync,
+  T: AsyncBounds + Stream,
 {
   #[inline]
   async fn read(&mut self, bytes: &mut [u8]) -> crate::Result<usize> {
@@ -120,6 +121,26 @@ mod async_std {
   }
 }
 
+#[cfg(all(feature = "glommio", not(feature = "async-trait")))]
+mod glommio {
+  use crate::Stream;
+  use futures_lite::io::{AsyncReadExt, AsyncWriteExt};
+  use glommio::net::TcpStream;
+
+  impl Stream for TcpStream {
+    #[inline]
+    async fn read(&mut self, bytes: &mut [u8]) -> crate::Result<usize> {
+      Ok(<Self as AsyncReadExt>::read(self, bytes).await?)
+    }
+
+    #[inline]
+    async fn write_all(&mut self, bytes: &[u8]) -> crate::Result<()> {
+      <Self as AsyncWriteExt>::write_all(self, bytes).await?;
+      Ok(())
+    }
+  }
+}
+
 #[cfg(feature = "hyper")]
 mod hyper {
   use crate::Stream;
@@ -195,7 +216,7 @@ mod tokio {
 
 #[cfg(feature = "tokio-rustls")]
 mod tokio_rustls {
-  use crate::Stream;
+  use crate::{misc::AsyncBounds, Stream};
   #[cfg(feature = "async-trait")]
   use alloc::boxed::Box;
   use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
@@ -203,7 +224,7 @@ mod tokio_rustls {
   #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
   impl<T> Stream for tokio_rustls::client::TlsStream<T>
   where
-    T: AsyncRead + AsyncWrite + Send + Unpin,
+    T: AsyncBounds + AsyncRead + AsyncWrite + Unpin,
   {
     #[inline]
     async fn read(&mut self, bytes: &mut [u8]) -> crate::Result<usize> {
@@ -220,7 +241,7 @@ mod tokio_rustls {
   #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
   impl<T> Stream for tokio_rustls::server::TlsStream<T>
   where
-    T: AsyncRead + AsyncWrite + Send + Unpin,
+    T: AsyncBounds + AsyncRead + AsyncWrite + Unpin,
   {
     #[inline]
     async fn read(&mut self, bytes: &mut [u8]) -> crate::Result<usize> {
