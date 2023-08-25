@@ -6,7 +6,7 @@ mod utf8_errors;
 
 pub(crate) use incomplete_utf8_char::{CompleteErr, IncompleteUtf8Char};
 pub(crate) use rng::Rng;
-pub(crate) use traits::{Expand, SingleTypeStorage};
+pub(crate) use traits::{AsyncBounds, Expand, SingleTypeStorage};
 pub(crate) use utf8_errors::{ExtUtf8Error, StdUtf8Error};
 
 pub(crate) fn from_utf8_opt(bytes: &[u8]) -> Option<&str> {

@@ -1,8 +1,6 @@
 use crate::{
   misc::SingleTypeStorage,
-  web_socket::{
-    WebSocketError, DFLT_FRAME_BUFFER_VEC_LEN, MAX_CONTROL_FRAME_LEN, MAX_HEADER_LEN_U8,
-  },
+  web_socket::{WebSocketError, DFLT_FRAME_BUFFER_VEC_LEN, MAX_CONTROL_FRAME_LEN, MAX_HDR_LEN_U8},
 };
 use alloc::{vec, vec::Vec};
 use core::array;
@@ -110,7 +108,7 @@ where
 
   pub(crate) fn set_header_indcs(&mut self, begin_idx: u8, len: u8) -> crate::Result<()> {
     let header_end_idx = Self::header_end_idx_from_parts(begin_idx, len);
-    if len > MAX_HEADER_LEN_U8 || usize::from(header_end_idx) > self.buffer.as_ref().len() {
+    if len > MAX_HDR_LEN_U8 || usize::from(header_end_idx) > self.buffer.as_ref().len() {
       return Err(WebSocketError::InvalidFrameHeaderBounds.into());
     }
     self.header_begin_idx = begin_idx;

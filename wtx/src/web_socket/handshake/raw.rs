@@ -1,6 +1,5 @@
-use core::borrow::BorrowMut;
-
 use crate::{
+  misc::AsyncBounds,
   web_socket::{
     handshake::{
       misc::{derived_key, gen_key, trim},
@@ -12,6 +11,7 @@ use crate::{
 };
 #[cfg(feature = "async-trait")]
 use alloc::boxed::Box;
+use core::borrow::BorrowMut;
 use httparse::{Header, Status};
 
 const MAX_READ_HEADER_LEN: usize = 64;
@@ -35,8 +35,8 @@ pub struct WebSocketAcceptRaw<'any, RB, S> {
 #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
 impl<'any, RB, S> WebSocketAccept<RB> for WebSocketAcceptRaw<'any, RB, S>
 where
-  RB: BorrowMut<ReadBuffer> + Send + Sync,
-  S: Send + Stream + Sync,
+  RB: AsyncBounds + BorrowMut<ReadBuffer>,
+  S: AsyncBounds + Stream,
 {
   type Response = crate::Response<'any, 'any>;
   type Stream = S;
@@ -113,8 +113,8 @@ pub struct WebSocketHandshakeRaw<'any, RB, S> {
 #[cfg_attr(feature = "async-trait", async_trait::async_trait)]
 impl<'any, RB, S> WebSocketHandshake<RB> for WebSocketHandshakeRaw<'any, RB, S>
 where
-  RB: BorrowMut<ReadBuffer> + Send + Sync,
-  S: Send + Stream + Sync,
+  RB: AsyncBounds + BorrowMut<ReadBuffer>,
+  S: AsyncBounds + Stream,
 {
   type Response = crate::Response<'any, 'any>;
   type Stream = S;

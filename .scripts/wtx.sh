@@ -6,6 +6,8 @@ $rt test-generic wtx
 $rt test-with-features wtx async-std
 $rt test-with-features wtx async-trait
 $rt test-with-features wtx base64
+$rt test-with-features wtx futures-lite
+$rt test-with-features wtx glommio
 $rt test-with-features wtx http
 $rt test-with-features wtx httparse
 $rt test-with-features wtx hyper

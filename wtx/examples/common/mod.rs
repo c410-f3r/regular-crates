@@ -7,10 +7,22 @@ use wtx::{
   ReadBuffer, Stream,
 };
 
+#[cfg(not(feature = "async-trait"))]
+pub(crate) trait AsyncBounds {}
+
+#[cfg(not(feature = "async-trait"))]
+impl<T> AsyncBounds for T where T: ?Sized {}
+
+#[cfg(feature = "async-trait")]
+pub(crate) trait AsyncBounds: Send + Sync {}
+
+#[cfg(feature = "async-trait")]
+impl<T> AsyncBounds for T where T: Send + Sync + ?Sized {}
+
 pub(crate) async fn _accept_conn_and_echo_frames(
   fb: &mut FrameBufferVec,
   rb: &mut ReadBuffer,
-  stream: impl Send + Stream + Sync,
+  stream: impl AsyncBounds + Stream,
 ) -> wtx::Result<()> {
   let (_, mut ws) = WebSocketAcceptRaw {
     fb,
@@ -32,8 +44,8 @@ pub(crate) async fn _connect<RB, S>(
   stream: S,
 ) -> wtx::Result<WebSocketClient<RB, S>>
 where
-  RB: BorrowMut<ReadBuffer> + Send + Sync,
-  S: Send + Stream + Sync,
+  RB: AsyncBounds + BorrowMut<ReadBuffer>,
+  S: AsyncBounds + Stream,
 {
   Ok(
     WebSocketHandshakeRaw { fb, headers_buffer: &mut <_>::default(), rb, uri, stream }
