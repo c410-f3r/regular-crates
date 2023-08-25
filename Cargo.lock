@@ -1626,7 +1626,7 @@ dependencies = [
 
 [[package]]
 name = "wtx"
-version = "0.5.1"
+version = "0.5.2"
 dependencies = [
  "async-std",
  "async-trait",
