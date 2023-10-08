@@ -1,4 +1,3 @@
-.scripts/autobahn/reports
 .vscode
 **/*.rs.bk
 **/artifacts

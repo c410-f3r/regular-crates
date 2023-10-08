@@ -15,5 +15,5 @@ rpath = false
 strip = "debuginfo"
 
 [workspace]
-members = ["cl-aux", "ndstruct", "ndstruct-fuzz", "rust-tools", "ws-bench", "wtx", "wtx-fuzz"]
+members = ["cl-aux", "ndstruct", "ndstruct-fuzz", "rust-tools"]
 resolver = "2"
