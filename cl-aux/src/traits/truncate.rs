@@ -5,11 +5,9 @@ use alloc::{string::String, vec::Vec};
 pub trait Truncate {
   /// Input
   type Input;
-  /// Output
-  type Output;
 
   /// Truncates the storage, delimiting its length by `Input`.
-  fn truncate(&mut self, input: Self::Input) -> Self::Output;
+  fn truncate(&mut self, input: Self::Input);
 }
 
 impl<T> Truncate for &mut T
@@ -17,11 +15,10 @@ where
   T: Truncate,
 {
   type Input = T::Input;
-  type Output = T::Output;
 
   #[inline]
-  fn truncate(&mut self, input: Self::Input) -> Self::Output {
-    (*self).truncate(input)
+  fn truncate(&mut self, input: Self::Input) {
+    (*self).truncate(input);
   }
 }
 
@@ -32,10 +29,9 @@ where
 /// ```
 impl<T> Truncate for Option<T> {
   type Input = usize;
-  type Output = ();
 
   #[inline]
-  fn truncate(&mut self, input: Self::Input) -> Self::Output {
+  fn truncate(&mut self, input: Self::Input) {
     if input == 0 {
       *self = None;
     }
@@ -50,10 +46,9 @@ impl<T> Truncate for Option<T> {
 #[cfg(feature = "alloc")]
 impl Truncate for String {
   type Input = usize;
-  type Output = ();
 
   #[inline]
-  fn truncate(&mut self, input: Self::Input) -> Self::Output {
+  fn truncate(&mut self, input: Self::Input) {
     self.truncate(input);
   }
 }
@@ -66,10 +61,9 @@ impl Truncate for String {
 #[cfg(feature = "alloc")]
 impl<T> Truncate for Vec<T> {
   type Input = usize;
-  type Output = ();
 
   #[inline]
-  fn truncate(&mut self, input: Self::Input) -> Self::Output {
+  fn truncate(&mut self, input: Self::Input) {
     self.truncate(input);
   }
 }
@@ -82,10 +76,9 @@ impl<T> Truncate for Vec<T> {
 #[cfg(feature = "arrayvec")]
 impl<const N: usize> Truncate for arrayvec::ArrayString<N> {
   type Input = usize;
-  type Output = ();
 
   #[inline]
-  fn truncate(&mut self, input: Self::Input) -> Self::Output {
+  fn truncate(&mut self, input: Self::Input) {
     self.truncate(input);
   }
 }
@@ -98,10 +91,9 @@ impl<const N: usize> Truncate for arrayvec::ArrayString<N> {
 #[cfg(feature = "arrayvec")]
 impl<T, const N: usize> Truncate for arrayvec::ArrayVec<T, N> {
   type Input = usize;
-  type Output = ();
 
   #[inline]
-  fn truncate(&mut self, input: Self::Input) -> Self::Output {
+  fn truncate(&mut self, input: Self::Input) {
     self.truncate(input);
   }
 }
@@ -117,10 +109,9 @@ where
   A: smallvec::Array,
 {
   type Input = usize;
-  type Output = ();
 
   #[inline]
-  fn truncate(&mut self, input: Self::Input) -> Self::Output {
+  fn truncate(&mut self, input: Self::Input) {
     self.truncate(input);
   }
 }
@@ -137,10 +128,9 @@ where
   A::Item: Default,
 {
   type Input = usize;
-  type Output = ();
 
   #[inline]
-  fn truncate(&mut self, input: Self::Input) -> Self::Output {
+  fn truncate(&mut self, input: Self::Input) {
     self.truncate(input);
   }
 }
@@ -157,10 +147,9 @@ where
   A::Item: Default,
 {
   type Input = usize;
-  type Output = ();
 
   #[inline]
-  fn truncate(&mut self, input: Self::Input) -> Self::Output {
+  fn truncate(&mut self, input: Self::Input) {
     self.truncate(input);
   }
 }

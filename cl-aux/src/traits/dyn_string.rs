@@ -31,9 +31,9 @@ pub trait DynString:
   + Deref<Target = str>
   + DerefMut
   + crate::Extend<char, Error = crate::Error>
-  + Push<char, Error = crate::Error, Output = ()>
-  + for<'str> Push<&'str str, Error = crate::Error, Output = ()>
-  + Truncate<Input = usize, Output = ()>
+  + Push<char, Error = crate::Error>
+  + for<'str> Push<&'str str, Error = crate::Error>
+  + Truncate<Input = usize>
   + WithCapacity<Input = usize>
   + Write
 {
@@ -47,9 +47,9 @@ impl<T> DynString for T where
     + Deref<Target = str>
     + DerefMut
     + crate::Extend<char, Error = crate::Error>
-    + Push<char, Error = crate::Error, Output = ()>
-    + for<'str> Push<&'str str, Error = crate::Error, Output = ()>
-    + Truncate<Input = usize, Output = ()>
+    + Push<char, Error = crate::Error>
+    + for<'str> Push<&'str str, Error = crate::Error>
+    + Truncate<Input = usize>
     + WithCapacity<Input = usize>
     + Write
 {

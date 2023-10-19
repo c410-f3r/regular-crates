@@ -145,7 +145,7 @@ where
     + Default
     + SingleTypeStorage<Item = ([usize; D], DATA)>
     + cl_aux::CapacityUpperBound
-    + cl_aux::Push<<DS as SingleTypeStorage>::Item, Output = ()>,
+    + cl_aux::Push<<DS as SingleTypeStorage>::Item>,
 {
   /// Creates a new random and valid instance delimited by the passed arguments.
   ///

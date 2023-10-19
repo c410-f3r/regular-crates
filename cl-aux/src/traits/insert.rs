@@ -39,11 +39,9 @@ pub trait Insert {
   type Error;
   /// Input
   type Input;
-  /// Output
-  type Output;
 
   /// Inserts an `Input` element.
-  fn insert(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error>;
+  fn insert(&mut self, input: Self::Input) -> Result<(), Self::Error>;
 }
 
 impl<T> Insert for &mut T
@@ -52,10 +50,9 @@ where
 {
   type Error = T::Error;
   type Input = T::Input;
-  type Output = T::Output;
 
   #[inline]
-  fn insert(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error> {
+  fn insert(&mut self, input: Self::Input) -> Result<(), Self::Error> {
     (*self).insert(input)
   }
 }
@@ -72,10 +69,9 @@ where
 {
   type Error = crate::Error;
   type Input = (K, V);
-  type Output = ();
 
   #[inline]
-  fn insert(&mut self, (k, v): Self::Input) -> Result<Self::Output, Self::Error> {
+  fn insert(&mut self, (k, v): Self::Input) -> Result<(), Self::Error> {
     _manage_hash!(self, k, v)
   }
 }
@@ -92,10 +88,9 @@ where
 {
   type Error = crate::Error;
   type Input = V;
-  type Output = ();
 
   #[inline]
-  fn insert(&mut self, v: Self::Input) -> Result<Self::Output, Self::Error> {
+  fn insert(&mut self, v: Self::Input) -> Result<(), Self::Error> {
     _manage_set!(self, v)
   }
 }
@@ -113,10 +108,9 @@ where
 {
   type Error = crate::Error;
   type Input = (K, V);
-  type Output = ();
 
   #[inline]
-  fn insert(&mut self, (k, v): Self::Input) -> Result<Self::Output, Self::Error> {
+  fn insert(&mut self, (k, v): Self::Input) -> Result<(), Self::Error> {
     _manage_hash!(self, k, v)
   }
 }
@@ -134,10 +128,9 @@ where
 {
   type Error = crate::Error;
   type Input = V;
-  type Output = ();
 
   #[inline]
-  fn insert(&mut self, v: Self::Input) -> Result<Self::Output, Self::Error> {
+  fn insert(&mut self, v: Self::Input) -> Result<(), Self::Error> {
     _manage_set!(self, v)
   }
 }
@@ -150,10 +143,9 @@ where
 impl<T> Insert for Option<T> {
   type Error = crate::Error;
   type Input = T;
-  type Output = ();
 
   #[inline]
-  fn insert(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error> {
+  fn insert(&mut self, input: Self::Input) -> Result<(), Self::Error> {
     if self.is_some() {
       Err(crate::Error::InsufficientCapacity(stringify!(self), 1))
     } else {
@@ -172,10 +164,9 @@ impl<T> Insert for Option<T> {
 impl<T> Insert for Vec<T> {
   type Error = crate::Error;
   type Input = (usize, T);
-  type Output = ();
 
   #[inline]
-  fn insert(&mut self, (idx, elem): Self::Input) -> Result<Self::Output, Self::Error> {
+  fn insert(&mut self, (idx, elem): Self::Input) -> Result<(), Self::Error> {
     _check_indcs!(self, idx);
     self.insert(idx, elem);
     Ok(())
@@ -191,10 +182,9 @@ impl<T> Insert for Vec<T> {
 impl<T, const N: usize> Insert for arrayvec::ArrayVec<T, N> {
   type Error = crate::Error;
   type Input = (usize, T);
-  type Output = ();
 
   #[inline]
-  fn insert(&mut self, (idx, elem): Self::Input) -> Result<Self::Output, Self::Error> {
+  fn insert(&mut self, (idx, elem): Self::Input) -> Result<(), Self::Error> {
     _check_indcs!(self, idx);
     self.insert(idx, elem);
     Ok(())
@@ -213,10 +203,9 @@ where
 {
   type Error = crate::Error;
   type Input = (usize, A::Item);
-  type Output = ();
 
   #[inline]
-  fn insert(&mut self, (idx, elem): Self::Input) -> Result<Self::Output, Self::Error> {
+  fn insert(&mut self, (idx, elem): Self::Input) -> Result<(), Self::Error> {
     _check_indcs!(self, idx);
     self.insert(idx, elem);
     Ok(())
@@ -236,10 +225,9 @@ where
 {
   type Error = crate::Error;
   type Input = (usize, A::Item);
-  type Output = ();
 
   #[inline]
-  fn insert(&mut self, (idx, elem): Self::Input) -> Result<Self::Output, Self::Error> {
+  fn insert(&mut self, (idx, elem): Self::Input) -> Result<(), Self::Error> {
     _check_indcs!(self, idx);
     self.insert(idx, elem);
     Ok(())
@@ -259,10 +247,9 @@ where
 {
   type Error = crate::Error;
   type Input = (usize, A::Item);
-  type Output = ();
 
   #[inline]
-  fn insert(&mut self, (idx, elem): Self::Input) -> Result<Self::Output, Self::Error> {
+  fn insert(&mut self, (idx, elem): Self::Input) -> Result<(), Self::Error> {
     _check_indcs!(self, idx);
     self.insert(idx, elem);
     Ok(())

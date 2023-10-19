@@ -5,11 +5,9 @@ use alloc::{string::String, vec::Vec};
 pub trait Push<I> {
   /// Error
   type Error;
-  /// Output
-  type Output;
 
   /// Pushes an element, increasing the storage length.
-  fn push(&mut self, input: I) -> Result<Self::Output, Self::Error>;
+  fn push(&mut self, input: I) -> Result<(), Self::Error>;
 }
 
 impl<I, T> Push<I> for &mut T
@@ -17,10 +15,9 @@ where
   T: Push<I>,
 {
   type Error = T::Error;
-  type Output = T::Output;
 
   #[inline]
-  fn push(&mut self, input: I) -> Result<Self::Output, Self::Error> {
+  fn push(&mut self, input: I) -> Result<(), Self::Error> {
     (*self).push(input)
   }
 }
@@ -32,10 +29,9 @@ where
 /// ```
 impl<T> Push<T> for () {
   type Error = crate::Error;
-  type Output = ();
 
   #[inline]
-  fn push(&mut self, _: T) -> Result<Self::Output, Self::Error> {
+  fn push(&mut self, _: T) -> Result<(), Self::Error> {
     Ok(())
   }
 }
@@ -47,10 +43,9 @@ impl<T> Push<T> for () {
 /// ```
 impl<T> Push<T> for Option<T> {
   type Error = crate::Error;
-  type Output = ();
 
   #[inline]
-  fn push(&mut self, input: T) -> Result<Self::Output, Self::Error> {
+  fn push(&mut self, input: T) -> Result<(), Self::Error> {
     if self.is_some() {
       Err(crate::Error::InsufficientCapacity(stringify!(self), 1))
     } else {
@@ -68,10 +63,9 @@ impl<T> Push<T> for Option<T> {
 #[cfg(feature = "alloc")]
 impl Push<char> for String {
   type Error = crate::Error;
-  type Output = ();
 
   #[inline]
-  fn push(&mut self, input: char) -> Result<Self::Output, Self::Error> {
+  fn push(&mut self, input: char) -> Result<(), Self::Error> {
     _check_capacity!(self);
     self.push(input);
     Ok(())
@@ -86,10 +80,9 @@ impl Push<char> for String {
 #[cfg(feature = "alloc")]
 impl<'input> Push<&'input str> for String {
   type Error = crate::Error;
-  type Output = ();
 
   #[inline]
-  fn push(&mut self, input: &'input str) -> Result<Self::Output, Self::Error> {
+  fn push(&mut self, input: &'input str) -> Result<(), Self::Error> {
     _check_capacity!(self);
     self.push_str(input);
     Ok(())
@@ -104,10 +97,9 @@ impl<'input> Push<&'input str> for String {
 #[cfg(feature = "alloc")]
 impl<T> Push<T> for Vec<T> {
   type Error = crate::Error;
-  type Output = ();
 
   #[inline]
-  fn push(&mut self, input: T) -> Result<Self::Output, Self::Error> {
+  fn push(&mut self, input: T) -> Result<(), Self::Error> {
     _check_capacity!(self);
     self.push(input);
     Ok(())
@@ -122,10 +114,9 @@ impl<T> Push<T> for Vec<T> {
 #[cfg(feature = "arrayvec")]
 impl<const N: usize> Push<char> for arrayvec::ArrayString<N> {
   type Error = crate::Error;
-  type Output = ();
 
   #[inline]
-  fn push(&mut self, input: char) -> Result<Self::Output, Self::Error> {
+  fn push(&mut self, input: char) -> Result<(), Self::Error> {
     _check_capacity!(self);
     self.push(input);
     Ok(())
@@ -140,10 +131,9 @@ impl<const N: usize> Push<char> for arrayvec::ArrayString<N> {
 #[cfg(feature = "arrayvec")]
 impl<'input, const N: usize> Push<&'input str> for arrayvec::ArrayString<N> {
   type Error = crate::Error;
-  type Output = ();
 
   #[inline]
-  fn push(&mut self, input: &'input str) -> Result<Self::Output, Self::Error> {
+  fn push(&mut self, input: &'input str) -> Result<(), Self::Error> {
     _check_capacity!(self);
     self.push_str(input);
     Ok(())
@@ -158,10 +148,9 @@ impl<'input, const N: usize> Push<&'input str> for arrayvec::ArrayString<N> {
 #[cfg(feature = "arrayvec")]
 impl<T, const N: usize> Push<T> for arrayvec::ArrayVec<T, N> {
   type Error = crate::Error;
-  type Output = ();
 
   #[inline]
-  fn push(&mut self, input: T) -> Result<Self::Output, Self::Error> {
+  fn push(&mut self, input: T) -> Result<(), Self::Error> {
     _check_capacity!(self);
     self.push(input);
     Ok(())
@@ -179,10 +168,9 @@ where
   A: smallvec::Array,
 {
   type Error = crate::Error;
-  type Output = ();
 
   #[inline]
-  fn push(&mut self, input: A::Item) -> Result<Self::Output, Self::Error> {
+  fn push(&mut self, input: A::Item) -> Result<(), Self::Error> {
     _check_capacity!(self);
     self.push(input);
     Ok(())
@@ -201,10 +189,9 @@ where
   A::Item: Default,
 {
   type Error = crate::Error;
-  type Output = ();
 
   #[inline]
-  fn push(&mut self, input: A::Item) -> Result<Self::Output, Self::Error> {
+  fn push(&mut self, input: A::Item) -> Result<(), Self::Error> {
     _check_capacity!(self);
     self.push(input);
     Ok(())
@@ -223,10 +210,9 @@ where
   A::Item: Default,
 {
   type Error = crate::Error;
-  type Output = ();
 
   #[inline]
-  fn push(&mut self, input: A::Item) -> Result<Self::Output, Self::Error> {
+  fn push(&mut self, input: A::Item) -> Result<(), Self::Error> {
     _check_capacity!(self);
     self.push(input);
     Ok(())

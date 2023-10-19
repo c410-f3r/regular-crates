@@ -422,9 +422,9 @@ where
   #[inline]
   pub fn constructor(&mut self) -> crate::Result<CslLineConstructor<'_, DS, IS, OS, D>>
   where
-    DS: Push<DATA, Output = ()>,
-    IS: Push<usize, Output = ()>,
-    OS: Push<usize, Output = ()>,
+    DS: Push<DATA>,
+    IS: Push<usize>,
+    OS: Push<usize>,
   {
     CslLineConstructor::new(self)
   }
@@ -507,9 +507,9 @@ where
   #[inline]
   pub fn truncate(&mut self, indcs: [usize; D])
   where
-    DS: Truncate<Input = usize, Output = ()>,
-    IS: Truncate<Input = usize, Output = ()>,
-    OS: AsMut<[usize]> + Truncate<Input = usize, Output = ()>,
+    DS: Truncate<Input = usize>,
+    IS: Truncate<Input = usize>,
+    OS: AsMut<[usize]> + Truncate<Input = usize>,
   {
     let Some([offs_indcs, values]) = csl_utils::line_offs(&self.dims, &indcs, self.offs.as_ref())
     else {
@@ -542,13 +542,9 @@ where
 #[cfg(feature = "rand")]
 impl<DATA, DS, IS, OS, const D: usize> Csl<DS, IS, OS, D>
 where
-  DS: AsMut<[DATA]>
-    + AsRef<[DATA]>
-    + Default
-    + Push<DATA, Output = ()>
-    + SingleTypeStorage<Item = DATA>,
-  IS: AsMut<[usize]> + AsRef<[usize]> + Default + Push<usize, Output = ()>,
-  OS: AsMut<[usize]> + AsRef<[usize]> + Default + Push<usize, Output = ()>,
+  DS: AsMut<[DATA]> + AsRef<[DATA]> + Default + Push<DATA> + SingleTypeStorage<Item = DATA>,
+  IS: AsMut<[usize]> + AsRef<[usize]> + Default + Push<usize>,
+  OS: AsMut<[usize]> + AsRef<[usize]> + Default + Push<usize>,
 {
   /// Creates a new random and valid instance delimited by the passed arguments.
   ///

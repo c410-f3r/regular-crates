@@ -7,11 +7,9 @@ pub trait Swap {
   type Error;
   /// Input
   type Input;
-  /// Output
-  type Output;
 
   /// Swaps two elements referencied by `Input`.
-  fn swap(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error>;
+  fn swap(&mut self, input: Self::Input) -> Result<(), Self::Error>;
 }
 
 impl<T> Swap for &mut T
@@ -20,10 +18,9 @@ where
 {
   type Error = T::Error;
   type Input = T::Input;
-  type Output = T::Output;
 
   #[inline]
-  fn swap(&mut self, input: Self::Input) -> Result<Self::Output, Self::Error> {
+  fn swap(&mut self, input: Self::Input) -> Result<(), Self::Error> {
     (*self).swap(input)
   }
 }
@@ -37,10 +34,9 @@ where
 impl<T, const N: usize> Swap for [T; N] {
   type Error = crate::Error;
   type Input = [usize; 2];
-  type Output = ();
 
   #[inline]
-  fn swap(&mut self, [a, b]: Self::Input) -> Result<Self::Output, Self::Error> {
+  fn swap(&mut self, [a, b]: Self::Input) -> Result<(), Self::Error> {
     manage_slice(self, a, b)
   }
 }
@@ -54,10 +50,9 @@ impl<T, const N: usize> Swap for [T; N] {
 impl<T> Swap for &'_ mut [T] {
   type Error = crate::Error;
   type Input = [usize; 2];
-  type Output = ();
 
   #[inline]
-  fn swap(&mut self, [a, b]: Self::Input) -> Result<Self::Output, Self::Error> {
+  fn swap(&mut self, [a, b]: Self::Input) -> Result<(), Self::Error> {
     manage_slice(self, a, b)
   }
 }
@@ -72,10 +67,9 @@ impl<T> Swap for &'_ mut [T] {
 impl<T> Swap for Vec<T> {
   type Error = crate::Error;
   type Input = [usize; 2];
-  type Output = ();
 
   #[inline]
-  fn swap(&mut self, [a, b]: Self::Input) -> Result<Self::Output, Self::Error> {
+  fn swap(&mut self, [a, b]: Self::Input) -> Result<(), Self::Error> {
     manage_slice(self, a, b)
   }
 }
@@ -90,10 +84,9 @@ impl<T> Swap for Vec<T> {
 impl<T, const N: usize> Swap for arrayvec::ArrayVec<T, N> {
   type Error = crate::Error;
   type Input = [usize; 2];
-  type Output = ();
 
   #[inline]
-  fn swap(&mut self, [a, b]: Self::Input) -> Result<Self::Output, Self::Error> {
+  fn swap(&mut self, [a, b]: Self::Input) -> Result<(), Self::Error> {
     manage_slice(self, a, b)
   }
 }
@@ -111,10 +104,9 @@ where
 {
   type Error = crate::Error;
   type Input = [usize; 2];
-  type Output = ();
 
   #[inline]
-  fn swap(&mut self, [a, b]: Self::Input) -> Result<Self::Output, Self::Error> {
+  fn swap(&mut self, [a, b]: Self::Input) -> Result<(), Self::Error> {
     manage_slice(self, a, b)
   }
 }
@@ -133,10 +125,9 @@ where
 {
   type Error = crate::Error;
   type Input = [usize; 2];
-  type Output = ();
 
   #[inline]
-  fn swap(&mut self, [a, b]: Self::Input) -> Result<Self::Output, Self::Error> {
+  fn swap(&mut self, [a, b]: Self::Input) -> Result<(), Self::Error> {
     manage_slice(self, a, b)
   }
 }
@@ -155,10 +146,9 @@ where
 {
   type Error = crate::Error;
   type Input = [usize; 2];
-  type Output = ();
 
   #[inline]
-  fn swap(&mut self, [a, b]: Self::Input) -> Result<Self::Output, Self::Error> {
+  fn swap(&mut self, [a, b]: Self::Input) -> Result<(), Self::Error> {
     manage_slice(self, a, b)
   }
 }

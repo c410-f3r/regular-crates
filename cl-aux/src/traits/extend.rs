@@ -5,14 +5,9 @@ use alloc::{string::String, vec::Vec};
 pub trait Extend<IN> {
   /// Error
   type Error;
-  /// Output
-  type Output;
 
   /// Returns an mutable inner reference of a derived element.
-  fn extend(
-    &mut self,
-    into_iter: impl IntoIterator<Item = IN>,
-  ) -> Result<Self::Output, Self::Error>;
+  fn extend(&mut self, into_iter: impl IntoIterator<Item = IN>) -> Result<(), Self::Error>;
 }
 
 impl<IN, T> Extend<IN> for &mut T
@@ -20,23 +15,18 @@ where
   T: Extend<IN>,
 {
   type Error = T::Error;
-  type Output = T::Output;
 
   #[inline]
-  fn extend(
-    &mut self,
-    into_iter: impl IntoIterator<Item = IN>,
-  ) -> Result<Self::Output, Self::Error> {
+  fn extend(&mut self, into_iter: impl IntoIterator<Item = IN>) -> Result<(), Self::Error> {
     (*self).extend(into_iter)
   }
 }
 
 impl<T> Extend<T> for () {
   type Error = crate::Error;
-  type Output = ();
 
   #[inline]
-  fn extend(&mut self, _: impl IntoIterator<Item = T>) -> Result<Self::Output, Self::Error> {
+  fn extend(&mut self, _: impl IntoIterator<Item = T>) -> Result<(), Self::Error> {
     Ok(())
   }
 }
@@ -48,13 +38,9 @@ impl<T> Extend<T> for () {
 /// ```
 impl<T> Extend<T> for Option<T> {
   type Error = crate::Error;
-  type Output = ();
 
   #[inline]
-  fn extend(
-    &mut self,
-    into_iter: impl IntoIterator<Item = T>,
-  ) -> Result<Self::Output, Self::Error> {
+  fn extend(&mut self, into_iter: impl IntoIterator<Item = T>) -> Result<(), Self::Error> {
     _check_capacity!(self);
     let err = || crate::Error::InsufficientCapacity(stringify!(self), 1);
     let mut iter = into_iter.into_iter();
@@ -76,13 +62,9 @@ impl<T> Extend<T> for Option<T> {
 #[cfg(feature = "alloc")]
 impl Extend<char> for String {
   type Error = crate::Error;
-  type Output = ();
 
   #[inline]
-  fn extend(
-    &mut self,
-    into_iter: impl IntoIterator<Item = char>,
-  ) -> Result<Self::Output, Self::Error> {
+  fn extend(&mut self, into_iter: impl IntoIterator<Item = char>) -> Result<(), Self::Error> {
     core::iter::Extend::extend(self, into_iter);
     Ok(())
   }
@@ -96,13 +78,9 @@ impl Extend<char> for String {
 #[cfg(feature = "alloc")]
 impl<T> Extend<T> for Vec<T> {
   type Error = crate::Error;
-  type Output = ();
 
   #[inline]
-  fn extend(
-    &mut self,
-    into_iter: impl IntoIterator<Item = T>,
-  ) -> Result<Self::Output, Self::Error> {
+  fn extend(&mut self, into_iter: impl IntoIterator<Item = T>) -> Result<(), Self::Error> {
     core::iter::Extend::extend(self, into_iter);
     Ok(())
   }
@@ -116,16 +94,12 @@ impl<T> Extend<T> for Vec<T> {
 #[cfg(feature = "arrayvec")]
 impl<const N: usize> Extend<char> for arrayvec::ArrayString<N>
 where
-  Self: crate::Push<char, Output = ()>,
+  Self: crate::Push<char>,
 {
   type Error = <Self as crate::Push<char>>::Error;
-  type Output = ();
 
   #[inline]
-  fn extend(
-    &mut self,
-    into_iter: impl IntoIterator<Item = char>,
-  ) -> Result<Self::Output, Self::Error> {
+  fn extend(&mut self, into_iter: impl IntoIterator<Item = char>) -> Result<(), Self::Error> {
     for elem in into_iter {
       crate::Push::push(self, elem)?;
     }
@@ -141,16 +115,12 @@ where
 #[cfg(feature = "arrayvec")]
 impl<T, const N: usize> Extend<T> for arrayvec::ArrayVec<T, N>
 where
-  Self: crate::Push<T, Output = ()>,
+  Self: crate::Push<T>,
 {
   type Error = <Self as crate::Push<T>>::Error;
-  type Output = ();
 
   #[inline]
-  fn extend(
-    &mut self,
-    into_iter: impl IntoIterator<Item = T>,
-  ) -> Result<Self::Output, Self::Error> {
+  fn extend(&mut self, into_iter: impl IntoIterator<Item = T>) -> Result<(), Self::Error> {
     for elem in into_iter {
       crate::Push::push(self, elem)?;
     }
@@ -167,16 +137,12 @@ where
 impl<A> Extend<A::Item> for smallvec::SmallVec<A>
 where
   A: smallvec::Array,
-  Self: crate::Push<A::Item, Output = ()>,
+  Self: crate::Push<A::Item>,
 {
   type Error = <Self as crate::Push<A::Item>>::Error;
-  type Output = ();
 
   #[inline]
-  fn extend(
-    &mut self,
-    into_iter: impl IntoIterator<Item = A::Item>,
-  ) -> Result<Self::Output, Self::Error> {
+  fn extend(&mut self, into_iter: impl IntoIterator<Item = A::Item>) -> Result<(), Self::Error> {
     for elem in into_iter {
       crate::Push::push(self, elem)?;
     }
@@ -193,16 +159,12 @@ where
 impl<A> Extend<A::Item> for tinyvec::ArrayVec<A>
 where
   A: tinyvec::Array,
-  Self: crate::Push<A::Item, Output = ()>,
+  Self: crate::Push<A::Item>,
 {
   type Error = <Self as crate::Push<A::Item>>::Error;
-  type Output = ();
 
   #[inline]
-  fn extend(
-    &mut self,
-    into_iter: impl IntoIterator<Item = A::Item>,
-  ) -> Result<Self::Output, Self::Error> {
+  fn extend(&mut self, into_iter: impl IntoIterator<Item = A::Item>) -> Result<(), Self::Error> {
     for elem in into_iter {
       crate::Push::push(self, elem)?;
     }
@@ -220,16 +182,12 @@ impl<A> Extend<A::Item> for tinyvec::TinyVec<A>
 where
   A: tinyvec::Array,
   A::Item: Default,
-  Self: crate::Push<A::Item, Output = ()>,
+  Self: crate::Push<A::Item>,
 {
   type Error = <Self as crate::Push<A::Item>>::Error;
-  type Output = ();
 
   #[inline]
-  fn extend(
-    &mut self,
-    into_iter: impl IntoIterator<Item = A::Item>,
-  ) -> Result<Self::Output, Self::Error> {
+  fn extend(&mut self, into_iter: impl IntoIterator<Item = A::Item>) -> Result<(), Self::Error> {
     for elem in into_iter {
       crate::Push::push(self, elem)?;
     }
