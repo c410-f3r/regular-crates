@@ -13,9 +13,9 @@ pub struct CslLineConstructor<'csl, DS, IS, OS, const D: usize> {
 
 impl<'csl, DATA, DS, IS, OS, const D: usize> CslLineConstructor<'csl, DS, IS, OS, D>
 where
-  DS: AsRef<[DATA]> + Push<DATA, Output = ()> + SingleTypeStorage<Item = DATA>,
-  IS: AsRef<[usize]> + Push<usize, Output = ()>,
-  OS: AsRef<[usize]> + Push<usize, Output = ()>,
+  DS: AsRef<[DATA]> + Push<DATA> + SingleTypeStorage<Item = DATA>,
+  IS: AsRef<[usize]> + Push<usize>,
+  OS: AsRef<[usize]> + Push<usize>,
 {
   #[inline]
   pub(crate) fn new(csl: &'csl mut Csl<DS, IS, OS, D>) -> crate::Result<Self> {

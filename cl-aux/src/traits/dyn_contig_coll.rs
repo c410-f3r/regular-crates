@@ -27,9 +27,9 @@ pub trait DynContigColl<T>:
   + Default
   + Deref<Target = [T]>
   + DerefMut
-  + crate::Extend<T, Error = crate::Error, Output = ()>
-  + Push<T, Error = crate::Error, Output = ()>
-  + Truncate<Input = usize, Output = ()>
+  + crate::Extend<T, Error = crate::Error>
+  + Push<T, Error = crate::Error>
+  + Truncate<Input = usize>
   + WithCapacity<Input = usize>
 {
 }
@@ -41,9 +41,9 @@ impl<T, U> DynContigColl<T> for U where
     + Default
     + Deref<Target = [T]>
     + DerefMut
-    + crate::Extend<T, Error = crate::Error, Output = ()>
-    + Push<T, Error = crate::Error, Output = ()>
-    + Truncate<Input = usize, Output = ()>
+    + crate::Extend<T, Error = crate::Error>
+    + Push<T, Error = crate::Error>
+    + Truncate<Input = usize>
     + WithCapacity<Input = usize>
 {
 }

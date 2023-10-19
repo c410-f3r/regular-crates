@@ -195,7 +195,7 @@ pub(crate) fn outermost_stride<const D: usize>(dims: &[usize; D]) -> usize {
 #[inline]
 pub(crate) fn manage_last_offset<OS>(offs: &mut OS) -> crate::Result<usize>
 where
-  OS: AsRef<[usize]> + Push<usize, Output = ()>,
+  OS: AsRef<[usize]> + Push<usize>,
 {
   Ok(if let Some(rslt) = offs.as_ref().last() {
     *rslt

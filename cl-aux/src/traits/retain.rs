@@ -5,11 +5,9 @@ use alloc::vec::Vec;
 pub trait Retain {
   /// Input
   type Input;
-  /// Output
-  type Output;
 
   /// Retains only the elements specified by the `F` predicate.
-  fn retain(&mut self, input: Self::Input) -> Self::Output;
+  fn retain(&mut self, input: Self::Input);
 }
 
 impl<T> Retain for &mut T
@@ -17,11 +15,10 @@ where
   T: Retain,
 {
   type Input = T::Input;
-  type Output = T::Output;
 
   #[inline]
-  fn retain(&mut self, input: Self::Input) -> Self::Output {
-    (*self).retain(input)
+  fn retain(&mut self, input: Self::Input) {
+    (*self).retain(input);
   }
 }
 
@@ -32,7 +29,6 @@ where
 /// ```
 impl<T> Retain for Option<T> {
   type Input = fn(&T) -> bool;
-  type Output = ();
 
   #[inline]
   fn retain(&mut self, input: Self::Input) {
@@ -52,7 +48,6 @@ impl<T> Retain for Option<T> {
 #[cfg(feature = "alloc")]
 impl<T> Retain for Vec<T> {
   type Input = fn(&T) -> bool;
-  type Output = ();
 
   #[inline]
   fn retain(&mut self, input: Self::Input) {
@@ -68,7 +63,6 @@ impl<T> Retain for Vec<T> {
 #[cfg(feature = "arrayvec")]
 impl<T, const N: usize> Retain for arrayvec::ArrayVec<T, N> {
   type Input = fn(&T) -> bool;
-  type Output = ();
 
   #[inline]
   fn retain(&mut self, input: Self::Input) {
@@ -87,7 +81,6 @@ where
   A: smallvec::Array,
 {
   type Input = fn(&A::Item) -> bool;
-  type Output = ();
 
   #[inline]
   fn retain(&mut self, input: Self::Input) {
@@ -107,7 +100,6 @@ where
   A::Item: Default,
 {
   type Input = fn(&A::Item) -> bool;
-  type Output = ();
 
   #[inline]
   fn retain(&mut self, input: Self::Input) {
@@ -127,7 +119,6 @@ where
   A::Item: Default,
 {
   type Input = fn(&A::Item) -> bool;
-  type Output = ();
 
   #[inline]
   fn retain(&mut self, input: Self::Input) {

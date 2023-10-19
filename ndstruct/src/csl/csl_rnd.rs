@@ -18,10 +18,10 @@ pub(crate) struct CslRnd<'csl, DS, IS, OS, R, const D: usize> {
 
 impl<'csl, DATA, DS, IS, OS, R, const D: usize> CslRnd<'csl, DS, IS, OS, R, D>
 where
-  DS: AsMut<[DATA]> + AsRef<[DATA]> + Push<DATA, Output = ()> + SingleTypeStorage<Item = DATA>,
-  IS: AsMut<[usize]> + AsRef<[usize]> + Push<usize, Output = ()>,
+  DS: AsMut<[DATA]> + AsRef<[DATA]> + Push<DATA> + SingleTypeStorage<Item = DATA>,
+  IS: AsMut<[usize]> + AsRef<[usize]> + Push<usize>,
   R: Rng,
-  OS: AsMut<[usize]> + AsRef<[usize]> + Push<usize, Output = ()>,
+  OS: AsMut<[usize]> + AsRef<[usize]> + Push<usize>,
 {
   #[inline]
   pub(crate) fn new(
