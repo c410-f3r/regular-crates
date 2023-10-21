@@ -8,24 +8,24 @@ use core::{
 
 #[cfg(feature = "alloc")]
 /// [AutoClear] with a [String].
-pub type AutClearString<'item> = AutoClear<'item, String>;
+pub type AutoClearString<'item> = AutoClear<'item, String>;
 #[cfg(feature = "alloc")]
 /// [AutoClear] with a [Vec].
-pub type AutClearVec<'item, T> = AutoClear<'item, Vec<T>>;
+pub type AutoClearVec<'item, T> = AutoClear<'item, Vec<T>>;
 
 #[cfg(feature = "arrayvec")]
 /// [AutoClear] with a [arrayvec::ArrayVec].
-pub type AutClearAV<'item, T, const N: usize> = AutoClear<'item, arrayvec::ArrayVec<T, N>>;
+pub type AutoClearAV<'item, T, const N: usize> = AutoClear<'item, arrayvec::ArrayVec<T, N>>;
 #[cfg(feature = "arrayvec")]
 /// [AutoClear] with a [arrayvec::ArrayString].
-pub type AutClearAS<'item, const N: usize> = AutoClear<'item, arrayvec::ArrayString<N>>;
+pub type AutoClearAS<'item, const N: usize> = AutoClear<'item, arrayvec::ArrayString<N>>;
 
 #[cfg(feature = "tinyvec")]
 /// [AutoClear] with a [tinyvec::ArrayVec].
-pub type AutClearTAV<'item, A> = AutoClear<'item, tinyvec::ArrayVec<A>>;
+pub type AutoClearTAV<'item, A> = AutoClear<'item, tinyvec::ArrayVec<A>>;
 #[cfg(all(feature = "alloc", feature = "tinyvec"))]
 /// [AutoClear] with a [tinyvec::TinyVec].
-pub type AutClearTV<'item, A> = AutoClear<'item, tinyvec::TinyVec<A>>;
+pub type AutoClearTV<'item, A> = AutoClear<'item, tinyvec::TinyVec<A>>;
 
 /// Any mutable item wrapped in this structure is automatically cleaned when dropped.
 #[derive(Debug, Eq, Ord, PartialEq, PartialOrd)]
