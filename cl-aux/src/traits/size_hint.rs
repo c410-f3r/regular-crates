@@ -246,10 +246,10 @@ where
 }
 
 /// ```rust
-/// let structure = cl_aux::doc_tests::tiny_vec();
+/// let structure = cl_aux::doc_tests::tiny_vec_tiny_vec();
 /// assert_eq!(cl_aux::SizeHint::size_hint(&structure), (3, Some(3)));
 /// ```
-#[cfg(feature = "tinyvec")]
+#[cfg(all(feature = "alloc", feature = "tinyvec"))]
 impl<A> SizeHint for tinyvec::TinyVec<A>
 where
   A: tinyvec::Array,

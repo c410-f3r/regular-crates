@@ -102,18 +102,18 @@ pub fn string() -> String {
 
 #[cfg(feature = "tinyvec")]
 #[inline]
-/// `TinyVec` with three elements
-pub fn tiny_vec() -> tinyvec::TinyVec<[i32; 5]> {
-  let mut vec = tinyvec::TinyVec::new();
+/// `ArrayVec` with three elements
+pub fn tiny_vec_array_vec() -> tinyvec::ArrayVec<[i32; 5]> {
+  let mut vec = tinyvec::ArrayVec::new();
   vec.extend([1, 2, 3].iter().copied());
   vec
 }
 
-#[cfg(feature = "tinyvec")]
+#[cfg(all(feature = "alloc", feature = "tinyvec"))]
 #[inline]
-/// `tinyvec::ArrayVec` with three elements
-pub fn tiny_vec_array_vec() -> tinyvec::ArrayVec<[i32; 5]> {
-  let mut vec = tinyvec::ArrayVec::new();
+/// `TinyVec` with three elements
+pub fn tiny_vec_tiny_vec() -> tinyvec::TinyVec<[i32; 5]> {
+  let mut vec = tinyvec::TinyVec::new();
   vec.extend([1, 2, 3].iter().copied());
   vec
 }

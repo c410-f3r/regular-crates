@@ -173,11 +173,11 @@ where
 }
 
 /// ```rust
-/// let mut structure = cl_aux::doc_tests::tiny_vec();
+/// let mut structure = cl_aux::doc_tests::tiny_vec_tiny_vec();
 /// cl_aux::Extend::extend(&mut structure, [20]);
 /// assert_eq!(&structure[..], &[1, 2, 3, 20][..]);
 /// ```
-#[cfg(feature = "tinyvec")]
+#[cfg(all(feature = "alloc", feature = "tinyvec"))]
 impl<A> Extend<A::Item> for tinyvec::TinyVec<A>
 where
   A: tinyvec::Array,

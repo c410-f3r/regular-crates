@@ -69,7 +69,7 @@ where
   type Item = A::Item;
 }
 
-#[cfg(feature = "tinyvec")]
+#[cfg(all(feature = "alloc", feature = "tinyvec"))]
 impl<A> SingleTypeStorage for tinyvec::TinyVec<A>
 where
   A: tinyvec::Array,
