@@ -163,10 +163,10 @@ where
 }
 
 /// ```rust
-/// let mut structure = cl_aux::doc_tests::tiny_vec();
+/// let mut structure = cl_aux::doc_tests::tiny_vec_tiny_vec();
 /// assert_eq!(cl_aux::Capacity::capacity(&structure), 5);
 /// ```
-#[cfg(feature = "tinyvec")]
+#[cfg(all(feature = "alloc", feature = "tinyvec"))]
 impl<A> Capacity for tinyvec::TinyVec<A>
 where
   A: tinyvec::Array,

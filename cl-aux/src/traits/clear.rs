@@ -120,11 +120,11 @@ where
 }
 
 /// ```rust
-/// let mut structure = cl_aux::doc_tests::tiny_vec();
+/// let mut structure = cl_aux::doc_tests::tiny_vec_tiny_vec();
 /// cl_aux::Clear::clear(&mut structure);
 /// assert_eq!(structure.len(), 0);
 /// ```
-#[cfg(feature = "tinyvec")]
+#[cfg(all(feature = "alloc", feature = "tinyvec"))]
 impl<A> Clear for tinyvec::TinyVec<A>
 where
   A: tinyvec::Array,

@@ -235,11 +235,11 @@ where
 }
 
 /// ```rust
-/// let mut structure = cl_aux::doc_tests::tiny_vec();
+/// let mut structure = cl_aux::doc_tests::tiny_vec_tiny_vec();
 /// cl_aux::Insert::insert(&mut structure, (0, 10));
 /// assert_eq!(structure.get(0), Some(&10));
 /// ```
-#[cfg(feature = "tinyvec")]
+#[cfg(all(feature = "alloc", feature = "tinyvec"))]
 impl<A> Insert for tinyvec::TinyVec<A>
 where
   A: tinyvec::Array,

@@ -199,10 +199,10 @@ where
 }
 
 /// ```rust
-/// let mut structure = cl_aux::doc_tests::tiny_vec();
+/// let mut structure = cl_aux::doc_tests::tiny_vec_tiny_vec();
 /// assert_eq!(cl_aux::Iter::iter(&structure).next().unwrap(), &1);
 /// ```
-#[cfg(feature = "tinyvec")]
+#[cfg(all(feature = "alloc", feature = "tinyvec"))]
 impl<A> Iter for tinyvec::TinyVec<A>
 where
   A: tinyvec::Array,

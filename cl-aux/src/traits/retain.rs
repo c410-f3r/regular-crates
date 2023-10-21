@@ -108,11 +108,11 @@ where
 }
 
 /// ```rust
-/// let mut structure = cl_aux::doc_tests::tiny_vec();
+/// let mut structure = cl_aux::doc_tests::tiny_vec_tiny_vec();
 /// cl_aux::Retain::retain(&mut structure, |n| n % 2 == 0);
 /// assert_eq!(&structure[..], &[2]);
 /// ```
-#[cfg(feature = "tinyvec")]
+#[cfg(all(feature = "alloc", feature = "tinyvec"))]
 impl<A> Retain for tinyvec::TinyVec<A>
 where
   A: tinyvec::Array,
