@@ -1,39 +1,16 @@
 use crate::Clear;
-#[cfg(feature = "alloc")]
-use alloc::{string::String, vec::Vec};
 use core::{
   borrow::{Borrow, BorrowMut},
   ops::{Deref, DerefMut},
 };
 
-#[cfg(feature = "alloc")]
-/// [AutoClear] with a [String].
-pub type AutoClearString<'item> = AutoClear<'item, String>;
-#[cfg(feature = "alloc")]
-/// [AutoClear] with a [Vec].
-pub type AutoClearVec<'item, T> = AutoClear<'item, Vec<T>>;
-
-#[cfg(feature = "arrayvec")]
-/// [AutoClear] with a [arrayvec::ArrayVec].
-pub type AutoClearAV<'item, T, const N: usize> = AutoClear<'item, arrayvec::ArrayVec<T, N>>;
-#[cfg(feature = "arrayvec")]
-/// [AutoClear] with a [arrayvec::ArrayString].
-pub type AutoClearAS<'item, const N: usize> = AutoClear<'item, arrayvec::ArrayString<N>>;
-
-#[cfg(feature = "tinyvec")]
-/// [AutoClear] with a [tinyvec::ArrayVec].
-pub type AutoClearTAV<'item, A> = AutoClear<'item, tinyvec::ArrayVec<A>>;
-#[cfg(all(feature = "alloc", feature = "tinyvec"))]
-/// [AutoClear] with a [tinyvec::TinyVec].
-pub type AutoClearTV<'item, A> = AutoClear<'item, tinyvec::TinyVec<A>>;
-
 /// Any mutable item wrapped in this structure is automatically cleaned when dropped.
 #[derive(Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub struct AutoClear<'item, T>(&'item mut T)
+pub struct AutoClear<T>(T)
 where
   T: Clear;
 
-impl<T> AsMut<T> for AutoClear<'_, T>
+impl<T> AsMut<T> for AutoClear<T>
 where
   T: Clear,
 {
@@ -43,7 +20,7 @@ where
   }
 }
 
-impl<T> AsRef<T> for AutoClear<'_, T>
+impl<T> AsRef<T> for AutoClear<T>
 where
   T: Clear,
 {
@@ -53,7 +30,7 @@ where
   }
 }
 
-impl<T> Borrow<T> for AutoClear<'_, T>
+impl<T> Borrow<T> for AutoClear<T>
 where
   T: Clear,
 {
@@ -63,7 +40,7 @@ where
   }
 }
 
-impl<T> BorrowMut<T> for AutoClear<'_, T>
+impl<T> BorrowMut<T> for AutoClear<T>
 where
   T: Clear,
 {
@@ -73,7 +50,7 @@ where
   }
 }
 
-impl<T> Deref for AutoClear<'_, T>
+impl<T> Deref for AutoClear<T>
 where
   T: Clear,
 {
@@ -81,21 +58,21 @@ where
 
   #[inline]
   fn deref(&self) -> &Self::Target {
-    self.0
+    &self.0
   }
 }
 
-impl<T> DerefMut for AutoClear<'_, T>
+impl<T> DerefMut for AutoClear<T>
 where
   T: Clear,
 {
   #[inline]
   fn deref_mut(&mut self) -> &mut Self::Target {
-    self.0
+    &mut self.0
   }
 }
 
-impl<T> Drop for AutoClear<'_, T>
+impl<T> Drop for AutoClear<T>
 where
   T: Clear,
 {
@@ -105,12 +82,12 @@ where
   }
 }
 
-impl<'item, T> From<&'item mut T> for AutoClear<'item, T>
+impl<T> From<T> for AutoClear<T>
 where
   T: Clear,
 {
   #[inline]
-  fn from(from: &'item mut T) -> Self {
+  fn from(from: T) -> Self {
     Self(from)
   }
 }
