@@ -1,4 +1,4 @@
-use crate::{Capacity, CapacityUpperBound, Length, SizeHint};
+use crate::{Capacity, CapacityUpperBound, Clear, Length, SizeHint, Truncate};
 
 macro_rules! tuple_impls {
   ($(
@@ -18,6 +18,14 @@ macro_rules! tuple_impls {
         const CAPACITY_UPPER_BOUND: usize = $tuple_len;
       }
 
+      #[allow(non_snake_case)]
+      impl<$( $T: Clear, )*> Clear for ($( $T, )*) {
+        #[inline]
+        fn clear(&mut self) {
+          $( self.$idx.clear(); )*
+        }
+      }
+
       impl<$( $T, )*> Length for ($( $T, )*) {
         #[inline]
         fn length(&self) -> usize {
@@ -29,6 +37,16 @@ macro_rules! tuple_impls {
         #[inline]
         fn size_hint(&self) -> (usize, Option<usize>) {
           ($tuple_len, Some($tuple_len))
+        }
+      }
+
+      #[allow(non_snake_case)]
+      impl<$( $T: Truncate, )*> Truncate for ($( $T, )*) {
+        type Input = ($( $T::Input, )*);
+
+        #[inline]
+        fn truncate(&mut self, input: Self::Input) {
+          $( self.$idx.truncate(input.$idx); )*
         }
       }
     )+
