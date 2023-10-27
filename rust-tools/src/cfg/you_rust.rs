@@ -44,6 +44,7 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Aclippy::similar_names",
   "-Aclippy::single_call_fn",
   "-Aclippy::std_instead_of_core",
+  "-Aclippy::str_to_string",
   "-Aclippy::struct_excessive_bools",
   "-Aclippy::unneeded_field_pattern",
   "-Aclippy::unseparated_literal_suffix",
