@@ -19,7 +19,7 @@ path = "random_csl.rs"
 required-features = ["libfuzzer-sys/link_libfuzzer"]
 
 [dependencies]
-arbitrary = { default-features = false, features = ["derive"], version = "1.0" }
+arbitrary = { default-features = false, features = ["derive"], version = "1.3" }
 libfuzzer-sys = { default-features = false, version = "0.4" }
 ndstruct = { default-features = false, features = ["alloc", "rand", "rayon"], path = "../ndstruct" }
 rand = { default-features = false, version = "0.8" }
