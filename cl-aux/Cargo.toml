@@ -1,7 +1,7 @@
 [dependencies]
 arrayvec = { default-features = false, optional = true, version = "0.7" }
 serde = { default-features = false, optional = true, version = "1.0" }
-smallvec = { default-features = false, optional = true, version = "1.0" }
+smallvec = { default-features = false, optional = true, version = "1.11" }
 tinyvec = { default-features = false, optional = true, version = "1.0" }
 
 [features]
