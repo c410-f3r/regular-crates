@@ -42,7 +42,7 @@ impl<T> Extend<T> for Option<T> {
   #[inline]
   fn extend(&mut self, into_iter: impl IntoIterator<Item = T>) -> Result<(), Self::Error> {
     _check_capacity!(self);
-    let err = || crate::Error::InsufficientCapacity(stringify!(self), 1);
+    let err = || crate::Error::InsufficientCapacity(1);
     let mut iter = into_iter.into_iter();
     let next = iter.next().ok_or_else(err)?;
     *self = Some(next);

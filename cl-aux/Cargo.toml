@@ -5,9 +5,9 @@ smallvec = { default-features = false, optional = true, version = "1.0" }
 tinyvec = { default-features = false, optional = true, version = "1.0" }
 
 [features]
-alloc = []
+alloc = ["tinyvec?/alloc"]
 default = []
-std = ["alloc", "tinyvec?/alloc"]
+std = ["alloc"]
 
 [package]
 authors = ["Caio Fernandes <c410.f3r@gmail.com>"]

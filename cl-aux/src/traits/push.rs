@@ -47,7 +47,7 @@ impl<T> Push<T> for Option<T> {
   #[inline]
   fn push(&mut self, input: T) -> Result<(), Self::Error> {
     if self.is_some() {
-      Err(crate::Error::InsufficientCapacity(stringify!(self), 1))
+      Err(crate::Error::InsufficientCapacity(1))
     } else {
       *self = Some(input);
       Ok(())

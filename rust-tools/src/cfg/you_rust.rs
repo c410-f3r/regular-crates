@@ -49,6 +49,7 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Aclippy::unneeded_field_pattern",
   "-Aclippy::unseparated_literal_suffix",
   "-Aclippy::unused_self",
+  "-Aclippy::used_underscore_binding",
 ];
 
 const RUST_FLAGS: &[&str] = &[

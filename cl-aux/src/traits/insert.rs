@@ -6,7 +6,7 @@
 macro_rules! _manage_hash {
   ($hash:expr, $key:expr, $value:expr) => {{
     if $hash.contains_key(&$key) {
-      Err(crate::Error::AlreadyExistingElement(stringify!($hash), stringify!($key)))
+      Err(crate::Error::AlreadyExistingElement)
     } else {
       let _maybe_discarded = $hash.insert($key, $value);
       Ok(())
@@ -17,7 +17,7 @@ macro_rules! _manage_hash {
 macro_rules! _manage_set {
   ($set:expr, $value:expr) => {{
     if $set.contains(&$value) {
-      Err(crate::Error::AlreadyExistingElement(stringify!($set), stringify!($value)))
+      Err(crate::Error::AlreadyExistingElement)
     } else {
       let _ = $set.insert($value);
       Ok(())
@@ -147,7 +147,7 @@ impl<T> Insert for Option<T> {
   #[inline]
   fn insert(&mut self, input: Self::Input) -> Result<(), Self::Error> {
     if self.is_some() {
-      Err(crate::Error::InsufficientCapacity(stringify!(self), 1))
+      Err(crate::Error::InsufficientCapacity(1))
     } else {
       *self = Some(input);
       Ok(())

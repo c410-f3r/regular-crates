@@ -4,11 +4,11 @@ use core::fmt::{Debug, Display, Formatter};
 #[derive(Debug, Eq, PartialEq)]
 pub enum Error {
   /// It is not possible to insert an already existing element
-  AlreadyExistingElement(&'static str, &'static str),
+  AlreadyExistingElement,
   /// Structure can't store more elements
-  InsufficientCapacity(&'static str, usize),
+  InsufficientCapacity(usize),
   /// Index is out of structure bounds
-  OutOfBounds(&'static str, usize),
+  OutOfBounds(usize),
 }
 
 impl Display for Error {
