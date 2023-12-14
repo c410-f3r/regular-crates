@@ -50,6 +50,7 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Aclippy::unseparated_literal_suffix",
   "-Aclippy::unused_self",
   "-Aclippy::used_underscore_binding",
+  "-Aclippy::wildcard_enum_match_arm",
 ];
 
 const RUST_FLAGS: &[&str] = &[
