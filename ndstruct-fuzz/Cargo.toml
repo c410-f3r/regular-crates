@@ -23,7 +23,7 @@ arbitrary = { default-features = false, features = ["derive"], version = "1.3" }
 libfuzzer-sys = { default-features = false, version = "0.4" }
 ndstruct = { default-features = false, features = ["alloc", "rand", "rayon"], path = "../ndstruct" }
 rand = { default-features = false, version = "0.8" }
-rayon = { default-features = false, version = "1.0" }
+rayon = { default-features = false, version = "1.8" }
 
 [package]
 authors = ["Automatically generated"]
