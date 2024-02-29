@@ -1,7 +1,7 @@
 [dependencies]
 cl-aux = { default-features = false, features = ["serde"], path = "../cl-aux", version = "4.0" }
 rand = { default-features = false, optional = true, version = "0.8" }
-rayon = { default-features = false, optional = true, version = "1.8" }
+rayon = { default-features = false, optional = true, version = "1.9" }
 serde = { default-features = false, features = ["derive"], optional = true, version = "1.0" }
 
 [features]
