@@ -81,7 +81,7 @@ fn handle_cmd_output(cmd: &mut Command) -> Result<()> {
     write_stdio!(child_stdout, stdout());
   }
   if !child.wait()?.success() {
-    return Err(crate::Error::FailedCommand);
+    return Err(Error::FailedCommand);
   }
   Ok(())
 }

@@ -14,7 +14,7 @@ impl Params {
     manage_flags(&mut self.rust_flags, &tp.add_rust_flags, &tp.rm_rust_flags);
     manage_flags(&mut self.rustfmt_flags, &tp.add_rustfmt_flags, &tp.rm_rustfmt_flags);
     if !tp.toolchain.is_empty() {
-      self.toolchain = tp.toolchain.clone();
+      self.toolchain.clone_from(&tp.toolchain);
     }
   }
 }

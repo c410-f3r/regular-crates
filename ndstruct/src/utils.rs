@@ -94,5 +94,5 @@ where
 
 #[inline]
 pub(crate) fn windows2<T>(slice: &[T]) -> impl Iterator<Item = [&T; 2]> {
-  slice.windows(2).filter_map(|value| Some([value.get(0)?, value.get(1)?]))
+  slice.windows(2).filter_map(|value| Some([value.first()?, value.get(1)?]))
 }
