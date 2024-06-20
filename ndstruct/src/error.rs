@@ -9,15 +9,15 @@ use core::fmt::{Debug, Display, Formatter};
 #[derive(Debug, Eq, PartialEq)]
 #[non_exhaustive]
 pub enum Error {
-  /// See [cl_aux::Error].
+  /// See [`cl_aux::Error`].
   ClAux(cl_aux::Error),
-  /// [CooError]
+  /// See [`CooError`]
   Coo(CooError),
-  /// [CslError]
+  /// See [`CslError`]
   Csl(CslError),
-  /// CslLineConstructorError
+  /// [`CslLineConstructorError`]
   CslLineConstructor(CslLineConstructorError),
-  /// [DenseError]
+  /// See [`DenseError`]
   Dense(DenseError),
   /// The internal buffer can't store all necessary data
   InsufficientCapacity,

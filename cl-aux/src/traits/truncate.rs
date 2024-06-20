@@ -1,7 +1,7 @@
 #[cfg(feature = "alloc")]
 use alloc::{string::String, vec::Vec};
 
-/// See [Truncate::truncate] for more information.
+/// See [`Truncate::truncate`] for more information.
 pub trait Truncate {
   /// Input
   type Input;

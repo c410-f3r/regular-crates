@@ -2,7 +2,7 @@ use crate::SingleItemStorage;
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 
-/// See [GetMut::get_mut] for more information.
+/// See [`GetMut::get_mut`] for more information.
 pub trait GetMut {
   /// Error
   type Error;

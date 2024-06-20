@@ -8,9 +8,9 @@ use alloc::{
 #[cfg(feature = "std")]
 use std::collections::{HashMap, HashSet};
 
-/// See [SizeHint::size_hint] for more information.
+/// See [`SizeHint::size_hint`] for more information.
 pub trait SizeHint {
-  /// Has the same semantics of [Iterator::size_hint].
+  /// Has the same semantics of [`Iterator::size_hint`].
   fn size_hint(&self) -> (usize, Option<usize>);
 }
 

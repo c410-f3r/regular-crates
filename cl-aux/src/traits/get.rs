@@ -2,7 +2,7 @@ use crate::SingleItemStorage;
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 
-/// See [Get::get] for more information.
+/// See [`Get::get`] for more information.
 pub trait Get {
   /// Error
   type Error;

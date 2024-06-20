@@ -1,7 +1,7 @@
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 
-/// See [Swap::swap] for more information.
+/// See [`Swap::swap`] for more information.
 pub trait Swap {
   /// Error
   type Error;

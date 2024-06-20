@@ -48,6 +48,7 @@ use crate::{coo::CooVec, csl::CslVec};
 /// );
 /// ```
 #[inline]
+#[must_use]
 pub fn coo_array_5() -> CooArray<i32, 5, 7> {
   CooArray {
     dims: [2, 3, 4, 3, 3].into(),
@@ -63,9 +64,10 @@ pub fn coo_array_5() -> CooArray<i32, 5, 7> {
   }
 }
 
-/// [`Vec`](alloc::vec::Vec) version of [`coo_array_5`].
+/// [`alloc::vec::Vec`] version of [`coo_array_5`].
 #[cfg(feature = "alloc")]
 #[inline]
+#[must_use]
 pub fn coo_vec_5() -> CooVec<i32, 5> {
   let coo = coo_array_5();
   CooVec { dims: coo.dims, data: coo.data.to_vec() }
@@ -102,6 +104,7 @@ pub fn coo_vec_5() -> CooVec<i32, 5> {
 /// );
 /// ```
 #[inline]
+#[must_use]
 pub fn csl_array_4() -> CslArray<i32, 4, 9, 25> {
   CslArray {
     data: [1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -111,9 +114,10 @@ pub fn csl_array_4() -> CslArray<i32, 4, 9, 25> {
   }
 }
 
-/// [`Vec`](alloc::vec::Vec) version of [`csl_array_4`].
+/// [`alloc::vec::Vec`] version of [`csl_array_4`].
 #[cfg(feature = "alloc")]
 #[inline]
+#[must_use]
 pub fn csl_vec_4() -> CslVec<i32, 4> {
   let csl = csl_array_4();
   CslVec {
@@ -151,6 +155,7 @@ pub fn csl_vec_4() -> CslVec<i32, 4> {
 /// );
 /// ```
 #[inline]
+#[must_use]
 pub fn dense_array_3() -> DenseArray<i32, 3, 36> {
   DenseArray {
     dims: [4, 3, 3].into(),

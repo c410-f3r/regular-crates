@@ -20,7 +20,7 @@ impl Actions {
     Ok(())
   }
 
-  pub(crate) fn rustfmt(&self) -> crate::Result<()> {
+  pub(crate) fn rustfmt() -> crate::Result<()> {
     handle_cmd_output(
       Command::new("echo").args(["-e", r"\e[0;33m***** Running rustfmt *****\e[0m\n"]),
     )?;

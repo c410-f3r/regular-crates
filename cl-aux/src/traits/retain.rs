@@ -1,7 +1,7 @@
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 
-/// See [Retain::retain] for more information.
+/// See [`Retain::retain`] for more information.
 pub trait Retain {
   /// Input
   type Input;

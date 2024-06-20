@@ -1,7 +1,7 @@
 #[cfg(feature = "alloc")]
 use alloc::{string::String, vec::Vec};
 
-/// See [Extend::extend] for more information.
+/// See [`Extend::extend`] for more information.
 pub trait Extend<IN> {
   /// Error
   type Error;

@@ -3,7 +3,7 @@ use crate::SingleItemStorage;
 use alloc::{string::String, vec::Vec};
 use core::{option, slice};
 
-/// See [Iter::iter] for more information.
+/// See [`Iter::iter`] for more information.
 pub trait Iter {
   /// Iterator
   type Output<'iter>: Iterator

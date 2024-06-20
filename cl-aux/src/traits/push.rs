@@ -1,7 +1,7 @@
 #[cfg(feature = "alloc")]
 use alloc::{string::String, vec::Vec};
 
-/// See [Push::push] for more information.
+/// See [`Push::push`] for more information.
 pub trait Push<I> {
   /// Error
   type Error;
