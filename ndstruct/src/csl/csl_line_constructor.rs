@@ -155,7 +155,7 @@ where
   }
 }
 
-/// Contains all errors related to CslLineConstructor.
+/// Contains all errors related to [`CslLineConstructor`].
 #[derive(Debug, Eq, PartialEq)]
 #[non_exhaustive]
 pub enum CslLineConstructorError {

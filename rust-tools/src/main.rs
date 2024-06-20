@@ -128,7 +128,7 @@ fn parse_action(
     }
     ActionOption::Rustfmt => {
       actions.params.modify(&tp);
-      actions.rustfmt()?;
+      Actions::rustfmt()?;
     }
     ActionOption::SetUp => {
       actions.params.modify(&tp);
@@ -136,7 +136,7 @@ fn parse_action(
     }
     ActionOption::TargetDir => {
       actions.params.modify(&tp);
-      actions.target_dir()?;
+      Actions::target_dir()?;
     }
     ActionOption::TestGeneric => {
       actions.params.modify(&tp);

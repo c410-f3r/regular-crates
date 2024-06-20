@@ -1,7 +1,7 @@
 #[cfg(feature = "alloc")]
 use alloc::{string::String, vec::Vec};
 
-/// See [WithCapacity::with_capacity] for more information.
+/// See [`WithCapacity::with_capacity`] for more information.
 pub trait WithCapacity
 where
   Self: Sized,

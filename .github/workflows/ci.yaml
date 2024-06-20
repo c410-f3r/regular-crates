@@ -14,7 +14,7 @@ jobs:
         with:
           override: true
           profile: minimal
-          toolchain: nightly-2024-04-27
+          toolchain: nightly-2024-06-08
       - uses: actions-rs/install@v0.1
         with:
           crate: cargo-fuzz
@@ -31,7 +31,7 @@ jobs:
           components: clippy, rustfmt
           override: true
           profile: minimal
-          toolchain: nightly-2024-04-27
+          toolchain: nightly-2024-06-08
       - uses: Swatinem/rust-cache@v2
 
       - run: .scripts/all.sh

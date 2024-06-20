@@ -1,7 +1,7 @@
 use core::fmt::{Debug, Display, Formatter};
 
 /// Groups all possible crate errors
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Error {
   /// It is not possible to insert an already existing element
   AlreadyExistingElement,

@@ -14,5 +14,5 @@ mod tuple_impls;
 pub use structures::*;
 pub use traits::*;
 
-/// Alias of core::result::Result<T, Error>
+/// Alias of [`core::result::Result<T, Error>`].
 pub type Result<T> = core::result::Result<T, Error>;

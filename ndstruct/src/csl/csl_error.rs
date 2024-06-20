@@ -103,7 +103,7 @@ pub enum CslError {
   #[cfg(feature = "rand")]
   NnzGreaterThanMaximumNnz,
 
-  /// It isn't possible to have more lines than usize::MAX - 2
+  /// It isn't possible to have more lines than [`usize::MAX`] - 2
   ///
   /// ```rust
   /// use ndstruct::csl::{CslArray, CslError};

@@ -1,6 +1,6 @@
 use core::{borrow::Borrow, ops::Deref, slice::Iter};
 
-/// Immutable array reference wrapper similar to [crate::ArrayWrapper].
+/// Immutable array reference wrapper similar to [`crate::ArrayWrapper`].
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 #[repr(transparent)]
 pub struct ArrayWrapperRef<'array, T, const N: usize>(

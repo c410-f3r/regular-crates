@@ -21,7 +21,7 @@ impl Debug for Error {
   fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), core::fmt::Error> {
     match self {
       Self::FailedCommand => write!(f, "A command wasn't successful"),
-      Self::Io(e) => write!(f, "IO: {e}"),
+      Self::Io(err) => write!(f, "IO: {err}"),
       Self::UnknownAction => write!(
         f,
         "Unknown action, please select one of the following possibilities: {}",

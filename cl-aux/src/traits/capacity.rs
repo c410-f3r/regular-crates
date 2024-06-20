@@ -2,7 +2,7 @@ use crate::SingleItemStorage;
 #[cfg(feature = "alloc")]
 use alloc::{string::String, vec::Vec};
 
-/// See [Capacity::capacity] for more information.
+/// See [`Capacity::capacity`] for more information.
 pub trait Capacity {
   /// The number of elements the implementation has pre-allocated as an internal buffer. Not
   /// necessarily the current number of inserted elements.

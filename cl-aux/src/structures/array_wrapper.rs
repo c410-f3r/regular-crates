@@ -124,7 +124,7 @@ mod here_be_dragons {
   };
 
   #[inline]
-  pub(super) fn try_from_fn<E, T, const N: usize>(
+  pub(crate) fn try_from_fn<E, T, const N: usize>(
     cb: impl FnMut(usize) -> Result<T, E>,
   ) -> Result<[T; N], E> {
     let mut iter = (0..N).map(cb);

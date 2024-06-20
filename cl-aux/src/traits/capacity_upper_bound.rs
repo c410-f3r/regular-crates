@@ -2,12 +2,12 @@ use crate::SingleItemStorage;
 #[cfg(feature = "alloc")]
 use alloc::{string::String, vec::Vec};
 
-/// See [CapacityUpperBound::capacity_upper_bound] for more information.
+/// See [`CapacityUpperBound::capacity_upper_bound`] for more information.
 pub trait CapacityUpperBound {
   /// The maximum theoretical number of elements a type implementation is able to store.
   const CAPACITY_UPPER_BOUND: usize;
 
-  /// Instance method representing [Self::CAPACITY_UPPER_BOUND].
+  /// Instance method representing [`Self::CAPACITY_UPPER_BOUND`].
   #[inline]
   fn capacity_upper_bound(&self) -> usize {
     Self::CAPACITY_UPPER_BOUND
@@ -148,9 +148,8 @@ where
 
 #[inline]
 const fn _capacity_upper_bound_of_type<T>() -> usize {
-  let size_of_t = core::mem::size_of::<T>();
   let isize_max_usize = isize::MAX.unsigned_abs();
-  if let Some(elem) = isize_max_usize.checked_div(size_of_t) {
+  if let Some(elem) = isize_max_usize.checked_div(size_of::<T>()) {
     elem
   } else {
     0

@@ -50,9 +50,9 @@ pub type CslVec<DATA, const D: usize> = Csl<Vec<DATA>, Vec<usize>, Vec<usize>, D
 /// # Types
 ///
 /// * `DA`: Dimensions Array
-/// * `DS`: Data SingleTypeStorage
-/// * `IS`: Indices SingleTypeStorage
-/// * `OS`: Offsets SingleTypeStorage
+/// * `DS`: Data Store
+/// * `IS`: Indices Store
+/// * `OS`: Offsets Store
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 #[derive(Clone, Debug, Default, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Csl<DS, IS, OS, const D: usize> {
@@ -88,6 +88,7 @@ where
   /// let _ = CslVec::<i32, 3>::with_capacity(nnz, nolp1);
   /// ```
   #[inline]
+  #[must_use]
   pub fn with_capacity(nnz: usize, nolp1: usize) -> Self {
     Self {
       data: DS::with_capacity(nnz),
@@ -259,7 +260,7 @@ where
     csl_utils::line(self, indcs)
   }
 
-  /// Number of NonZero elements.
+  /// Number of non zero elements.
   ///
   /// # Example
   ///
@@ -418,7 +419,7 @@ where
     self.offs.clear();
   }
 
-  /// See [`CslLineConstructor`](CslLineConstructor) for more information.
+  /// See [`CslLineConstructor`] for more information.
   #[inline]
   pub fn constructor(&mut self) -> crate::Result<CslLineConstructor<'_, DS, IS, OS, D>>
   where

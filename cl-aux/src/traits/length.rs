@@ -9,7 +9,7 @@ use std::collections::{HashMap, HashSet};
 
 use crate::SingleItemStorage;
 
-/// See [Length::length] for more information.
+/// See [`Length::length`] for more information.
 pub trait Length {
   /// Holds a certain number of elements.
   fn length(&self) -> usize;

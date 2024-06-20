@@ -28,8 +28,8 @@ macro_rules! create_enum_with_list {
             type Err = crate::Error;
 
             #[inline]
-            fn from_str(s: &str) -> Result<Self, Self::Err> {
-                Ok(match s {
+            fn from_str(str: &str) -> Result<Self, Self::Err> {
+                Ok(match str {
                     $first_variant_str => Self::$first_variant_ident,
                     $($variant_str => Self::$variant_ident,)*
                     _ => return Err($err),

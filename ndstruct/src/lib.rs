@@ -14,7 +14,7 @@ pub mod doc_tests;
 mod error;
 mod utils;
 
-/// Shorcut of core::result::Result<T, ndstruct::Error>;
+/// Shorcut of [`core::result::Result<T, error::Error>`].
 pub type Result<T> = core::result::Result<T, Error>;
 
 pub use error::*;

@@ -1,7 +1,7 @@
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 
-/// See [Remove::remove] for more information.
+/// See [`Remove::remove`] for more information.
 pub trait Remove {
   /// Error
   type Error;

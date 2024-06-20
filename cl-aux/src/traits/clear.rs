@@ -1,7 +1,7 @@
 #[cfg(feature = "alloc")]
 use alloc::{string::String, vec::Vec};
 
-/// See [Clear::clear] for more information.
+/// See [`Clear::clear`] for more information.
 pub trait Clear {
   /// "Clears" the internal buffer, "erasing" all elements.
   fn clear(&mut self);

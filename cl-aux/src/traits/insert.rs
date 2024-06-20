@@ -33,7 +33,7 @@ use alloc::{
 #[cfg(feature = "std")]
 use std::collections::{HashMap, HashSet};
 
-/// See [Insert::insert] for more information.
+/// See [`Insert::insert`] for more information.
 pub trait Insert {
   /// Error
   type Error;
@@ -71,8 +71,8 @@ where
   type Input = (K, V);
 
   #[inline]
-  fn insert(&mut self, (k, v): Self::Input) -> Result<(), Self::Error> {
-    _manage_hash!(self, k, v)
+  fn insert(&mut self, (key, val): Self::Input) -> Result<(), Self::Error> {
+    _manage_hash!(self, key, val)
   }
 }
 
@@ -90,8 +90,8 @@ where
   type Input = V;
 
   #[inline]
-  fn insert(&mut self, v: Self::Input) -> Result<(), Self::Error> {
-    _manage_set!(self, v)
+  fn insert(&mut self, input: Self::Input) -> Result<(), Self::Error> {
+    _manage_set!(self, input)
   }
 }
 
