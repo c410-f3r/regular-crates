@@ -40,12 +40,16 @@ pub type CslVec<DATA, const D: usize> = Csl<Vec<DATA>, Vec<usize>, Vec<usize>, D
 
 /// Base structure for all CSL* variants.
 ///
-/// It is possible to define your own fancy CSL, e.g., `Csl<
+/// It is possible to define your own fancy CSL.
+///
+/// ```ignore,rust
+/// type CustomCsl = ndstruct::Csl<
 ///   Vec<num_bigint::BigNum, 32>,
 ///   arrayvec::ArrayVec<[usize; 32]>,
 ///   smallvec::SmallVec<[usize; 321]>,
 ///   123
-/// >`.
+/// >
+/// ```
 ///
 /// # Types
 ///
