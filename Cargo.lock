@@ -30,7 +30,7 @@ dependencies = [
 
 [[package]]
 name = "cl-aux"
-version = "4.4.0"
+version = "5.0.0"
 dependencies = [
  "arrayvec",
  "serde",
