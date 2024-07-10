@@ -120,5 +120,4 @@ impl Display for CslError {
   }
 }
 
-#[cfg(feature = "std")]
-impl std::error::Error for CslError {}
+impl core::error::Error for CslError {}
