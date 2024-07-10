@@ -34,6 +34,7 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Aclippy::multiple_inherent_impl",
   "-Aclippy::must_use_candidate",
   "-Aclippy::needless_doctest_main",
+  "-Aclippy::panic_in_result_fn",
   "-Aclippy::pattern_type_mismatch",
   "-Aclippy::pub_use",
   "-Aclippy::pub_with_shorthand",
