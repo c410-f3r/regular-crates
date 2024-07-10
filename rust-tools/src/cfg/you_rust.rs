@@ -5,6 +5,7 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Dclippy::restriction",
   "-Dwarnings",
   "-Aclippy::absolute_paths",
+  "-Aclippy::allow_attributes",
   "-Aclippy::big_endian_bytes",
   "-Aclippy::blanket-clippy-restriction-lints",
   "-Aclippy::decimal_literal_representation",
