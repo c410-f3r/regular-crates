@@ -21,5 +21,4 @@ impl Display for DenseError {
   }
 }
 
-#[cfg(feature = "std")]
-impl std::error::Error for DenseError {}
+impl core::error::Error for DenseError {}

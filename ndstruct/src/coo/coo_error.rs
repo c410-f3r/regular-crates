@@ -53,5 +53,4 @@ impl Display for CooError {
   }
 }
 
-#[cfg(feature = "std")]
-impl std::error::Error for CooError {}
+impl core::error::Error for CooError {}

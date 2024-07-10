@@ -170,5 +170,4 @@ impl Display for CslLineConstructorError {
   }
 }
 
-#[cfg(feature = "std")]
-impl std::error::Error for CslLineConstructorError {}
+impl core::error::Error for CslLineConstructorError {}
