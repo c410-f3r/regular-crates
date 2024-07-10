@@ -195,10 +195,6 @@ where
       })
       .0;
       if data.as_ref().iter().all(|value| value.0 != indcs) {
-        #[allow(
-          // Capacity was already checked
-          clippy::let_underscore_must_use
-        )]
         data
           .push({
             let element = cb(rng, &indcs);

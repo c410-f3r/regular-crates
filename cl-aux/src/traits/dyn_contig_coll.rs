@@ -9,7 +9,7 @@ use core::ops::{Deref, DerefMut};
 #[cfg_attr(not(feature = "alloc"), doc = "```ignore")]
 /// fn stuff<T>(dcc: &mut T)
 /// where
-///     T: cl_aux::DynContigColl<u8>
+///     T: cl_aux::DynContigColl<cl_aux::Error, u8>
 /// {
 ///     dcc.clear();
 ///     dcc.extend([4, 5, 6]).unwrap();
@@ -20,29 +20,29 @@ use core::ops::{Deref, DerefMut};
 /// stuff(&mut dcc);
 /// assert_eq!(dcc, &[4]);
 /// ```
-pub trait DynContigColl<T>:
+pub trait DynContigColl<E, T>:
   AsRef<[T]>
   + Clear
   + Capacity
   + Default
   + Deref<Target = [T]>
   + DerefMut
-  + crate::Extend<T, Error = crate::Error>
-  + Push<T, Error = crate::Error>
+  + crate::Extend<T, Error = E>
+  + Push<T, Error = E>
   + Truncate<Input = usize>
   + WithCapacity<Input = usize>
 {
 }
 
-impl<T, U> DynContigColl<T> for U where
+impl<E, T, U> DynContigColl<E, T> for U where
   U: AsRef<[T]>
     + Clear
     + Capacity
     + Default
     + Deref<Target = [T]>
     + DerefMut
-    + crate::Extend<T, Error = crate::Error>
-    + Push<T, Error = crate::Error>
+    + crate::Extend<T, Error = E>
+    + Push<T, Error = E>
     + Truncate<Input = usize>
     + WithCapacity<Input = usize>
 {

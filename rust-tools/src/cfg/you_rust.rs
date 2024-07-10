@@ -12,6 +12,7 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Aclippy::error_impl_error",
   "-Aclippy::exhaustive_enums",
   "-Aclippy::exhaustive_structs",
+  "-Aclippy::field_scoped_visibility_modifiers",
   "-Aclippy::host_endian_bytes",
   "-Aclippy::ignored_unit_patterns",
   "-Aclippy::impl_trait_in_params",
@@ -36,6 +37,7 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Aclippy::pub_use",
   "-Aclippy::pub_with_shorthand",
   "-Aclippy::question_mark_used",
+  "-Aclippy::same_name_method",
   "-Aclippy::self_named_module_files",
   "-Aclippy::semicolon_outside_block",
   "-Aclippy::similar_names",
@@ -80,7 +82,6 @@ const RUST_FLAGS: &[&str] = &[
   "-Dunused_macro_rules",
   "-Dunused_qualifications",
   "-Dunused_results",
-  "-Dvariant_size_differences",
   "-Dwarnings",
 ];
 

@@ -138,18 +138,12 @@ where
     Ok(self)
   }
 
-  #[allow(
-    // self.curr_dim_idx always points to a valid reference
-    clippy::unwrap_used
-  )]
+  #[expect(clippy::unwrap_used, reason = "`self.curr_dim_idx` always points to a valid reference")]
   fn curr_dim(&mut self) -> &mut usize {
     self.csl.dims.get_mut(self.curr_dim_idx).unwrap()
   }
 
-  #[allow(
-    // Constructor doesn't contain empty dimensions
-    clippy::unwrap_used
-  )]
+  #[expect(clippy::unwrap_used, reason = "Constructor doesn't contain empty dimensions")]
   fn last_dim(&mut self) -> usize {
     *self.csl.dims.last().unwrap()
   }
