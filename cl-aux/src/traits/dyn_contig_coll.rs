@@ -30,7 +30,7 @@ pub trait DynContigColl<E, T>:
   + crate::Extend<T, Error = E>
   + Push<T, Error = E>
   + Truncate<Input = usize>
-  + WithCapacity<Input = usize>
+  + WithCapacity<Error = E, Input = usize>
 {
 }
 
@@ -44,6 +44,6 @@ impl<E, T, U> DynContigColl<E, T> for U where
     + crate::Extend<T, Error = E>
     + Push<T, Error = E>
     + Truncate<Input = usize>
-    + WithCapacity<Input = usize>
+    + WithCapacity<Error = E, Input = usize>
 {
 }
