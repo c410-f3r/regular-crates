@@ -92,14 +92,13 @@ where
   /// let _ = CslVec::<i32, 3>::with_capacity(nnz, nolp1);
   /// ```
   #[inline]
-  #[must_use]
-  pub fn with_capacity(nnz: usize, nolp1: usize) -> Self {
-    Self {
-      data: DS::with_capacity(nnz),
+  pub fn with_capacity(nnz: usize, nolp1: usize) -> crate::Result<Self> {
+    Ok(Self {
+      data: DS::with_capacity(nnz)?,
       dims: <_>::default(),
-      indcs: IS::with_capacity(nnz),
-      offs: OS::with_capacity(nolp1),
-    }
+      indcs: IS::with_capacity(nnz)?,
+      offs: OS::with_capacity(nolp1)?,
+    })
   }
 }
 
