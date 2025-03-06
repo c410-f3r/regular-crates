@@ -2,7 +2,7 @@
 arrayvec = { default-features = false, optional = true, version = "0.7" }
 serde = { default-features = false, optional = true, version = "1.0" }
 smallvec = { default-features = false, optional = true, version = "1.13" }
-tinyvec = { default-features = false, optional = true, version = "1.0" }
+tinyvec = { default-features = false, optional = true, version = "1.9" }
 
 [features]
 alloc = ["tinyvec?/alloc"]
