@@ -609,11 +609,11 @@ where
   pub fn new_random_rand<R>(rng: &mut R, upper_bound: usize) -> crate::Result<Self>
   where
     R: rand::Rng,
-    rand::distributions::Standard: rand::distributions::Distribution<DATA>,
+    rand::distr::StandardUniform: rand::distr::Distribution<DATA>,
   {
     let dims = crate::utils::valid_random_dims(rng, upper_bound);
     let max_nnz = max_nnz(&dims);
-    let nnz = if max_nnz == 0 { 0 } else { rng.gen_range(0..max_nnz) };
-    Self::new_controlled_random_rand(dims, nnz, rng, |r, _| r.r#gen())
+    let nnz = if max_nnz == 0 { 0 } else { rng.random_range(0..max_nnz) };
+    Self::new_controlled_random_rand(dims, nnz, rng, |r, _| r.random())
   }
 }

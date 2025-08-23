@@ -1,7 +1,7 @@
 [dependencies]
 arrayvec = { default-features = false, optional = true, version = "0.7" }
 serde = { default-features = false, optional = true, version = "1.0" }
-smallvec = { default-features = false, optional = true, version = "1.13" }
+smallvec = { default-features = false, optional = true, version = "1.0" }
 tinyvec = { default-features = false, optional = true, version = "1.0" }
 
 [features]
@@ -20,4 +20,4 @@ name = "cl-aux"
 readme = "README.md"
 repository = "https://github.com/c410-f3r/regular-crates"
 rust-version = "1.65"
-version = "5.0.1"
+version = "5.1.0"
