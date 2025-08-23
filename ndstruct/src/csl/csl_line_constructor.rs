@@ -81,7 +81,7 @@ where
   /// Pushes a new compressed line, modifying the internal structure and if applicable,
   /// increases the current dimension length.
   ///
-  /// The iterator will be truncated to (usize::Max - last offset value + 1) or (last dimension value)
+  /// The iterator will be truncated to (`usize::MAX` - last offset value + 1) or (last dimension value)
   /// and it can lead to a situation where no values will be inserted.
   ///
   /// # Arguments

@@ -5,7 +5,7 @@ use crate::csl::{
 use cl_aux::{Push, SingleTypeStorage};
 use core::cmp::Ordering;
 use rand::{
-  distr::{Distribution, Uniform},
+  distr::{Distribution as _, Uniform},
   Rng,
 };
 
@@ -107,7 +107,9 @@ where
     loop {
       if *self.csl.offs.as_ref().get(last_visited_off)? >= nnz {
         if let Some(slice) = self.csl.offs.as_mut().get_mut(last_visited_off..) {
-          slice.iter_mut().for_each(|off| *off = nnz);
+          for off in slice.iter_mut() {
+            *off = nnz;
+          }
         }
         break;
       }

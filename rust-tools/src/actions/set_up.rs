@@ -1,5 +1,5 @@
 use crate::Actions;
-use std::{fs::File, io::Write};
+use std::{fs::File, io::Write as _};
 
 impl Actions {
   pub(crate) fn set_up(&self) -> crate::Result<()> {

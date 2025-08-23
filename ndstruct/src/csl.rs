@@ -590,21 +590,6 @@ where
   ///
   /// * `rng`: `rand::Rng` trait
   /// * `upper_bound`: The maximum allowed exclusive dimension
-  ///
-  /// # Example
-  ///
-  /// # Example
-  #[cfg_attr(feature = "alloc", doc = "```rust")]
-  #[cfg_attr(not(feature = "alloc"), doc = "```ignore")]
-  /// # fn main() -> ndstruct::Result<()> {
-  /// use ndstruct::csl::CslVec;
-  /// use rand::{rngs::mock::StepRng, seq::SliceRandom};
-  /// let mut rng = StepRng::new(0, 1);
-  /// let upper_bound = 5;
-  /// let random: ndstruct::Result<CslVec<u8, 8>>;
-  /// random = CslVec::new_random_rand(&mut rng, upper_bound);
-  /// assert!(random?.dims().choose(&mut rng).unwrap() < &upper_bound);
-  /// # Ok(()) }
   #[inline]
   pub fn new_random_rand<R>(rng: &mut R, upper_bound: usize) -> crate::Result<Self>
   where

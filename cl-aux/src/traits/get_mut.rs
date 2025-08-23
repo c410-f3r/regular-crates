@@ -23,7 +23,8 @@ where
 {
   type Error = T::Error;
   type Input = T::Input;
-  type Output<'output> = T::Output<'output>
+  type Output<'output>
+    = T::Output<'output>
   where
     Self: 'output;
 
@@ -40,7 +41,8 @@ where
 impl<T> GetMut for SingleItemStorage<T> {
   type Error = crate::Error;
   type Input = usize;
-  type Output<'output> = &'output mut T
+  type Output<'output>
+    = &'output mut T
   where
     Self: 'output;
 
@@ -57,7 +59,8 @@ impl<T> GetMut for SingleItemStorage<T> {
 impl<T, const N: usize> GetMut for [T; N] {
   type Error = crate::Error;
   type Input = usize;
-  type Output<'output> = &'output mut T
+  type Output<'output>
+    = &'output mut T
   where
     Self: 'output;
 
@@ -74,7 +77,8 @@ impl<T, const N: usize> GetMut for [T; N] {
 impl<T> GetMut for &'_ mut [T] {
   type Error = crate::Error;
   type Input = usize;
-  type Output<'output> = &'output mut T
+  type Output<'output>
+    = &'output mut T
   where
     Self: 'output;
 
@@ -92,7 +96,8 @@ impl<T> GetMut for &'_ mut [T] {
 impl<T> GetMut for Vec<T> {
   type Error = crate::Error;
   type Input = usize;
-  type Output<'output> = &'output mut T
+  type Output<'output>
+    = &'output mut T
   where
     Self: 'output;
 
@@ -110,7 +115,8 @@ impl<T> GetMut for Vec<T> {
 impl<T, const N: usize> GetMut for arrayvec::ArrayVec<T, N> {
   type Error = crate::Error;
   type Input = usize;
-  type Output<'output> = &'output mut T
+  type Output<'output>
+    = &'output mut T
   where
     Self: 'output;
 
@@ -131,7 +137,8 @@ where
 {
   type Error = crate::Error;
   type Input = usize;
-  type Output<'output> = &'output mut A::Item
+  type Output<'output>
+    = &'output mut A::Item
   where
     Self: 'output;
 
@@ -152,7 +159,8 @@ where
 {
   type Error = crate::Error;
   type Input = usize;
-  type Output<'output> = &'output mut A::Item
+  type Output<'output>
+    = &'output mut A::Item
   where
     Self: 'output;
 
@@ -174,7 +182,8 @@ where
 {
   type Error = crate::Error;
   type Input = usize;
-  type Output<'output> = &'output mut A::Item
+  type Output<'output>
+    = &'output mut A::Item
   where
     Self: 'output;
 

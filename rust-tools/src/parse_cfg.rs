@@ -1,5 +1,5 @@
 use crate::{CfgOption, Params, TransformingParams};
-use std::io::{BufRead, BufReader, Read};
+use std::io::{BufRead as _, BufReader, Read};
 
 #[allow(
   // False positive

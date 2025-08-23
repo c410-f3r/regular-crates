@@ -23,7 +23,8 @@ where
 {
   type Error = T::Error;
   type Input = T::Input;
-  type Output<'output> = T::Output<'output>
+  type Output<'output>
+    = T::Output<'output>
   where
     Self: 'output;
 
@@ -40,7 +41,8 @@ where
 impl<T> Get for SingleItemStorage<T> {
   type Error = crate::Error;
   type Input = usize;
-  type Output<'output> = &'output T
+  type Output<'output>
+    = &'output T
   where
     Self: 'output;
 
@@ -57,7 +59,8 @@ impl<T> Get for SingleItemStorage<T> {
 impl<T, const N: usize> Get for [T; N] {
   type Error = crate::Error;
   type Input = usize;
-  type Output<'output> = &'output T
+  type Output<'output>
+    = &'output T
   where
     Self: 'output;
 
@@ -74,7 +77,8 @@ impl<T, const N: usize> Get for [T; N] {
 impl<T> Get for &'_ [T] {
   type Error = crate::Error;
   type Input = usize;
-  type Output<'output> = &'output T
+  type Output<'output>
+    = &'output T
   where
     Self: 'output;
 
@@ -91,7 +95,8 @@ impl<T> Get for &'_ [T] {
 impl<T> Get for &'_ mut [T] {
   type Error = crate::Error;
   type Input = usize;
-  type Output<'output> = &'output T
+  type Output<'output>
+    = &'output T
   where
     Self: 'output;
 
@@ -109,7 +114,8 @@ impl<T> Get for &'_ mut [T] {
 impl<T> Get for Vec<T> {
   type Error = crate::Error;
   type Input = usize;
-  type Output<'output> = &'output T
+  type Output<'output>
+    = &'output T
   where
     Self: 'output;
 
@@ -127,7 +133,8 @@ impl<T> Get for Vec<T> {
 impl<T, const N: usize> Get for arrayvec::ArrayVec<T, N> {
   type Error = crate::Error;
   type Input = usize;
-  type Output<'output> = &'output T
+  type Output<'output>
+    = &'output T
   where
     Self: 'output;
 
@@ -148,7 +155,8 @@ where
 {
   type Error = crate::Error;
   type Input = usize;
-  type Output<'output> = &'output A::Item
+  type Output<'output>
+    = &'output A::Item
   where
     Self: 'output;
 
@@ -170,7 +178,8 @@ where
 {
   type Error = crate::Error;
   type Input = usize;
-  type Output<'output> = &'output A::Item
+  type Output<'output>
+    = &'output A::Item
   where
     Self: 'output;
 
@@ -192,7 +201,8 @@ where
 {
   type Error = crate::Error;
   type Input = usize;
-  type Output<'output> = &'output A::Item
+  type Output<'output>
+    = &'output A::Item
   where
     Self: 'output;
 

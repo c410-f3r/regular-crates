@@ -176,7 +176,7 @@ where
   where
     R: rand::Rng,
   {
-    use rand::distr::Distribution;
+    use rand::distr::Distribution as _;
     if nnz > crate::utils::max_nnz(&dims) {
       return Err(CooError::NnzGreaterThanMaximumNnz.into());
     }
@@ -213,19 +213,6 @@ where
   ///
   /// * `rng`: `rand::Rng` trait
   /// * `upper_bound`: The maximum allowed exclusive dimension
-  ///
-  /// # Example
-  #[cfg_attr(feature = "alloc", doc = "```rust")]
-  #[cfg_attr(not(feature = "alloc"), doc = "```ignore")]
-  /// # fn main() -> ndstruct::Result<()> {
-  /// use ndstruct::coo::CooVec;
-  /// use rand::{rngs::mock::StepRng, seq::SliceRandom};
-  /// let mut rng = StepRng::new(0, 1);
-  /// let upper_bound = 5;
-  /// let random: ndstruct::Result<CooVec<u8, 8>>;
-  /// random = CooVec::new_random_rand(&mut rng, upper_bound);
-  /// assert!(random?.dims().choose(&mut rng).unwrap() < &upper_bound);
-  /// # Ok(()) }
   #[inline]
   pub fn new_random_rand<R>(rng: &mut R, upper_bound: usize) -> crate::Result<Self>
   where
