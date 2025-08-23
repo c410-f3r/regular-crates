@@ -18,7 +18,8 @@ impl<T> Iter for &T
 where
   T: Iter,
 {
-  type Output<'iter> = T::Output<'iter>
+  type Output<'iter>
+    = T::Output<'iter>
   where
     Self: 'iter;
 
@@ -44,7 +45,8 @@ impl Iter for () {
 /// assert_eq!(cl_aux::Iter::iter(&Some(0)).next().unwrap(), &0);
 /// ```
 impl<T> Iter for Option<T> {
-  type Output<'iter> = option::Iter<'iter, T>
+  type Output<'iter>
+    = option::Iter<'iter, T>
   where
     T: 'iter;
 
@@ -59,7 +61,8 @@ impl<T> Iter for Option<T> {
 /// assert_eq!(cl_aux::Iter::iter(&structure).next().unwrap(), &1);
 /// ```
 impl<T> Iter for SingleItemStorage<T> {
-  type Output<'iter> = slice::Iter<'iter, T>
+  type Output<'iter>
+    = slice::Iter<'iter, T>
   where
     T: 'iter;
 
@@ -74,7 +77,8 @@ impl<T> Iter for SingleItemStorage<T> {
 /// assert_eq!(cl_aux::Iter::iter(&structure).next().unwrap(), &1);
 /// ```
 impl<T, const N: usize> Iter for [T; N] {
-  type Output<'iter> = slice::Iter<'iter, T>
+  type Output<'iter>
+    = slice::Iter<'iter, T>
   where
     T: 'iter;
 
@@ -89,7 +93,8 @@ impl<T, const N: usize> Iter for [T; N] {
 /// assert_eq!(cl_aux::Iter::iter(&structure).next().unwrap(), &1);
 /// ```
 impl<T> Iter for &'_ [T] {
-  type Output<'iter> = slice::Iter<'iter, T>
+  type Output<'iter>
+    = slice::Iter<'iter, T>
   where
     Self: 'iter;
 
@@ -119,7 +124,8 @@ impl Iter for String {
 /// ```
 #[cfg(feature = "alloc")]
 impl<T> Iter for Vec<T> {
-  type Output<'iter> = slice::Iter<'iter, T>
+  type Output<'iter>
+    = slice::Iter<'iter, T>
   where
     T: 'iter;
 
@@ -149,7 +155,8 @@ impl<const N: usize> Iter for arrayvec::ArrayString<N> {
 /// ```
 #[cfg(feature = "arrayvec")]
 impl<T, const N: usize> Iter for arrayvec::ArrayVec<T, N> {
-  type Output<'iter> = slice::Iter<'iter, T>
+  type Output<'iter>
+    = slice::Iter<'iter, T>
   where
     T: 'iter;
 
@@ -168,7 +175,8 @@ impl<A> Iter for smallvec::SmallVec<A>
 where
   A: smallvec::Array,
 {
-  type Output<'iter> = slice::Iter<'iter, A::Item>
+  type Output<'iter>
+    = slice::Iter<'iter, A::Item>
   where
     A: 'iter;
 
@@ -188,7 +196,8 @@ where
   A: tinyvec::Array,
   A::Item: Default,
 {
-  type Output<'iter> = slice::Iter<'iter, A::Item>
+  type Output<'iter>
+    = slice::Iter<'iter, A::Item>
   where
     A: 'iter;
 
@@ -208,7 +217,8 @@ where
   A: tinyvec::Array,
   A::Item: Default,
 {
-  type Output<'iter> = slice::Iter<'iter, A::Item>
+  type Output<'iter>
+    = slice::Iter<'iter, A::Item>
   where
     A: 'iter;
 

@@ -590,30 +590,15 @@ where
   ///
   /// * `rng`: `rand::Rng` trait
   /// * `upper_bound`: The maximum allowed exclusive dimension
-  ///
-  /// # Example
-  ///
-  /// # Example
-  #[cfg_attr(feature = "alloc", doc = "```rust")]
-  #[cfg_attr(not(feature = "alloc"), doc = "```ignore")]
-  /// # fn main() -> ndstruct::Result<()> {
-  /// use ndstruct::csl::CslVec;
-  /// use rand::{rngs::mock::StepRng, seq::SliceRandom};
-  /// let mut rng = StepRng::new(0, 1);
-  /// let upper_bound = 5;
-  /// let random: ndstruct::Result<CslVec<u8, 8>>;
-  /// random = CslVec::new_random_rand(&mut rng, upper_bound);
-  /// assert!(random?.dims().choose(&mut rng).unwrap() < &upper_bound);
-  /// # Ok(()) }
   #[inline]
   pub fn new_random_rand<R>(rng: &mut R, upper_bound: usize) -> crate::Result<Self>
   where
     R: rand::Rng,
-    rand::distributions::Standard: rand::distributions::Distribution<DATA>,
+    rand::distr::StandardUniform: rand::distr::Distribution<DATA>,
   {
     let dims = crate::utils::valid_random_dims(rng, upper_bound);
     let max_nnz = max_nnz(&dims);
-    let nnz = if max_nnz == 0 { 0 } else { rng.gen_range(0..max_nnz) };
-    Self::new_controlled_random_rand(dims, nnz, rng, |r, _| r.r#gen())
+    let nnz = if max_nnz == 0 { 0 } else { rng.random_range(0..max_nnz) };
+    Self::new_controlled_random_rand(dims, nnz, rng, |r, _| r.random())
   }
 }

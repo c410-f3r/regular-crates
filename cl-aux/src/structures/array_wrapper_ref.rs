@@ -51,7 +51,7 @@ impl<'array, T, const N: usize> IntoIterator for &'array ArrayWrapperRef<'array,
 #[cfg(feature = "serde")]
 mod serde {
   use crate::ArrayWrapperRef;
-  use serde::{ser::SerializeTuple, Serialize, Serializer};
+  use serde::{ser::SerializeTuple as _, Serialize, Serializer};
 
   impl<T, const N: usize> Serialize for ArrayWrapperRef<'_, T, N>
   where

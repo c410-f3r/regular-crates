@@ -5,7 +5,7 @@ use crate::csl::{
 use cl_aux::{Push, SingleTypeStorage};
 use core::cmp::Ordering;
 use rand::{
-  distributions::{Distribution, Uniform},
+  distr::{Distribution as _, Uniform},
   Rng,
 };
 
@@ -84,7 +84,7 @@ where
       let mut counter = 0;
       let line_nnz = offset.get(1)?.checked_sub(*offset.first()?)?;
       while counter < line_nnz {
-        let rnd = self.rng.gen_range(0..*dims.get(last_dim_idx)?);
+        let rnd = self.rng.random_range(0..*dims.get(last_dim_idx)?);
         if !indcs.as_ref().get(*offset.first()?..)?.contains(&rnd) {
           indcs.push(rnd).ok()?;
           counter = counter.checked_add(1)?;
@@ -100,12 +100,16 @@ where
     for _ in 1..correct_offs_len(&self.csl.dims).ok()? {
       self.csl.offs.push(0).ok()?;
     }
-    let fun = |idl, _, s: &mut Self| Some(Uniform::from(0..=idl).sample(s.rng));
+    let fun = |idl, _, s: &mut Self| {
+      Some(Uniform::new_inclusive(0, idl).map(|el| el.sample(s.rng)).unwrap_or_default())
+    };
     let mut last_visited_off = self.do_fill_offs(last_dim_idx, fun)?;
     loop {
       if *self.csl.offs.as_ref().get(last_visited_off)? >= nnz {
         if let Some(slice) = self.csl.offs.as_mut().get_mut(last_visited_off..) {
-          slice.iter_mut().for_each(|off| *off = nnz);
+          for off in slice.iter_mut() {
+            *off = nnz;
+          }
         }
         break;
       }
@@ -115,7 +119,8 @@ where
         let curr = offs.get(idx)?.checked_add(offs_adjustment)?;
         let prev = *offs.get(idx.checked_sub(1)?)?;
         let start = curr.checked_sub(prev)?;
-        let line_nnz = Uniform::from(start..=idl).sample(s.rng);
+        let line_nnz =
+          Uniform::new_inclusive(start, idl).map(|el| el.sample(s.rng)).unwrap_or_default();
         let offs_adjustment_addition = line_nnz.checked_add(prev)?.checked_sub(curr)?;
         offs_adjustment = offs_adjustment.checked_add(offs_adjustment_addition)?;
         Some(line_nnz)

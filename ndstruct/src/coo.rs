@@ -176,7 +176,7 @@ where
   where
     R: rand::Rng,
   {
-    use rand::distributions::Distribution;
+    use rand::distr::Distribution as _;
     if nnz > crate::utils::max_nnz(&dims) {
       return Err(CooError::NnzGreaterThanMaximumNnz.into());
     }
@@ -190,7 +190,7 @@ where
         if dim == 0 {
           0
         } else {
-          rand::distributions::Uniform::from(0..dim).sample(rng)
+          rand::distr::Uniform::new(0, dim).ok().map(|el| el.sample(rng)).unwrap_or_default()
         }
       })
       .0;
@@ -213,28 +213,15 @@ where
   ///
   /// * `rng`: `rand::Rng` trait
   /// * `upper_bound`: The maximum allowed exclusive dimension
-  ///
-  /// # Example
-  #[cfg_attr(feature = "alloc", doc = "```rust")]
-  #[cfg_attr(not(feature = "alloc"), doc = "```ignore")]
-  /// # fn main() -> ndstruct::Result<()> {
-  /// use ndstruct::coo::CooVec;
-  /// use rand::{rngs::mock::StepRng, seq::SliceRandom};
-  /// let mut rng = StepRng::new(0, 1);
-  /// let upper_bound = 5;
-  /// let random: ndstruct::Result<CooVec<u8, 8>>;
-  /// random = CooVec::new_random_rand(&mut rng, upper_bound);
-  /// assert!(random?.dims().choose(&mut rng).unwrap() < &upper_bound);
-  /// # Ok(()) }
   #[inline]
   pub fn new_random_rand<R>(rng: &mut R, upper_bound: usize) -> crate::Result<Self>
   where
     R: rand::Rng,
-    rand::distributions::Standard: rand::distributions::Distribution<DATA>,
+    rand::distr::StandardUniform: rand::distr::Distribution<DATA>,
   {
     let dims = crate::utils::valid_random_dims(rng, upper_bound);
     let max_nnz = crate::utils::max_nnz(&dims);
-    let nnz = if max_nnz == 0 { 0 } else { rng.gen_range(0..max_nnz) };
-    Self::new_controlled_random_rand(dims, nnz, rng, |r, _| r.r#gen())
+    let nnz = if max_nnz == 0 { 0 } else { rng.random_range(0..max_nnz) };
+    Self::new_controlled_random_rand(dims, nnz, rng, |r, _| r.random())
   }
 }

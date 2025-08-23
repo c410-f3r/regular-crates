@@ -61,7 +61,7 @@ impl<T, const N: usize> CapacityUpperBound for [T; N] {
 /// assert_eq!(cl_aux::CapacityUpperBound::capacity_upper_bound(&structure), 2305843009213693951);
 /// ```
 impl<T> CapacityUpperBound for &'_ [T] {
-  const CAPACITY_UPPER_BOUND: usize = _capacity_upper_bound_of_type::<T>();
+  const CAPACITY_UPPER_BOUND: usize = capacity_upper_bound_of_type::<T>();
 }
 
 /// ```rust
@@ -69,7 +69,7 @@ impl<T> CapacityUpperBound for &'_ [T] {
 /// assert_eq!(cl_aux::CapacityUpperBound::capacity_upper_bound(&mut structure), 2305843009213693951);
 /// ```
 impl<T> CapacityUpperBound for &'_ mut [T] {
-  const CAPACITY_UPPER_BOUND: usize = _capacity_upper_bound_of_type::<T>();
+  const CAPACITY_UPPER_BOUND: usize = capacity_upper_bound_of_type::<T>();
 }
 
 /// ```rust
@@ -78,7 +78,7 @@ impl<T> CapacityUpperBound for &'_ mut [T] {
 /// ```
 #[cfg(feature = "alloc")]
 impl CapacityUpperBound for String {
-  const CAPACITY_UPPER_BOUND: usize = _capacity_upper_bound_of_type::<u8>();
+  const CAPACITY_UPPER_BOUND: usize = capacity_upper_bound_of_type::<u8>();
 }
 
 /// ```rust
@@ -87,7 +87,7 @@ impl CapacityUpperBound for String {
 /// ```
 #[cfg(feature = "alloc")]
 impl<T> CapacityUpperBound for Vec<T> {
-  const CAPACITY_UPPER_BOUND: usize = _capacity_upper_bound_of_type::<T>();
+  const CAPACITY_UPPER_BOUND: usize = capacity_upper_bound_of_type::<T>();
 }
 
 /// ```rust
@@ -117,7 +117,7 @@ impl<A> CapacityUpperBound for smallvec::SmallVec<A>
 where
   A: smallvec::Array,
 {
-  const CAPACITY_UPPER_BOUND: usize = _capacity_upper_bound_of_type::<A::Item>();
+  const CAPACITY_UPPER_BOUND: usize = capacity_upper_bound_of_type::<A::Item>();
 }
 
 /// ```rust
@@ -143,11 +143,11 @@ where
   A: tinyvec::Array,
   A::Item: Default,
 {
-  const CAPACITY_UPPER_BOUND: usize = _capacity_upper_bound_of_type::<A::Item>();
+  const CAPACITY_UPPER_BOUND: usize = capacity_upper_bound_of_type::<A::Item>();
 }
 
 #[inline]
-const fn _capacity_upper_bound_of_type<T>() -> usize {
+const fn capacity_upper_bound_of_type<T>() -> usize {
   let isize_max_usize = isize::MAX.unsigned_abs();
   if let Some(elem) = isize_max_usize.checked_div(size_of::<T>()) {
     elem

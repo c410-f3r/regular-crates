@@ -21,7 +21,7 @@ use parse_cfg::parse_cfg;
 use std::{
   env::{args, Args},
   fs::File,
-  io::{stderr, stdout, BufRead, BufReader, Write},
+  io::{stderr, stdout, BufRead as _, BufReader, Write as _},
   process::Command,
 };
 use transforming_params::TransformingParams;
@@ -146,7 +146,7 @@ fn parse_action(
       actions.params.modify(&tp);
       actions.test_with_features(arg(args)?, opt(args))?;
     }
-  };
+  }
   Ok(())
 }
 

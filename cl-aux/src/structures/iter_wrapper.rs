@@ -10,7 +10,7 @@ where
 #[cfg(feature = "serde")]
 mod serde {
   use crate::IterWrapper;
-  use serde::{ser::SerializeSeq, Serialize, Serializer};
+  use serde::{ser::SerializeSeq as _, Serialize, Serializer};
 
   impl<I> Serialize for IterWrapper<I>
   where

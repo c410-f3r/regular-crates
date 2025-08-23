@@ -77,7 +77,7 @@ where
   if D == 0 {
     return dims;
   }
-  let cut_point = rng.gen_range(0..D);
+  let cut_point = rng.random_range(0..D);
   let mut array = dims;
   let iter = if let Some(r) = array.get_mut(cut_point..) {
     r.iter_mut()
@@ -87,7 +87,7 @@ where
   match upper_bound {
     0 => {}
     1 => iter.for_each(|dim| *dim = 1),
-    _ => iter.for_each(|dim| *dim = rng.gen_range(1..upper_bound)),
+    _ => iter.for_each(|dim| *dim = rng.random_range(1..upper_bound)),
   }
   dims
 }

@@ -1,4 +1,4 @@
-use crate::{IterWrapper, Length, SingleItemStorage};
+use crate::{IterWrapper, Length as _, SingleItemStorage};
 #[cfg(feature = "alloc")]
 use alloc::{
   collections::{BTreeMap, BTreeSet},
