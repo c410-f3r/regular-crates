@@ -5,8 +5,6 @@
 $rt rustfmt
 $rt clippy
 
-.scripts/cl-aux.sh
-.scripts/ndstruct.sh
 .scripts/rust-tools.sh
 
-cargo test --all-features --doc
+cargo test --all-features

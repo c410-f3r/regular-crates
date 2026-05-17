@@ -1,4 +1,4 @@
-use crate::{cfg::YouRust, Params};
+use crate::{Params, cfg::YouRust};
 
 create_enum_with_list! {
     crate::Error::UnknownCfg;

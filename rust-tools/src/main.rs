@@ -19,9 +19,9 @@ use error::Error;
 use params::Params;
 use parse_cfg::parse_cfg;
 use std::{
-  env::{args, Args},
+  env::{Args, args},
   fs::File,
-  io::{stderr, stdout, BufRead as _, BufReader, Write as _},
+  io::{BufRead as _, BufReader, Write as _, stderr, stdout},
   process::Command,
 };
 use transforming_params::TransformingParams;

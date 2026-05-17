@@ -1,7 +1,3 @@
-[profile.profiling]
-inherits = "release"
-debug = true
-
 [workspace]
-members = ["cl-aux", "ndstruct", "ndstruct-fuzz", "rust-tools"]
-resolver = "2"
+members = ["rust-tools"]
+resolver = "3"
