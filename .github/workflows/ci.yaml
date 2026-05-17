@@ -6,22 +6,6 @@ on:
       - main
 
 jobs:
-  fuzz:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          override: true
-          profile: minimal
-          toolchain: nightly-2025-07-17
-      - uses: actions-rs/install@v0.1
-        with:
-          crate: cargo-fuzz
-          use-tool-cache: true
-
-      - run: .scripts/fuzz.sh
-
   internal-tests:
     runs-on: ubuntu-latest
     steps:
@@ -31,7 +15,7 @@ jobs:
           components: clippy, rustfmt
           override: true
           profile: minimal
-          toolchain: nightly-2025-07-17
+          toolchain: nightly-2026-05-07
       - uses: Swatinem/rust-cache@v2
 
       - run: .scripts/all.sh

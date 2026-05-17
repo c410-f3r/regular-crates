@@ -1,4 +1,4 @@
-use crate::{handle_cmd_output, Actions};
+use crate::{Actions, handle_cmd_output};
 use std::process::Command;
 
 macro_rules! create_fns {

@@ -23,6 +23,6 @@ fn manage_flags(flags: &mut Vec<String>, to_add: &[String], to_subtract: &[Strin
   let iter = flags
     .iter()
     .chain(to_add)
-    .filter(move |flag| !flag.is_empty() && to_subtract.iter().all(|s| s != *flag));
+    .filter(move |flag| !flag.is_empty() && to_subtract.iter().all(|str| str != *flag));
   *flags = iter.cloned().collect();
 }

@@ -1,5 +1,5 @@
 use crate::Actions;
-use std::io::{stdout, Write as _};
+use std::io::{Write as _, stdout};
 
 const TARGET_DIR: &str = "target/rust-tools-target";
 

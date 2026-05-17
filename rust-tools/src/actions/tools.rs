@@ -1,4 +1,4 @@
-use crate::{handle_cmd_output, Actions};
+use crate::{Actions, handle_cmd_output};
 use std::{env::Args, process::Command};
 
 impl Actions {
