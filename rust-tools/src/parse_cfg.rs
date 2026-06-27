@@ -97,7 +97,7 @@ mod tests {
         rm_rust_flags E
         add_rustfmt_flags F
         template you-rust
-        toolchain nightly-2026-05-07
+        toolchain nightly-2026-06-27
     "#;
     let (params, tp) = parse_cfg(&cfg[..]).unwrap();
     assert_eq!(params, YouRust::default().0);
@@ -107,6 +107,6 @@ mod tests {
     assert_eq!(tp.rm_rust_flags, vec!["E"]);
     assert_eq!(tp.add_rustfmt_flags, vec!["F"]);
     assert_eq!(tp.rm_rustfmt_flags, Vec::<String>::new());
-    assert_eq!(tp.toolchain, "nightly-2026-05-07");
+    assert_eq!(tp.toolchain, "nightly-2026-06-27");
   }
 }

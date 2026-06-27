@@ -63,7 +63,7 @@ rust-tools --file SOME_CONFIGURATION_FILE.cfg SOME_COMMAND
 add_clipy_flags -Aclippy::type_complexity
 rm_clippy_flags -Aclippy::implicit_return,-Aclippy::missing_docs_in_private_items
 template you-rust
-toolchain nightly-2026-05-07
+toolchain nightly-2026-06-27
 ```
 
 ## CLI parameters
