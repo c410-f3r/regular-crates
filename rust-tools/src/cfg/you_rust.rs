@@ -31,6 +31,8 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Aclippy::doc_include_without_cfg",
   // Can't distinguish between titles and paragraphs (HP)
   "-Aclippy::doc_paragraphs_missing_punctuation",
+  // Allows the future insertion of fields without breaking user-code (DNMS)
+  "-Aclippy::empty_structs_with_brackets",
   // Sometimes it is more readable to use inline modules when they are small (PO)
   "-Aclippy::inline_modules",
   // `arithmetic_side_effects` makes the use of these operators predictable by the compiler (DNMS)
@@ -59,6 +61,8 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Aclippy::integer_division",
   // Extra work that leads to the same end result (DNMS)
   "-Aclippy::into_iter_without_iter",
+  // Does not work with `cfg_select` (HP)
+  "-Aclippy::items_after_statements",
   // Not very useful (MSTS)
   "-Aclippy::len_without_is_empty",
   // Conflicts with other lints and also generates additional work (PO)
@@ -102,14 +106,14 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Aclippy::semicolon_outside_block",
   // Single responsibility and self documentation (DNMS)
   "-Aclippy::single_call_fn",
-  // Right now it is demanding the use of `core` elements that is only available in nightly (HP)
-  "-Aclippy::std_instead_of_core",
   // Too restrictive (PO)
   "-Aclippy::struct_field_names",
   // Sometimes a new field is not evaluated in established places because of the wildcard (PO)
   "-Aclippy::unneeded_field_pattern",
   // Unseparated is better than separated (PO)
   "-Aclippy::unseparated_literal_suffix",
+  // New extension with lots of false-positives (HP)
+  "-Aclippy::unused_async_trait_impl",
   // Variables with starting underscore are required when `cfg` flags are involved (MSTS)
   "-Aclippy::used_underscore_binding",
 ];
