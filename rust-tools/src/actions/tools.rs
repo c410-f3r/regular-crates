@@ -10,7 +10,7 @@ impl Actions {
     handle_cmd_output(
       cmd
         .args(
-          [String::from("clippy"), String::from("--workspace")]
+          [String::from("clippy"), String::from("--all-features")]
             .into_iter()
             .chain(args.by_ref())
             .chain([String::from("--")]),
