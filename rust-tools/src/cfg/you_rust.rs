@@ -39,6 +39,8 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Aclippy::integer_division_remainder_used",
   // It is better to not have an empty `else` block (PO)
   "-Aclippy::else_if_without_else",
+  // Not useful (PO)
+  "-Aclippy::enum_variant_names",
   // adhoc module prefixes should be used to distinguish different error enums (PO)
   "-Aclippy::error_impl_error",
   // Exhaustiveness is a good thing (PO)
@@ -87,8 +89,6 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Aclippy::multiple_inherent_impl",
   // The usefulness is doubtful (PO)
   "-Aclippy::must_use_candidate",
-  // Lifetime errors because inner references are shorter (MSTS)
-  "-Aclippy::ref_option",
   // Pattern matching used to be more restrict in older versions (PO)
   "-Aclippy::pattern_type_mismatch",
   // Just plain wrong (DNMS)
@@ -98,6 +98,8 @@ const CLIPPY_FLAGS: &[&str] = &[
   // `?` is idiomatic and there are third-party libraries that offer backtraces when working
   // with `?` (DNMS)
   "-Aclippy::question_mark_used",
+  // Lifetime errors because inner references are shorter (MSTS)
+  "-Aclippy::ref_option",
   // The required methods of an external trait might conflict with internal methods (DNMS)
   "-Aclippy::same_name_method",
   // The new syntax is better (PO)
@@ -110,6 +112,8 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Aclippy::struct_field_names",
   // Sometimes a new field is not evaluated in established places because of the wildcard (PO)
   "-Aclippy::unneeded_field_pattern",
+  // Hardcoded to an external crate and I couldn't find a legit use case (PO)
+  "-Aclippy::unsafe_derive_deserialize",
   // Unseparated is better than separated (PO)
   "-Aclippy::unseparated_literal_suffix",
   // New extension with lots of false-positives (HP)
