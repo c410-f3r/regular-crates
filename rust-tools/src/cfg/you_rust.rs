@@ -108,6 +108,8 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Aclippy::semicolon_outside_block",
   // Single responsibility and self documentation (DNMS)
   "-Aclippy::single_call_fn",
+  // Does not compose well with APIs (PO)
+  "-Aclippy::struct_excessive_bools",
   // Too restrictive (PO)
   "-Aclippy::struct_field_names",
   // Sometimes a new field is not evaluated in established places because of the wildcard (PO)
