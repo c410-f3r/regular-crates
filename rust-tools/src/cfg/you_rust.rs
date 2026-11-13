@@ -100,6 +100,8 @@ const CLIPPY_FLAGS: &[&str] = &[
   "-Aclippy::question_mark_used",
   // Lifetime errors because inner references are shorter (MSTS)
   "-Aclippy::ref_option",
+  // Hard to work when lots of fields are involved (PO)
+  "-Aclippy::rest_pattern_accessible_field",
   // The required methods of an external trait might conflict with internal methods (DNMS)
   "-Aclippy::same_name_method",
   // The new syntax is better (PO)
